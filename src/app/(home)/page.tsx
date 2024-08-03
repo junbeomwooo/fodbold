@@ -29,7 +29,7 @@ const getTodayMatches = async (timezone: string) => {
 };
 
 export default async function page() {
-  const fotmob = new Fotmob();
+  // const fotmob = new Fotmob();
 
   /** 접속한 인터넷의 ip를 통해 국가를 알아내고 타임존 적용시킨 데이터 반환하기 */
   // const timezone =
