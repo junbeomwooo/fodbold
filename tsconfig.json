@@ -32,7 +32,7 @@
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts"
-  ],
+, "next-i18next.config.ㅓs"  ],
   "exclude": [
     "node_modules"
   ]
