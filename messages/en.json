@@ -1,0 +1,13 @@
+{
+  "header": {
+    "matches": "Matches",
+    "news": "News",
+    "theme": "Theme",
+    "language": "Language",
+    "lanOption": {
+      "english": "English",
+      "danish": "Danish",
+      "korean": "Korean"
+    }
+  }
+}

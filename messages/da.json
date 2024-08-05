@@ -1,0 +1,13 @@
+{
+  "header": {
+    "matches": "Kampe",
+    "news": "Nyheder",
+    "theme": "Tema",
+    "language": "Sprog",
+    "lanOption": {
+      "english": "Engelsk",
+      "danish": "Dansk",
+      "korean": "Koreansk"
+    }
+  }
+}
