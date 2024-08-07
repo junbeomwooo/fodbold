@@ -7,7 +7,7 @@ export default function Header() {
   const t = useTranslations("header");
   return (
     <>
-      <div className="h-20 flex flex-row items-center justify-between hover:no-underline px-24 max-md:px-12 bg-slate-100 dark:bg-black fixed w-full">
+      <div className="h-20 flex flex-row items-center justify-between hover:no-underline px-14 max-md:px-12 bg-slate-100 dark:bg-black fixed w-full">
         <Link
           className="font-extrabold text-xl text-emerald-400 hover:no-underline"
           href="/"
@@ -18,6 +18,7 @@ export default function Header() {
             width={100}
             height={50}
             className="dark:invert object-contain"
+            style={{ width: 100, height: 50 }}
             priority 
           />
         </Link>

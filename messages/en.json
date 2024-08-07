@@ -9,5 +9,10 @@
       "danish": "Danish",
       "korean": "Korean"
     }
+  },
+  "main": {
+    "topLeagues": "Top Leagues",
+    "premier": "Premier League",
+    "england": "England"
   }
 }

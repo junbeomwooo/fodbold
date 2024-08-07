@@ -52,6 +52,13 @@ const config = {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+        custom: {
+          dark: "#1d1d1d",
+          green: "#34d399",
+          gray: "#8a8a8b",
+          gray2: "#5f5f5f"
+
+        }
       },
       borderRadius: {
         lg: "var(--radius)",
@@ -78,6 +85,12 @@ const config = {
         "max-lg": { max: "1024px" },
         "max-xl": { max: "1280px" },
         "max-2xl": { max: "1536px" },
+      },
+      fontSize: {
+        'xsm' : '13px'
+      },
+      rotate: {
+        '270': '270deg', 
       },
     },
   },
