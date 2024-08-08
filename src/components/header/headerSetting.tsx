@@ -47,6 +47,7 @@ export default function HeaderSetting() {
             className="flex place-content-between cursor-pointer px-5 py-5 max-md:px-10 hover:bg-slate-300 dark:hover:bg-zinc-900 transition-all ease-in-out duration-300"
             onClick={() => {
               setTheme(currentTheme === "dark" ? "light" : "dark");
+              setOpenSetting(!openSetting);
             }}
           >
             <h1 className="dark:text-white">{t("theme")}</h1>

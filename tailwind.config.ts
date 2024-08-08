@@ -83,12 +83,14 @@ const config = {
       },
       screens: {
         "max-sm": { max: "640px" },
+        "max-msm": { max: "700px" },
         "max-md": { max: "768px" },
         "max-lg": { max: "1024px" },
         "max-xl": { max: "1280px" },
         "max-2xl": { max: "1536px" },
       },
       fontSize: {
+        'xxs' : '10px',
         'xsm' : '13px'
       },
       rotate: {

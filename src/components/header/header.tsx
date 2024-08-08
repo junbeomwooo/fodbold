@@ -7,7 +7,7 @@ export default function Header() {
   const t = useTranslations("header");
   return (
     <>
-      <div className="h-20 flex flex-row items-center justify-between hover:no-underline px-14 max-md:px-12 bg-slate-100 dark:bg-black fixed w-full">
+      <div className="h-20 flex flex-row items-center justify-between hover:no-underline px-14 max-md:px-12 bg-slate-100 dark:bg-black fixed w-full z-20">
         <Link
           className="font-extrabold text-xl text-emerald-400 hover:no-underline"
           href="/"
