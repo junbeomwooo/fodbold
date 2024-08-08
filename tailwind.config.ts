@@ -54,9 +54,11 @@ const config = {
         },
         custom: {
           dark: "#1d1d1d",
+          lightDark: "#282828",
           green: "#34d399",
           gray: "#8a8a8b",
-          gray2: "#5f5f5f"
+          gray2: "#5f5f5f",
+          gray3: '#333333'
 
         }
       },
