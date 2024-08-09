@@ -14,5 +14,29 @@
     "topLeagues": "Topligaer",
     "premier": "Premier League",
     "england": "England"
+  },
+  "Date": {
+    "sunday": "Søndag",
+    "monday": "Mandag",
+    "tuesday": "Tirsdag",
+    "wednesday": "Onsdag",
+    "thursday": "Torsdag",
+    "friday": "Fredag",
+    "saturday": "Lørdag",
+    "january": "Januar",
+    "february": "Februar",
+    "march": "Marts",
+    "april": "April",
+    "may": "Maj",
+    "june": "Juni",
+    "july": "Juli",
+    "august": "August",
+    "september": "September",
+    "october": "Oktober",
+    "november": "November",
+    "december": "December",
+    "today": "I dag",
+    "yesterday": "I går",
+    "tomorrow": "I morgen"
   }
 }
