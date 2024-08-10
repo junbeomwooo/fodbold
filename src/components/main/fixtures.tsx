@@ -159,12 +159,13 @@ export default function Fixtures() {
 
     // 달력 날짜 선택
   const onClickSelectDate = (selectedDate:any) => {
+    
     // 현재 날짜 변경 값을 데이터에 반영 
-    const formattedDate = selectedDate.toISOString().slice(0,10);
+    const formattedDate = moment(selectedDate).format('YYYY-MM-DD');
     setIsDate(formattedDate);
 
     // 달력에 날짜 변경값 변경 후 닫기
-    setDate(formattedDate);
+    setDate(selectedDate);
     setIsOpenCal(!isOpenCal);
   };
 

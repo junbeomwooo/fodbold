@@ -2,11 +2,13 @@ import React from "react";
 import Image from "next/image";
 
 import { FOOTBALL_IMAGE } from "@/app/[locale]/(home)/page";
+import { useState } from "react";
 
 export default async function Leagues({t}:{t:any}) {
 
   return (
     <div className=" w-1/5 max-lg:hidden max-xl:w-2/5  max-xl:mr-6 ">
+    {/* Top Leagues */}
     <div className="w-full h-auto bg-white rounded-xl border-solid border border-slate-200 pb-4 dark:bg-custom-dark dark:border-0">
       <h1 className="text-base font-medium p-3 ml-4 dark:text-custom-green pt-6 mb-2">
         {t("topLeagues")}
@@ -117,6 +119,10 @@ export default async function Leagues({t}:{t:any}) {
           <h2 className="text-xsm ml-5 dark:text-white">Copa America</h2>
         </li>
       </ul>
+    </div>
+    {/* All Leagues */}
+    <div>
+
     </div>
   </div>
   );
