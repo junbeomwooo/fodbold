@@ -13,7 +13,8 @@
   "main": {
     "topLeagues": "톱 리그",
     "premier": "Premier League",
-    "england": "영국"
+    "england": "영국",
+    "allLeagues": "모든 리그"
   },
   "Date": {
     "sunday": "일요일",

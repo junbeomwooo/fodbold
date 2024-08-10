@@ -95,6 +95,7 @@ const config = {
       },
       rotate: {
         '270': '270deg', 
+        'm180': '-180deg'
       },
     },
   },

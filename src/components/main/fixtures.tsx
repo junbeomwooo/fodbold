@@ -203,7 +203,7 @@ export default function Fixtures() {
                 width={16}
                 height={16}
                 style={{ width: "16px", height: "16px" }}
-                className="ml-3 dark:invert"
+                className={`ml-3 dark:invert transition-transform duration-300 ${isOpenCal ? 'rotate-m180' : 'rotate-0'}`}
               />
             </div>
             {isOpenCal && (

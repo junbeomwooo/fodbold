@@ -35,6 +35,8 @@ const getAllLeagues = async (year: number) => {
       "x-rapidapi-key": `${process.env.FOOTBALL_API_KEY}`,
     },
   });
+
+  return response.json();
 };
 
 export default async function page() {
@@ -48,10 +50,7 @@ export default async function page() {
   // const [stands] = standing?.league?.standings;
 
   /** 전 세계 리그정보 가져오기 */
-  // const allLeagues = await getAllLeagues(year);
-
-
-
+  // const leagueData = (await getAllLeagues(year)).response;
 
   /** 지울 데이터 (데이터 통신 대용으로 사용중)*/
   const stands = [
@@ -417,9 +416,1300 @@ export default async function page() {
     },
   ];
 
+  const leagueData = [
+    {
+      league: {
+        id: 343,
+        name: "First League",
+        type: "League",
+        logo: "https://media.api-sports.io/football/leagues/343.png",
+      },
+      country: {
+        name: "Armenia",
+        code: "AM",
+        flag: "https://media.api-sports.io/flags/am.svg",
+      },
+    },
+    {
+      league: {
+        id: 701,
+        name: "Liga Revelação U23",
+        type: "League",
+        logo: "https://media.api-sports.io/football/leagues/701.png",
+      },
+      country: {
+        name: "Portugal",
+        code: "PT",
+        flag: "https://media.api-sports.io/flags/pt.svg",
+      },
+    },
+    {
+      league: {
+        id: 761,
+        name: "Cup",
+        type: "Cup",
+        logo: "https://media.api-sports.io/football/leagues/761.png",
+      },
+      country: {
+        name: "Liechtenstein",
+        code: "LI",
+        flag: "https://media.api-sports.io/flags/li.svg",
+      },
+    },
+    {
+      league: {
+        id: 12,
+        name: "CAF Champions League",
+        type: "Cup",
+        logo: "https://media.api-sports.io/football/leagues/12.png",
+      },
+      country: { name: "World", code: null, flag: null },
+    },
+    {
+      league: {
+        id: 492,
+        name: "Tweede Divisie",
+        type: "League",
+        logo: "https://media.api-sports.io/football/leagues/492.png",
+      },
+      country: {
+        name: "Netherlands",
+        code: "NL",
+        flag: "https://media.api-sports.io/flags/nl.svg",
+      },
+    },
+    {
+      league: {
+        id: 186,
+        name: "Ligue 1",
+        type: "League",
+        logo: "https://media.api-sports.io/football/leagues/186.png",
+      },
+      country: {
+        name: "Algeria",
+        code: "DZ",
+        flag: "https://media.api-sports.io/flags/dz.svg",
+      },
+    },
+    {
+      league: {
+        id: 854,
+        name: "WE League",
+        type: "League",
+        logo: "https://media.api-sports.io/football/leagues/854.png",
+      },
+      country: {
+        name: "Japan",
+        code: "JP",
+        flag: "https://media.api-sports.io/flags/jp.svg",
+      },
+    },
+    {
+      league: {
+        id: 1025,
+        name: "Second League A - Fall Season Gold",
+        type: "League",
+        logo: "https://media.api-sports.io/football/leagues/1025.png",
+      },
+      country: {
+        name: "Russia",
+        code: "RU",
+        flag: "https://media.api-sports.io/flags/ru.svg",
+      },
+    },
+    {
+      league: {
+        id: 1026,
+        name: "Second League A - Fall Season Silver",
+        type: "League",
+        logo: "https://media.api-sports.io/football/leagues/1026.png",
+      },
+      country: {
+        name: "Russia",
+        code: "RU",
+        flag: "https://media.api-sports.io/flags/ru.svg",
+      },
+    },
+    {
+      league: {
+        id: 755,
+        name: "Oberliga - Nordost-Süd",
+        type: "League",
+        logo: "https://media.api-sports.io/football/leagues/755.png",
+      },
+      country: {
+        name: "Germany",
+        code: "DE",
+        flag: "https://media.api-sports.io/flags/de.svg",
+      },
+    },
+    {
+      league: {
+        id: 754,
+        name: "Oberliga - Nordost-Nord",
+        type: "League",
+        logo: "https://media.api-sports.io/football/leagues/754.png",
+      },
+      country: {
+        name: "Germany",
+        code: "DE",
+        flag: "https://media.api-sports.io/flags/de.svg",
+      },
+    },
+    {
+      league: {
+        id: 751,
+        name: "Oberliga - Niederrhein",
+        type: "League",
+        logo: "https://media.api-sports.io/football/leagues/751.png",
+      },
+      country: {
+        name: "Germany",
+        code: "DE",
+        flag: "https://media.api-sports.io/flags/de.svg",
+      },
+    },
+    {
+      league: {
+        id: 752,
+        name: "Oberliga - Rheinland-Pfalz / Saar",
+        type: "League",
+        logo: "https://media.api-sports.io/football/leagues/752.png",
+      },
+      country: {
+        name: "Germany",
+        code: "DE",
+        flag: "https://media.api-sports.io/flags/de.svg",
+      },
+    },
+    {
+      league: {
+        id: 753,
+        name: "Oberliga - Baden-Württemberg",
+        type: "League",
+        logo: "https://media.api-sports.io/football/leagues/753.png",
+      },
+      country: {
+        name: "Germany",
+        code: "DE",
+        flag: "https://media.api-sports.io/flags/de.svg",
+      },
+    },
+    {
+      league: {
+        id: 747,
+        name: "Oberliga - Westfalen",
+        type: "League",
+        logo: "https://media.api-sports.io/football/leagues/747.png",
+      },
+      country: {
+        name: "Germany",
+        code: "DE",
+        flag: "https://media.api-sports.io/flags/de.svg",
+      },
+    },
+    {
+      league: {
+        id: 85,
+        name: "Regionalliga - Nordost",
+        type: "League",
+        logo: "https://media.api-sports.io/football/leagues/85.png",
+      },
+      country: {
+        name: "Germany",
+        code: "DE",
+        flag: "https://media.api-sports.io/flags/de.svg",
+      },
+    },
+    {
+      league: {
+        id: 745,
+        name: "Oberliga - Hamburg",
+        type: "League",
+        logo: "https://media.api-sports.io/football/leagues/745.png",
+      },
+      country: {
+        name: "Germany",
+        code: "DE",
+        flag: "https://media.api-sports.io/flags/de.svg",
+      },
+    },
+    {
+      league: {
+        id: 86,
+        name: "Regionalliga - SudWest",
+        type: "League",
+        logo: "https://media.api-sports.io/football/leagues/86.png",
+      },
+      country: {
+        name: "Germany",
+        code: "DE",
+        flag: "https://media.api-sports.io/flags/de.svg",
+      },
+    },
+    {
+      league: {
+        id: 83,
+        name: "Regionalliga - Bayern",
+        type: "League",
+        logo: "https://media.api-sports.io/football/leagues/83.png",
+      },
+      country: {
+        name: "Germany",
+        code: "DE",
+        flag: "https://media.api-sports.io/flags/de.svg",
+      },
+    },
+    {
+      league: {
+        id: 938,
+        name: "Oberliga - Bayern Nord",
+        type: "League",
+        logo: "https://media.api-sports.io/football/leagues/938.png",
+      },
+      country: {
+        name: "Germany",
+        code: "DE",
+        flag: "https://media.api-sports.io/flags/de.svg",
+      },
+    },
+    {
+      league: {
+        id: 87,
+        name: "Regionalliga - West",
+        type: "League",
+        logo: "https://media.api-sports.io/football/leagues/87.png",
+      },
+      country: {
+        name: "Germany",
+        code: "DE",
+        flag: "https://media.api-sports.io/flags/de.svg",
+      },
+    },
+    {
+      league: {
+        id: 939,
+        name: "Oberliga - Bayern Süd",
+        type: "League",
+        logo: "https://media.api-sports.io/football/leagues/939.png",
+      },
+      country: {
+        name: "Germany",
+        code: "DE",
+        flag: "https://media.api-sports.io/flags/de.svg",
+      },
+    },
+    {
+      league: {
+        id: 744,
+        name: "Oberliga - Schleswig-Holstein",
+        type: "League",
+        logo: "https://media.api-sports.io/football/leagues/744.png",
+      },
+      country: {
+        name: "Germany",
+        code: "DE",
+        flag: "https://media.api-sports.io/flags/de.svg",
+      },
+    },
+    {
+      league: {
+        id: 20,
+        name: "CAF Confederation Cup",
+        type: "Cup",
+        logo: "https://media.api-sports.io/football/leagues/20.png",
+      },
+      country: { name: "World", code: null, flag: null },
+    },
+    {
+      league: {
+        id: 484,
+        name: "Frauenliga",
+        type: "League",
+        logo: "https://media.api-sports.io/football/leagues/484.png",
+      },
+      country: {
+        name: "Austria",
+        code: "AT",
+        flag: "https://media.api-sports.io/flags/at.svg",
+      },
+    },
+    {
+      league: {
+        id: 1041,
+        name: "Júniores U19",
+        type: "League",
+        logo: "https://media.api-sports.io/football/leagues/1041.png",
+      },
+      country: {
+        name: "Portugal",
+        code: "PT",
+        flag: "https://media.api-sports.io/flags/pt.svg",
+      },
+    },
+    {
+      league: {
+        id: 234,
+        name: "Liga Nacional",
+        type: "League",
+        logo: "https://media.api-sports.io/football/leagues/234.png",
+      },
+      country: {
+        name: "Honduras",
+        code: "HN",
+        flag: "https://media.api-sports.io/flags/hn.svg",
+      },
+    },
+    {
+      league: {
+        id: 263,
+        name: "Liga de Expansión MX",
+        type: "League",
+        logo: "https://media.api-sports.io/football/leagues/263.png",
+      },
+      country: {
+        name: "Mexico",
+        code: "MX",
+        flag: "https://media.api-sports.io/flags/mx.svg",
+      },
+    },
+    {
+      league: {
+        id: 924,
+        name: "Piala Presiden",
+        type: "Cup",
+        logo: "https://media.api-sports.io/football/leagues/924.png",
+      },
+      country: {
+        name: "Indonesia",
+        code: "ID",
+        flag: "https://media.api-sports.io/flags/id.svg",
+      },
+    },
+    {
+      league: {
+        id: 506,
+        name: "2. liga",
+        type: "League",
+        logo: "https://media.api-sports.io/football/leagues/506.png",
+      },
+      country: {
+        name: "Slovakia",
+        code: "SK",
+        flag: "https://media.api-sports.io/flags/sk.svg",
+      },
+    },
+    {
+      league: {
+        id: 229,
+        name: "Landesliga - Steiermark",
+        type: "League",
+        logo: "https://media.api-sports.io/football/leagues/229.png",
+      },
+      country: {
+        name: "Austria",
+        code: "AT",
+        flag: "https://media.api-sports.io/flags/at.svg",
+      },
+    },
+    {
+      league: {
+        id: 645,
+        name: "3. liga - East",
+        type: "League",
+        logo: "https://media.api-sports.io/football/leagues/645.png",
+      },
+      country: {
+        name: "Slovakia",
+        code: "SK",
+        flag: "https://media.api-sports.io/flags/sk.svg",
+      },
+    },
+    {
+      league: {
+        id: 715,
+        name: "DFB Junioren Pokal",
+        type: "Cup",
+        logo: "https://media.api-sports.io/football/leagues/715.png",
+      },
+      country: {
+        name: "Germany",
+        code: "DE",
+        flag: "https://media.api-sports.io/flags/de.svg",
+      },
+    },
+    {
+      league: {
+        id: 675,
+        name: "U21 Divisie 1",
+        type: "League",
+        logo: "https://media.api-sports.io/football/leagues/675.png",
+      },
+      country: {
+        name: "Netherlands",
+        code: "NL",
+        flag: "https://media.api-sports.io/flags/nl.svg",
+      },
+    },
+    {
+      league: {
+        id: 948,
+        name: "1a Divisão - Women",
+        type: "League",
+        logo: "https://media.api-sports.io/football/leagues/948.png",
+      },
+      country: {
+        name: "Portugal",
+        code: "PT",
+        flag: "https://media.api-sports.io/flags/pt.svg",
+      },
+    },
+    {
+      league: {
+        id: 533,
+        name: "CAF Super Cup",
+        type: "Cup",
+        logo: "https://media.api-sports.io/football/leagues/533.png",
+      },
+      country: { name: "World", code: null, flag: null },
+    },
+    {
+      league: {
+        id: 644,
+        name: "3. liga - West",
+        type: "League",
+        logo: "https://media.api-sports.io/football/leagues/644.png",
+      },
+      country: {
+        name: "Slovakia",
+        code: "SK",
+        flag: "https://media.api-sports.io/flags/sk.svg",
+      },
+    },
+    {
+      league: {
+        id: 232,
+        name: "Landesliga - Wien",
+        type: "League",
+        logo: "https://media.api-sports.io/football/leagues/232.png",
+      },
+      country: {
+        name: "Austria",
+        code: "AT",
+        flag: "https://media.api-sports.io/flags/at.svg",
+      },
+    },
+    {
+      league: {
+        id: 230,
+        name: "Landesliga - Tirol",
+        type: "League",
+        logo: "https://media.api-sports.io/football/leagues/230.png",
+      },
+      country: {
+        name: "Austria",
+        code: "AT",
+        flag: "https://media.api-sports.io/flags/at.svg",
+      },
+    },
+    {
+      league: {
+        id: 226,
+        name: "Landesliga - Niederosterreich",
+        type: "League",
+        logo: "https://media.api-sports.io/football/leagues/226.png",
+      },
+      country: {
+        name: "Austria",
+        code: "AT",
+        flag: "https://media.api-sports.io/flags/at.svg",
+      },
+    },
+    {
+      league: {
+        id: 225,
+        name: "Landesliga - Karnten",
+        type: "League",
+        logo: "https://media.api-sports.io/football/leagues/225.png",
+      },
+      country: {
+        name: "Austria",
+        code: "AT",
+        flag: "https://media.api-sports.io/flags/at.svg",
+      },
+    },
+    {
+      league: {
+        id: 224,
+        name: "Landesliga - Burgenland",
+        type: "League",
+        logo: "https://media.api-sports.io/football/leagues/224.png",
+      },
+      country: {
+        name: "Austria",
+        code: "AT",
+        flag: "https://media.api-sports.io/flags/at.svg",
+      },
+    },
+    {
+      league: {
+        id: 227,
+        name: "Landesliga - Oberosterreich",
+        type: "League",
+        logo: "https://media.api-sports.io/football/leagues/227.png",
+      },
+      country: {
+        name: "Austria",
+        code: "AT",
+        flag: "https://media.api-sports.io/flags/at.svg",
+      },
+    },
+    {
+      league: {
+        id: 231,
+        name: "Landesliga - Vorarlbergliga",
+        type: "League",
+        logo: "https://media.api-sports.io/football/leagues/231.png",
+      },
+      country: {
+        name: "Austria",
+        code: "AT",
+        flag: "https://media.api-sports.io/flags/at.svg",
+      },
+    },
+    {
+      league: {
+        id: 228,
+        name: "Landesliga - Salzburg",
+        type: "League",
+        logo: "https://media.api-sports.io/football/leagues/228.png",
+      },
+      country: {
+        name: "Austria",
+        code: "AT",
+        flag: "https://media.api-sports.io/flags/at.svg",
+      },
+    },
+    {
+      league: {
+        id: 748,
+        name: "Oberliga - Niedersachsen",
+        type: "League",
+        logo: "https://media.api-sports.io/football/leagues/748.png",
+      },
+      country: {
+        name: "Germany",
+        code: "DE",
+        flag: "https://media.api-sports.io/flags/de.svg",
+      },
+    },
+    {
+      league: {
+        id: 84,
+        name: "Regionalliga - Nord",
+        type: "League",
+        logo: "https://media.api-sports.io/football/leagues/84.png",
+      },
+      country: {
+        name: "Germany",
+        code: "DE",
+        flag: "https://media.api-sports.io/flags/de.svg",
+      },
+    },
+    {
+      league: {
+        id: 138,
+        name: "Serie C - Girone A",
+        type: "League",
+        logo: "https://media.api-sports.io/football/leagues/138.png",
+      },
+      country: {
+        name: "Italy",
+        code: "IT",
+        flag: "https://media.api-sports.io/flags/it.svg",
+      },
+    },
+    {
+      league: {
+        id: 943,
+        name: "Serie C - Girone C",
+        type: "League",
+        logo: "https://media.api-sports.io/football/leagues/943.png",
+      },
+      country: {
+        name: "Italy",
+        code: "IT",
+        flag: "https://media.api-sports.io/flags/it.svg",
+      },
+    },
+    {
+      league: {
+        id: 942,
+        name: "Serie C - Girone B",
+        type: "League",
+        logo: "https://media.api-sports.io/football/leagues/942.png",
+      },
+      country: {
+        name: "Italy",
+        code: "IT",
+        flag: "https://media.api-sports.io/flags/it.svg",
+      },
+    },
+    {
+      league: {
+        id: 419,
+        name: "Premyer Liqa",
+        type: "League",
+        logo: "https://media.api-sports.io/football/leagues/419.png",
+      },
+      country: {
+        name: "Azerbaidjan",
+        code: "AZ",
+        flag: "https://media.api-sports.io/flags/az.svg",
+      },
+    },
+    {
+      league: {
+        id: 197,
+        name: "Super League 1",
+        type: "League",
+        logo: "https://media.api-sports.io/football/leagues/197.png",
+      },
+      country: {
+        name: "Greece",
+        code: "GR",
+        flag: "https://media.api-sports.io/flags/gr.svg",
+      },
+    },
+    {
+      league: {
+        id: 1128,
+        name: "Brasileiro U17",
+        type: "League",
+        logo: "https://media.api-sports.io/football/leagues/1128.png",
+      },
+      country: {
+        name: "Brazil",
+        code: "BR",
+        flag: "https://media.api-sports.io/flags/br.svg",
+      },
+    },
+    {
+      league: {
+        id: 273,
+        name: "Magyar Kupa",
+        type: "Cup",
+        logo: "https://media.api-sports.io/football/leagues/273.png",
+      },
+      country: {
+        name: "Hungary",
+        code: "HU",
+        flag: "https://media.api-sports.io/flags/hu.svg",
+      },
+    },
+    {
+      league: {
+        id: 396,
+        name: "Primera Division",
+        type: "League",
+        logo: "https://media.api-sports.io/football/leagues/396.png",
+      },
+      country: {
+        name: "Nicaragua",
+        code: "NI",
+        flag: "https://media.api-sports.io/flags/ni.svg",
+      },
+    },
+    {
+      league: {
+        id: 559,
+        name: "League Cup",
+        type: "Cup",
+        logo: "https://media.api-sports.io/football/leagues/559.png",
+      },
+      country: {
+        name: "Northern-Ireland",
+        code: "GB",
+        flag: "https://media.api-sports.io/flags/gb.svg",
+      },
+    },
+    {
+      league: {
+        id: 82,
+        name: "Frauen Bundesliga",
+        type: "League",
+        logo: "https://media.api-sports.io/football/leagues/82.png",
+      },
+      country: {
+        name: "Germany",
+        code: "DE",
+        flag: "https://media.api-sports.io/flags/de.svg",
+      },
+    },
+    {
+      league: {
+        id: 139,
+        name: "Serie A Women",
+        type: "League",
+        logo: "https://media.api-sports.io/football/leagues/139.png",
+      },
+      country: {
+        name: "Italy",
+        code: "IT",
+        flag: "https://media.api-sports.io/flags/it.svg",
+      },
+    },
+    {
+      league: {
+        id: 64,
+        name: "Feminine Division 1",
+        type: "League",
+        logo: "https://media.api-sports.io/football/leagues/64.png",
+      },
+      country: {
+        name: "France",
+        code: "FR",
+        flag: "https://media.api-sports.io/flags/fr.svg",
+      },
+    },
+    {
+      league: {
+        id: 313,
+        name: "2a Divisió",
+        type: "League",
+        logo: "https://media.api-sports.io/football/leagues/313.png",
+      },
+      country: {
+        name: "Andorra",
+        code: "AD",
+        flag: "https://media.api-sports.io/flags/ad.svg",
+      },
+    },
+    {
+      league: {
+        id: 556,
+        name: "Super Cup",
+        type: "Cup",
+        logo: "https://media.api-sports.io/football/leagues/556.png",
+      },
+      country: {
+        name: "Spain",
+        code: "ES",
+        flag: "https://media.api-sports.io/flags/es.svg",
+      },
+    },
+    {
+      league: {
+        id: 750,
+        name: "Oberliga - Hessen",
+        type: "League",
+        logo: "https://media.api-sports.io/football/leagues/750.png",
+      },
+      country: {
+        name: "Germany",
+        code: "DE",
+        flag: "https://media.api-sports.io/flags/de.svg",
+      },
+    },
+    {
+      league: {
+        id: 284,
+        name: "Liga II",
+        type: "League",
+        logo: "https://media.api-sports.io/football/leagues/284.png",
+      },
+      country: {
+        name: "Romania",
+        code: "RO",
+        flag: "https://media.api-sports.io/flags/ro.svg",
+      },
+    },
+    {
+      league: {
+        id: 676,
+        name: "Central Youth League",
+        type: "League",
+        logo: "https://media.api-sports.io/football/leagues/676.png",
+      },
+      country: {
+        name: "Poland",
+        code: "PL",
+        flag: "https://media.api-sports.io/flags/pl.svg",
+      },
+    },
+    {
+      league: {
+        id: 410,
+        name: "C-League",
+        type: "League",
+        logo: "https://media.api-sports.io/football/leagues/410.png",
+      },
+      country: {
+        name: "Cambodia",
+        code: "KH",
+        flag: "https://media.api-sports.io/flags/kh.svg",
+      },
+    },
+    {
+      league: {
+        id: 63,
+        name: "National 1",
+        type: "League",
+        logo: "https://media.api-sports.io/football/leagues/63.png",
+      },
+      country: {
+        name: "France",
+        code: "FR",
+        flag: "https://media.api-sports.io/flags/fr.svg",
+      },
+    },
+    {
+      league: {
+        id: 307,
+        name: "Pro League",
+        type: "League",
+        logo: "https://media.api-sports.io/football/leagues/307.png",
+      },
+      country: {
+        name: "Saudi-Arabia",
+        code: "SA",
+        flag: "https://media.api-sports.io/flags/sa.svg",
+      },
+    },
+    {
+      league: {
+        id: 91,
+        name: "Eredivisie Women",
+        type: "League",
+        logo: "https://media.api-sports.io/football/leagues/91.png",
+      },
+      country: {
+        name: "Netherlands",
+        code: "NL",
+        flag: "https://media.api-sports.io/flags/nl.svg",
+      },
+    },
+    {
+      league: {
+        id: 297,
+        name: "Thai League 2",
+        type: "League",
+        logo: "https://media.api-sports.io/football/leagues/297.png",
+      },
+      country: {
+        name: "Thailand",
+        code: "TH",
+        flag: "https://media.api-sports.io/flags/th.svg",
+      },
+    },
+    {
+      league: {
+        id: 178,
+        name: "Third League - Southwest",
+        type: "League",
+        logo: "https://media.api-sports.io/football/leagues/178.png",
+      },
+      country: {
+        name: "Bulgaria",
+        code: "BG",
+        flag: "https://media.api-sports.io/flags/bg.svg",
+      },
+    },
+    {
+      league: {
+        id: 177,
+        name: "Third League - Southeast",
+        type: "League",
+        logo: "https://media.api-sports.io/football/leagues/177.png",
+      },
+      country: {
+        name: "Bulgaria",
+        code: "BG",
+        flag: "https://media.api-sports.io/flags/bg.svg",
+      },
+    },
+    {
+      league: {
+        id: 749,
+        name: "Oberliga - Bremen",
+        type: "League",
+        logo: "https://media.api-sports.io/football/leagues/749.png",
+      },
+      country: {
+        name: "Germany",
+        code: "DE",
+        flag: "https://media.api-sports.io/flags/de.svg",
+      },
+    },
+    {
+      league: {
+        id: 370,
+        name: "Primera Division",
+        type: "League",
+        logo: "https://media.api-sports.io/football/leagues/370.png",
+      },
+      country: {
+        name: "El-Salvador",
+        code: "SV",
+        flag: "https://media.api-sports.io/flags/sv.svg",
+      },
+    },
+    {
+      league: {
+        id: 931,
+        name: "Non League Premier - Southern Central",
+        type: "League",
+        logo: "https://media.api-sports.io/football/leagues/931.png",
+      },
+      country: {
+        name: "England",
+        code: "GB",
+        flag: "https://media.api-sports.io/flags/gb.svg",
+      },
+    },
+    {
+      league: {
+        id: 705,
+        name: "Campionato Primavera - 1",
+        type: "League",
+        logo: "https://media.api-sports.io/football/leagues/705.png",
+      },
+      country: {
+        name: "Italy",
+        code: "IT",
+        flag: "https://media.api-sports.io/flags/it.svg",
+      },
+    },
+    {
+      league: {
+        id: 699,
+        name: "Women's Championship",
+        type: "League",
+        logo: "https://media.api-sports.io/football/leagues/699.png",
+      },
+      country: {
+        name: "England",
+        code: "GB",
+        flag: "https://media.api-sports.io/flags/gb.svg",
+      },
+    },
+    {
+      league: {
+        id: 44,
+        name: "FA WSL",
+        type: "League",
+        logo: "https://media.api-sports.io/football/leagues/44.png",
+      },
+      country: {
+        name: "England",
+        code: "GB",
+        flag: "https://media.api-sports.io/flags/gb.svg",
+      },
+    },
+    {
+      league: {
+        id: 746,
+        name: "Oberliga - Mittelrhein",
+        type: "League",
+        logo: "https://media.api-sports.io/football/leagues/746.png",
+      },
+      country: {
+        name: "Germany",
+        code: "DE",
+        flag: "https://media.api-sports.io/flags/de.svg",
+      },
+    },
+    {
+      league: {
+        id: 67,
+        name: "National 2 - Group A",
+        type: "League",
+        logo: "https://media.api-sports.io/football/leagues/67.png",
+      },
+      country: {
+        name: "France",
+        code: "FR",
+        flag: "https://media.api-sports.io/flags/fr.svg",
+      },
+    },
+    {
+      league: {
+        id: 68,
+        name: "National 2 - Group B",
+        type: "League",
+        logo: "https://media.api-sports.io/football/leagues/68.png",
+      },
+      country: {
+        name: "France",
+        code: "FR",
+        flag: "https://media.api-sports.io/flags/fr.svg",
+      },
+    },
+    {
+      league: {
+        id: 69,
+        name: "National 2 - Group C",
+        type: "League",
+        logo: "https://media.api-sports.io/football/leagues/69.png",
+      },
+      country: {
+        name: "France",
+        code: "FR",
+        flag: "https://media.api-sports.io/flags/fr.svg",
+      },
+    },
+    {
+      league: {
+        id: 932,
+        name: "Non League Div One - Northern East",
+        type: "League",
+        logo: "https://media.api-sports.io/football/leagues/932.png",
+      },
+      country: {
+        name: "England",
+        code: "GB",
+        flag: "https://media.api-sports.io/flags/gb.svg",
+      },
+    },
+    {
+      league: {
+        id: 52,
+        name: "Non League Div One - Isthmian North",
+        type: "League",
+        logo: "https://media.api-sports.io/football/leagues/52.png",
+      },
+      country: {
+        name: "England",
+        code: "GB",
+        flag: "https://media.api-sports.io/flags/gb.svg",
+      },
+    },
+    {
+      league: {
+        id: 58,
+        name: "Non League Premier - Isthmian",
+        type: "League",
+        logo: "https://media.api-sports.io/football/leagues/58.png",
+      },
+      country: {
+        name: "England",
+        code: "GB",
+        flag: "https://media.api-sports.io/flags/gb.svg",
+      },
+    },
+    {
+      league: {
+        id: 59,
+        name: "Non League Premier - Northern",
+        type: "League",
+        logo: "https://media.api-sports.io/football/leagues/59.png",
+      },
+      country: {
+        name: "England",
+        code: "GB",
+        flag: "https://media.api-sports.io/flags/gb.svg",
+      },
+    },
+    {
+      league: {
+        id: 60,
+        name: "Non League Premier - Southern South",
+        type: "League",
+        logo: "https://media.api-sports.io/football/leagues/60.png",
+      },
+      country: {
+        name: "England",
+        code: "GB",
+        flag: "https://media.api-sports.io/flags/gb.svg",
+      },
+    },
+    {
+      league: {
+        id: 56,
+        name: "Non League Div One - Southern South",
+        type: "League",
+        logo: "https://media.api-sports.io/football/leagues/56.png",
+      },
+      country: {
+        name: "England",
+        code: "GB",
+        flag: "https://media.api-sports.io/flags/gb.svg",
+      },
+    },
+    {
+      league: {
+        id: 53,
+        name: "Non League Div One - Isthmian South Central",
+        type: "League",
+        logo: "https://media.api-sports.io/football/leagues/53.png",
+      },
+      country: {
+        name: "England",
+        code: "GB",
+        flag: "https://media.api-sports.io/flags/gb.svg",
+      },
+    },
+    {
+      league: {
+        id: 57,
+        name: "Non League Div One - Isthmian South East",
+        type: "League",
+        logo: "https://media.api-sports.io/football/leagues/57.png",
+      },
+      country: {
+        name: "England",
+        code: "GB",
+        flag: "https://media.api-sports.io/flags/gb.svg",
+      },
+    },
+    {
+      league: {
+        id: 54,
+        name: "Non League Div One - Northern West",
+        type: "League",
+        logo: "https://media.api-sports.io/football/leagues/54.png",
+      },
+      country: {
+        name: "England",
+        code: "GB",
+        flag: "https://media.api-sports.io/flags/gb.svg",
+      },
+    },
+    {
+      league: {
+        id: 55,
+        name: "Non League Div One - Northern Midlands",
+        type: "League",
+        logo: "https://media.api-sports.io/football/leagues/55.png",
+      },
+      country: {
+        name: "England",
+        code: "GB",
+        flag: "https://media.api-sports.io/flags/gb.svg",
+      },
+    },
+    {
+      league: {
+        id: 933,
+        name: "Non League Div One - Southern Central",
+        type: "League",
+        logo: "https://media.api-sports.io/football/leagues/933.png",
+      },
+      country: {
+        name: "England",
+        code: "GB",
+        flag: "https://media.api-sports.io/flags/gb.svg",
+      },
+    },
+    {
+      league: {
+        id: 958,
+        name: "Copa Costa Rica",
+        type: "Cup",
+        logo: "https://media.api-sports.io/football/leagues/958.png",
+      },
+      country: {
+        name: "Costa-Rica",
+        code: "CR",
+        flag: "https://media.api-sports.io/flags/cr.svg",
+      },
+    },
+    {
+      league: {
+        id: 551,
+        name: "Super Cup",
+        type: "Cup",
+        logo: "https://media.api-sports.io/football/leagues/551.png",
+      },
+      country: {
+        name: "Turkey",
+        code: "TR",
+        flag: "https://media.api-sports.io/flags/tr.svg",
+      },
+    },
+    {
+      league: {
+        id: 181,
+        name: "FA Cup",
+        type: "Cup",
+        logo: "https://media.api-sports.io/football/leagues/181.png",
+      },
+      country: {
+        name: "Scotland",
+        code: "GB",
+        flag: "https://media.api-sports.io/flags/gb.svg",
+      },
+    },
+    {
+      league: {
+        id: 356,
+        name: "Second League",
+        type: "League",
+        logo: "https://media.api-sports.io/football/leagues/356.png",
+      },
+      country: {
+        name: "Montenegro",
+        code: "ME",
+        flag: "https://media.api-sports.io/flags/me.svg",
+      },
+    },
+    {
+      league: {
+        id: 204,
+        name: "1. Lig",
+        type: "League",
+        logo: "https://media.api-sports.io/football/leagues/204.png",
+      },
+      country: {
+        name: "Turkey",
+        code: "TR",
+        flag: "https://media.api-sports.io/flags/tr.svg",
+      },
+    },
+    {
+      league: {
+        id: 1034,
+        name: "2. Frauen Bundesliga",
+        type: "League",
+        logo: "https://media.api-sports.io/football/leagues/1034.png",
+      },
+      country: {
+        name: "Germany",
+        code: "DE",
+        flag: "https://media.api-sports.io/flags/de.svg",
+      },
+    },
+    {
+      league: {
+        id: 457,
+        name: "Campeonato de Portugal Prio - Group A",
+        type: "League",
+        logo: "https://media.api-sports.io/football/leagues/457.png",
+      },
+      country: {
+        name: "Portugal",
+        code: "PT",
+        flag: "https://media.api-sports.io/flags/pt.svg",
+      },
+    },
+    {
+      league: {
+        id: 458,
+        name: "Campeonato de Portugal Prio - Group B",
+        type: "League",
+        logo: "https://media.api-sports.io/football/leagues/458.png",
+      },
+      country: {
+        name: "Portugal",
+        code: "PT",
+        flag: "https://media.api-sports.io/flags/pt.svg",
+      },
+    },
+  ];
+
   return (
     <div className="flex w-full h-full px-14 pt-28 dark:bg-black max-lg:block max-msm:px-6">
-      <League t={t} />
+      <League leagueData={leagueData} />
       <Fixtures />
       <Standing t={t} stands={stands} />
     </div>
