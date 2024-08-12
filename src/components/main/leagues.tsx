@@ -11,6 +11,11 @@ import { useTranslations } from "next-intl";
 
 export default function Leagues({ leagueData }: { leagueData: any }) {
   const t = useTranslations("main");
+  const c = useTranslations("countries");
+
+  const [leagueDropdown, setLeagueDropDown] = useState<{
+    [key: string]: boolean;
+  }>({});
 
   const allLeagues = leagueData?.reduce((acc: any, league: any) => {
     const country = league.country.name;
@@ -26,12 +31,17 @@ export default function Leagues({ leagueData }: { leagueData: any }) {
     return acc;
   }, []);
 
+  const onCickDropDown = (countryName: string) => {
+    setLeagueDropDown((prev) => ({
+      ...prev,
+      [countryName]: !prev[countryName],
+    }));
+  };
   /** 뒤에있는 World를 맨 앞으로 옮기기 위해 */
   const countries = Object.keys(allLeagues).sort();
   const withoutWorld = countries.filter((v) => v !== "World");
   const countryKeys = ["World"].concat(withoutWorld);
 
-  console.log(countryKeys);
   return (
     <div className=" w-1/5 max-lg:hidden max-xl:w-2/5  max-xl:mr-6 ">
       {/* Top Leagues */}
@@ -149,31 +159,47 @@ export default function Leagues({ leagueData }: { leagueData: any }) {
         </h1>
         {countryKeys.map((countryName: string, countryIndex: number) => {
           const flag = allLeagues[countryName]?.flag;
+          const leagues = allLeagues[countryName].league;
+          console.log(countryName);
 
           return (
             <ul
               key={countryIndex}
-              className="flex hover:cursor-pointer hover:bg-slate-100 p-3 pl-7 dark:hover:bg-zinc-700 justify-between"
             >
-              <div className="flex">
+              <div
+                className={`flex justify-between hover:cursor-pointer hover:bg-slate-100 p-3 pl-7 dark:hover:bg-zinc-700 ${leagueDropdown[countryName] ? 'bg-slate-100 dark:bg-zinc-700':null}`}
+                onClick={() => onCickDropDown(countryName)}
+              >
+                <div className="flex">
+                  <Image
+                    src={flag || earth}
+                    alt={countryName}
+                    width={16}
+                    height={16}
+                    style={{ width: "16px", height: "16px" }}
+                    className="rounded-full"
+                  />
+                  <h1 className="text-xsm ml-5 dark:text-white">
+                    {c(countryName)}
+                  </h1>
+                </div>
                 <Image
-                  src={flag || earth}
-                  alt={countryName}
+                  src={triangle}
+                  alt="dropdown"
                   width={15}
                   height={15}
-                  style={{ width: "16px", height: "16px" }}
-                  className="rounded-full"
+                  style={{ width: "15px", height: "15px" }}
+                  className="opacity-60 dark:invert"
                 />
-              <h1 className="text-xsm ml-5 dark:text-white">{countryName}</h1>
               </div>
-              <Image
-                src={triangle}
-                alt="dropdown"
-                width={15}
-                height={15}
-                style={{ width: "15px", height: "15px" }}
-                className="opacity-60 dark:invert"
-              />
+              {leagueDropdown[countryName] && leagues.map((v:any,i:number) => {
+                return(
+                  <li key={i} className="flex  hover:cursor-pointer hover:bg-slate-100 p-3 pl-7 dark:hover:bg-zinc-700">
+                    <Image src={v.logo} alt={v.name} width={16} height={16} style={{width:"16px", height:"16px"}} />
+                    <h1 className="text-xsm ml-5 text-slate-500 dark:text-custom-gray">{v.name}</h1>
+                  </li>
+                )
+              })}
             </ul>
           );
         })}
