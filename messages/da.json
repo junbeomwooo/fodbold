@@ -167,5 +167,12 @@
     "Wales": "Wales",
     "Zambia": "Zambia",
     "Zimbabwe": "Zimbabwe"
-  }
+  },
+  "status": {
+  "all": "Alle",
+  "live": "Live",
+  "finished": "Afsluttet",
+  "scheduled": "Planlagt",
+  "filter": "Filter"
+}
 }

@@ -167,5 +167,12 @@
     "Wales": "웨일스",
     "Zambia": "잠비아",
     "Zimbabwe": "짐바브웨"
+  },
+  "status": {
+    "all": "전체",
+    "live": "진행중",
+    "finished": "종료된",
+    "scheduled": "예정된",
+    "filter": "필터"
   }
 }

@@ -163,11 +163,13 @@ export default function Leagues({ leagueData }: { leagueData: any }) {
           console.log(countryName);
 
           return (
-            <ul
-              key={countryIndex}
-            >
+            <ul key={countryIndex}>
               <div
-                className={`flex justify-between hover:cursor-pointer hover:bg-slate-100 p-3 pl-7 dark:hover:bg-zinc-700 ${leagueDropdown[countryName] ? 'bg-slate-100 dark:bg-zinc-700':null}`}
+                className={`flex justify-between hover:cursor-pointer hover:bg-slate-100 p-3 pl-7 dark:hover:bg-zinc-700 ${
+                  leagueDropdown[countryName]
+                    ? "bg-slate-100 dark:bg-zinc-700"
+                    : null
+                }`}
                 onClick={() => onCickDropDown(countryName)}
               >
                 <div className="flex">
@@ -192,13 +194,36 @@ export default function Leagues({ leagueData }: { leagueData: any }) {
                   className="opacity-60 dark:invert"
                 />
               </div>
-              {leagueDropdown[countryName] && leagues.map((v:any,i:number) => {
-                return(
-                  <li key={i} className="flex  hover:cursor-pointer hover:bg-slate-100 p-3 pl-7 dark:hover:bg-zinc-700">
-                    <Image src={v.logo} alt={v.name} width={16} height={16} style={{width:"16px", height:"16px"}} />
-                    <h1 className="text-xsm ml-5 text-slate-500 dark:text-custom-gray">{v.name}</h1>
+              {leagues.map((v: any, i: number) => {
+                return (
+                  <li
+                    key={i}
+                    className={`flex  hover:cursor-pointer hover:bg-slate-100 dark:hover:bg-zinc-700 
+                      transition-all
+                      pl-7
+                  ${
+                    leagueDropdown[countryName]
+                      ? "max-h-auto  p-3"
+                      : "max-h-0 p-0"
+                  }`}
+                  >
+                    <Image
+                      src={v.logo}
+                      alt={v.name}
+                      width={16}
+                      height={16}
+                      style={{ width: "16px", height: "16px" }}
+                      className={`
+                          transition-all
+                       ${
+                         leagueDropdown[countryName] ? "max-h-auto " : "max-h-0 hidden"
+                       }`}
+                    />
+                    <h1 className="text-xsm ml-5 text-slate-500 dark:text-custom-gray overflow-y-hidden">
+                      {v.name}
+                    </h1>
                   </li>
-                )
+                );
               })}
             </ul>
           );

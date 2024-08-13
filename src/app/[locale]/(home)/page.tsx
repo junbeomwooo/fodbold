@@ -13,7 +13,7 @@ export const GEOLOCATION_URL = "https://api.ipgeolocation.io/ipgeo";
 /** 해당 리그 id를 통한 리그 스탠딩 데이터 받아오기 */
 const getStanding = async (id: number, year: number) => {
   const response = await fetch(
-    `${FOOTBALL_URL}/standings?league=${id}&season=2023`,
+    `${FOOTBALL_URL}/standings?league=${id}&season=2024`,
     {
       method: "GET",
       headers: {
@@ -28,15 +28,17 @@ const getStanding = async (id: number, year: number) => {
 
 /** 모든 리그 정보 받아오기 */
 const getAllLeagues = async (year: number) => {
-  const response = await fetch(`${FOOTBALL_URL}/leagues?season=${year}`, {
-    method: "GET",
-    headers: {
-      "x-rapidapi-host": "v3.football.api-sports.io",
-      "x-rapidapi-key": `${process.env.FOOTBALL_API_KEY}`,
-    },
-  });
+  if (year) {
+    const response = await fetch(`${FOOTBALL_URL}/leagues?season=${year}`, {
+      method: "GET",
+      headers: {
+        "x-rapidapi-host": "v3.football.api-sports.io",
+        "x-rapidapi-key": `${process.env.FOOTBALL_API_KEY}`,
+      },
+    });
 
-  return response.json();
+    return response.json();
+  }
 };
 
 export default async function page() {
