@@ -160,7 +160,6 @@ export default function Leagues({ leagueData }: { leagueData: any }) {
         {countryKeys.map((countryName: string, countryIndex: number) => {
           const flag = allLeagues[countryName]?.flag;
           const leagues = allLeagues[countryName].league;
-          console.log(countryName);
 
           return (
             <ul key={countryIndex}>
