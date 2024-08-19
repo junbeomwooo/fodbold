@@ -38,8 +38,11 @@ export default function Fixtures() {
   // 오늘인지 확인하려쓰는 상태값
   const [isToday, setToday] = useState("");
 
-  // 데이터 저장할 상태값
+  // 보여줄 데이터 저장할 상태값
   const [data, setData] = useState([]);
+
+  // 필터또는 가공되지않은 원본 데이터를 저장할 값
+  const [initialData, setInitialData] = useState([]);
 
   // 캘린터 visible 상태값
   const [isOpenCal, setIsOpenCal] = useState(false);
@@ -49,6 +52,10 @@ export default function Fixtures() {
 
   // 선택한 데이터 필터값
   const [filter, setFilter] = useState("all");
+
+  // 검색 중인지 아닌지 판단
+  // 검색 중일 경우 가공되지않은 원본 데이터를 사용해 검색을 함 / 전체 데이터 검색임을 알리기 위해 filter값을 all로 표시해주기 위해 isForSearch가 true일 경우 데이터 통신을 스킵하고 끝날땐 isForSearch를 초기화, useState로 설정시 의존성 배열을 강제로 추가해야하기때문에 useRef 참조변수를 사용
+  const forSearchRef = useRef(false);
 
   /** 접속한 ip를 통한 국가 가져오기 (타임존 시간대 적용하기 위해) */
   const getLocation = async () => {
@@ -107,42 +114,49 @@ export default function Fixtures() {
           setIsDate(currentDate);
           setToday(currentDate);
         }
+        // 검색 중일 경우 데이터 통신x, 검색 중이 아닐 경우 데이터 통신 O
+        if (!forSearchRef.current) {
+          // 모든 데이터 받아오기 (Default)
+          if (
+            isDate &&
+            isTimezone &&
+            (filter === "all" ||
+              filter === "finished" ||
+              filter === "scheduled")
+          ) {
+            const { response } = await getMatches(isDate, isTimezone);
 
-        // 모든 데이터 받아오기 (Default)
-        if (
-          isDate &&
-          isTimezone &&
-          (filter === "all" || filter === "finished" || filter === "scheduled")
-        ) {
-          const { response } = await getMatches(isDate, isTimezone);
+            if (filter === "all") {
+              setInitialData(response);
+              setData(response);
+              // 끝난 경기 데이터만 보여주기(finished 클릭시)
+            } else if (filter === "finished") {
+              const status = ["FT", "AET", "PEN", "AWD", "WO"];
+              const finishedMatch = response.filter((match: any) => {
+                return status.includes(match.fixture.status.short);
+              });
+              setData(finishedMatch);
 
-          if (filter === "all") {
-            setData(response);
-            // 끝난 경기 데이터만 보여주기(finished 클릭시)
-          } else if (filter === "finished") {
-            const status = ["FT", "AET", "PEN", "AWD", "WO"];
-            const finishedMatch = response.filter((match: any) => {
-              return status.includes(match.fixture.status.short);
-            });
-            setData(finishedMatch);
-
-            // 예정된 데이터만 보여주기(scheduled 클릭시)
-          } else if (filter === "scheduled") {
-            const scheduledMatch = response.filter((match: any) => {
-              const status = ["TBD", "NS"];
-              return status.includes(match.fixture.status.short);
-            });
-            setData(scheduledMatch);
+              // 예정된 데이터만 보여주기(scheduled 클릭시)
+            } else if (filter === "scheduled") {
+              const scheduledMatch = response.filter((match: any) => {
+                const status = ["TBD", "NS"];
+                return status.includes(match.fixture.status.short);
+              });
+              setData(scheduledMatch);
+            }
           }
-        }
-        /// 현재 진행중인 경기 데이터만 받아오기 (live 클릭시)
-        else if (isTimezone && filter === "live") {
-          const { response } = await getLiveMatches(isTimezone);
-          setData(response);
+          /// 현재 진행중인 경기 데이터만 받아오기 (live 클릭시)
+          else if (isTimezone && filter === "live") {
+            const { response } = await getLiveMatches(isTimezone);
+            setData(response);
+          }
         }
       } catch (e) {
         console.error(e);
         return;
+      } finally {
+        forSearchRef.current = false // 검색이 끝난 후에는 다시 false로 변경
       }
     };
 
@@ -187,22 +201,26 @@ export default function Fixtures() {
 
   // 검색이벤트
   const onClickSearch = () => {
-    // 입력된 값 
-    const input = inputRef.current?.value.toLowerCase();
+    // 입력된 값
+    const input = inputRef.current?.value.trim().toLowerCase();
+    forSearchRef.current = true;
+    setFilter("all");
 
-    // 필터가 바뀌면 useEffect로 인해 데이터를 받아옴. (검색할 데이터를 모든 데이터로 고정하기위해)
-    setFilter("all")
+    if (!input) {
+      // 초반 가공되지않은 데이터로 복구
+      setData(initialData);
+    } else {
+      // 받아온 데이터를 바탕으로 필터링
+      const search = initialData.filter((match: any) => {
+        return (
+          match.teams.home.name.toLowerCase().includes(input) ||
+          match.teams.away.name.toLowerCase().includes(input)
+        );
+      });
 
-    // 받아온 데이터를 바탕으로 필터링
-    const search = data.filter((match: any) => {
-      return (
-        match.teams.home.name.toLowerCase().includes(input) ||
-        match.teams.away.name.toLowerCase().includes(input)
-      );
-    });
-    
-    // 필터링한 데이터 저장
-    setData(search);
+      // 필터링한 데이터 저장
+      setData(search);
+    }
   };
 
   // /** 축구경기 리그별로 데이터 묶기 */
