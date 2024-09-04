@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "../../styles/global.css";
 import Header from "../../components/header/header";
+import Footer from "../../components/footer/footer";
 import Providers from "../../components/provider";
 import React from "react";
 import { NextIntlClientProvider } from "next-intl";
@@ -37,6 +38,7 @@ export default async function RootLayout({
           <Providers>
             <Header />
             {children}
+            <Footer />
           </Providers>
         </NextIntlClientProvider>
       </body>

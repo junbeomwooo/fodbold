@@ -54,7 +54,7 @@ export default function Fixtures() {
   const [filter, setFilter] = useState("all");
 
   // 검색 중인지 아닌지 판단
-  // 검색 중일 경우 가공되지않은 원본 데이터를 사용해 검색을 함 / 전체 데이터 검색임을 알리기 위해 filter값을 all로 표시해주기 위해 isForSearch가 true일 경우 데이터 통신을 스킵하고 끝날땐 isForSearch를 초기화, useState로 설정시 의존성 배열을 강제로 추가해야하기때문에 useRef 참조변수를 사용
+  // 검색 중일 경우 가공되지않은 원본 데이터를 사용해 검색을 함 / 전체 데이터 검색임을 알리기 위해 filter값을 all로 표시해주기 위해 forSearchRef가 true일 경우 데이터 통신을 스킵하고 끝날땐 forSearchRef 초기화, useState로 설정시 의존성 배열을 강제로 추가해야하기때문에 useRef 참조변수를 사용
   const forSearchRef = useRef(false);
 
   /** 접속한 ip를 통한 국가 가져오기 (타임존 시간대 적용하기 위해) */
@@ -127,6 +127,7 @@ export default function Fixtures() {
             const { response } = await getMatches(isDate, isTimezone);
 
             if (filter === "all") {
+              // InitialData : 초기데이터는 따로 저장해두기
               setInitialData(response);
               setData(response);
               // 끝난 경기 데이터만 보여주기(finished 클릭시)
@@ -156,7 +157,7 @@ export default function Fixtures() {
         console.error(e);
         return;
       } finally {
-        forSearchRef.current = false // 검색이 끝난 후에는 다시 false로 변경
+        forSearchRef.current = false // 검색이 끝난 후에는 고정적으로 false로 변경
       }
     };
 
@@ -204,6 +205,12 @@ export default function Fixtures() {
     // 입력된 값
     const input = inputRef.current?.value.trim().toLowerCase();
     forSearchRef.current = true;
+
+    /** 특정 [진행중,예정된,종료된]과 같이 특정 필터가 선택된 상태에서는 사용자 편의상 검색된 결과가 전체 결과라는 것을 알려주기위해 필터를 [전체]로 바꾸어줘야하는데
+     * 이런 케이스는 useState로인해 자동적으로 데이터가 다시한번 받아와져서 불필요한 통신이 생기니 
+     * useState문안에서 if else 조건문을 통하여 검색 중일땐 데이터 통신을 하지않고 스킵하게 끔 forSearchRef 참조변수가 true또는 false를 구분하여 구현
+     * forSearchRef.current를 앞에 명시함으로써 한번의 검색 후 다시 한 번 검색시에도 불필요한 데이터 통신은 발생하지 않게 됌
+     */
     setFilter("all");
 
     if (!input) {
@@ -342,7 +349,7 @@ export default function Fixtures() {
             <div
               className={` rounded-2xl text-xsm px-2.5 cursor-pointer box-border flex items-center mr-3 w-fit text-nowrap dark:border-0 dark:bg-custom-gray3 dark:text-white ${
                 filter === "all"
-                  ? "bg-black text-white dark:bg-white dark:text-gray-950"
+                  ? "bg-black text-white dark:bg-white dark:text-custom-gray3"
                   : "border border-solid border-slate-300 hover:bg-slate-300 dark:hover:bg-custom-gray2"
               }`}
               onClick={() => setFilter("all")}
@@ -352,7 +359,7 @@ export default function Fixtures() {
             <div
               className={` rounded-2xl text-xsm px-2.5 cursor-pointer box-border flex items-center mr-3 w-fit text-nowrap dark:border-0 dark:bg-custom-gray3 dark:text-white ${
                 filter === "live"
-                  ? "bg-black text-white dark:bg-white dark:text-gray-950"
+                  ? "bg-black text-white dark:bg-white dark:text-custom-gray3"
                   : "border border-solid border-slate-300 hover:bg-slate-300 dark:hover:bg-custom-gray2"
               }`}
               onClick={() => setFilter("live")}
@@ -362,7 +369,7 @@ export default function Fixtures() {
             <div
               className={` rounded-2xl text-xsm px-2.5 cursor-pointer box-border flex items-center mr-3 w-fit text-nowrap dark:border-0 dark:bg-custom-gray3 dark:text-white ${
                 filter === "finished"
-                  ? "bg-black text-white dark:bg-white dark:text-gray-950"
+                  ? "bg-black text-white dark:bg-white dark:text-custom-gray3"
                   : "border border-solid border-slate-300 hover:bg-slate-300 dark:hover:bg-custom-gray2"
               }`}
               onClick={() => setFilter("finished")}
@@ -372,7 +379,7 @@ export default function Fixtures() {
             <div
               className={` rounded-2xl text-xsm px-2.5 cursor-pointer box-border flex items-center mr-3 w-fit text-nowrap dark:border-0 dark:bg-custom-gray3 dark:text-white ${
                 filter === "scheduled"
-                  ? "bg-black text-white dark:bg-white dark:text-gray-950"
+                  ? "bg-black text-white dark:bg-white dark:text-custom-gray3"
                   : "border border-solid border-slate-300 hover:bg-slate-300 dark:hover:bg-custom-gray2"
               }`}
               onClick={() => setFilter("scheduled")}
