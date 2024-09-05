@@ -6,7 +6,13 @@ const withNextIntl = createNextIntlPlugin();
 const nextConfig = {
   reactStrictMode: false, 
   images: {
-    domains: ["media.api-sports.io"],
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'media.api-sports.io',
+        pathname: '**',
+      },
+    ],
   },
 };
 

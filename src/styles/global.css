@@ -140,6 +140,12 @@ body {
   font-size: 18px;
 }
 
+ /* 다크 모드*/
+.dark body {
+  background-color: black;
+  color: white;
+}
+
 a {
   color: inherit;
   text-decoration: none;

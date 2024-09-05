@@ -23,7 +23,7 @@ export default function HeaderSetting() {
   /** 페이지 이동 */
   const changeLan = (lan:string):void => {
     const changeUrl = window.location.pathname.replace(/^\/[a-z]{2}/,lan);
-    router.push(changeUrl);
+    router.push(`/${changeUrl}`);
   }
 
   return (

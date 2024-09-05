@@ -8,10 +8,16 @@ import triangle from "../../../public/img/triangle.png";
 import earth from "../../../public/img/earth.png";
 
 import { useTranslations } from "next-intl";
+import { useRouter,usePathname, useParams } from "next/navigation";
 
 export default function Leagues({ leagueData }: { leagueData: any }) {
   const t = useTranslations("main");
   const c = useTranslations("countries");
+
+  const router = useRouter();
+
+  const params = useParams();
+  const locale = params.locale;
 
   const [leagueDropdown, setLeagueDropDown] = useState<{
     [key: string]: boolean;
@@ -50,7 +56,10 @@ export default function Leagues({ leagueData }: { leagueData: any }) {
           {t("topLeagues")}
         </h1>
         <ul>
-          <li className="flex hover:cursor-pointer hover:bg-slate-100 p-3 pl-7 dark:hover:bg-zinc-700">
+          <li className="flex hover:cursor-pointer hover:bg-slate-100 p-3 pl-7 dark:hover:bg-zinc-700"
+          onClick={() => {
+            router.push(`${locale}/leagues/39`)
+          }}>
             <Image
               src={`${FOOTBALL_IMAGE}/leagues/39.png`}
               alt="Premier League"
@@ -60,7 +69,10 @@ export default function Leagues({ leagueData }: { leagueData: any }) {
             />
             <h2 className="text-xsm ml-5 dark:text-white">Premier League</h2>
           </li>
-          <li className="flex hover:cursor-pointer hover:bg-slate-100 p-3 pl-7 dark:hover:bg-zinc-700">
+          <li className="flex hover:cursor-pointer hover:bg-slate-100 p-3 pl-7 dark:hover:bg-zinc-700"
+            onClick={() => {
+              router.push(`${locale}/leagues/140`)
+            }}>
             <Image
               src={`${FOOTBALL_IMAGE}/leagues/140.png`}
               alt="La Liga"
@@ -70,7 +82,10 @@ export default function Leagues({ leagueData }: { leagueData: any }) {
             />
             <h2 className="text-xsm ml-5 dark:text-white">La Liga</h2>
           </li>
-          <li className="flex hover:cursor-pointer hover:bg-slate-100 p-3 pl-7 dark:hover:bg-zinc-700">
+          <li className="flex hover:cursor-pointer hover:bg-slate-100 p-3 pl-7 dark:hover:bg-zinc-700"
+            onClick={() => {
+              router.push(`${locale}/leagues/78`)
+            }}>
             <Image
               src={`${FOOTBALL_IMAGE}/leagues/78.png`}
               alt="Bundesliga"
@@ -80,7 +95,10 @@ export default function Leagues({ leagueData }: { leagueData: any }) {
             />
             <h2 className="text-xsm ml-5 dark:text-white">Bundesliga</h2>
           </li>
-          <li className="flex hover:cursor-pointer hover:bg-slate-100 p-3 pl-7 dark:hover:bg-zinc-700">
+          <li className="flex hover:cursor-pointer hover:bg-slate-100 p-3 pl-7 dark:hover:bg-zinc-700"
+            onClick={() => {
+              router.push(`${locale}/leagues/135`)
+            }}>
             <Image
               src={`${FOOTBALL_IMAGE}/leagues/135.png`}
               alt="Serie A"
@@ -90,7 +108,10 @@ export default function Leagues({ leagueData }: { leagueData: any }) {
             />
             <h2 className="text-xsm ml-5 dark:text-white">Serie A</h2>
           </li>
-          <li className="flex hover:cursor-pointer hover:bg-slate-100 p-3 pl-7 dark:hover:bg-zinc-700">
+          <li className="flex hover:cursor-pointer hover:bg-slate-100 p-3 pl-7 dark:hover:bg-zinc-700"
+            onClick={() => {
+              router.push(`${locale}/leagues/61`)
+            }}>
             <Image
               src={`${FOOTBALL_IMAGE}/leagues/61.png`}
               alt="Ligue 1"
@@ -100,7 +121,10 @@ export default function Leagues({ leagueData }: { leagueData: any }) {
             />
             <h2 className="text-xsm ml-5 dark:text-white">Ligue 1</h2>
           </li>
-          <li className="flex hover:cursor-pointer hover:bg-slate-100 p-3 pl-7 dark:hover:bg-zinc-700">
+          <li className="flex hover:cursor-pointer hover:bg-slate-100 p-3 pl-7 dark:hover:bg-zinc-700"
+            onClick={() => {
+              router.push(`${locale}/leagues/2`)
+            }}>
             <Image
               src={`${FOOTBALL_IMAGE}/leagues/2.png`}
               alt="Champions League"
@@ -110,7 +134,10 @@ export default function Leagues({ leagueData }: { leagueData: any }) {
             />
             <h2 className="text-xsm ml-5 dark:text-white">Champions League</h2>
           </li>
-          <li className="flex hover:cursor-pointer hover:bg-slate-100 p-3 pl-7 dark:hover:bg-zinc-700">
+          <li className="flex hover:cursor-pointer hover:bg-slate-100 p-3 pl-7 dark:hover:bg-zinc-700" 
+            onClick={() => {
+              router.push(`${locale}/leagues/3`)
+            }}>
             <Image
               src={`${FOOTBALL_IMAGE}/leagues/3.png`}
               alt="Europa League"
@@ -120,7 +147,10 @@ export default function Leagues({ leagueData }: { leagueData: any }) {
             />
             <h2 className="text-xsm ml-5 dark:text-white">Europa League</h2>
           </li>
-          <li className="flex hover:cursor-pointer hover:bg-slate-100 p-3 pl-7 dark:hover:bg-zinc-700">
+          <li className="flex hover:cursor-pointer hover:bg-slate-100 p-3 pl-7 dark:hover:bg-zinc-700" 
+            onClick={() => {
+              router.push(`${locale}/leagues/1`)
+            }}>
             <Image
               src={`${FOOTBALL_IMAGE}/leagues/1.png`}
               alt="World Cup"
@@ -130,7 +160,10 @@ export default function Leagues({ leagueData }: { leagueData: any }) {
             />
             <h2 className="text-xsm ml-5 dark:text-white">World Cup</h2>
           </li>
-          <li className="flex hover:cursor-pointer hover:bg-slate-100 p-3 pl-7 dark:hover:bg-zinc-700">
+          <li className="flex hover:cursor-pointer hover:bg-slate-100 p-3 pl-7 dark:hover:bg-zinc-700"
+            onClick={() => {
+              router.push(`${locale}/leagues/4`)
+            }}>
             <Image
               src={`${FOOTBALL_IMAGE}/leagues/4.png`}
               alt="Euro Championship"
@@ -140,7 +173,10 @@ export default function Leagues({ leagueData }: { leagueData: any }) {
             />
             <h2 className="text-xsm ml-5 dark:text-white">Euro Championship</h2>
           </li>
-          <li className="flex hover:cursor-pointer hover:bg-slate-100 p-3 pl-7 dark:hover:bg-zinc-700">
+          <li className="flex hover:cursor-pointer hover:bg-slate-100 p-3 pl-7 dark:hover:bg-zinc-700"
+            onClick={() => {
+              router.push(`${locale}/leagues/39`)
+            }}>
             <Image
               src={`${FOOTBALL_IMAGE}/leagues/9.png`}
               alt="Copa America"
