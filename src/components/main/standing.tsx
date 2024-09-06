@@ -40,12 +40,12 @@ export default function Standing({ t, stands }: { t: any; stands: any }) {
         <div className="mt-3 flex flex-col">
           {stands.map((v: any, i: any) => {
             // 승급
-            const champions = "Promotion - Champions League (Group Stage: )";
-            const europa = "Promotion - Europa League (Group Stage: )";
+            const champions = "Champions League";
+            const europa = "Europa League";
             const conference =
-              "Promotion - Europa Conference League (Qualification: )";
+              "Europa Conference League";
             // 강등
-            const relegation = "Relegation - Championship";
+            const relegation = "Relegation";
             return (
               <div
                 key={i}
@@ -54,11 +54,11 @@ export default function Standing({ t, stands }: { t: any; stands: any }) {
                 {v.description &&
                 v.description.includes(relegation) === true ? (
                   <div className="w-0.5 h-5 bg-red-500 absolute" />
-                ) : v.description && v.description === champions ? (
+                ) : v.description && v.description.includes(champions) === true ? (
                   <div className="w-0.5 h-5 bg-custom-green absolute" />
-                ) : v.description && v.description === europa ? (
+                ) : v.description && v.description.includes(europa) === true ? (
                   <div className="w-0.5 h-5 bg-blue-500 absolute" />
-                ) : v.description && v.description === conference ? (
+                ) : v.description && v.description.includes(conference) === true ? (
                   <div className="w-0.5 h-5 bg-sky-300 absolute" />
                 ) : (
                   <></>

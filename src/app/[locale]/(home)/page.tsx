@@ -50,6 +50,7 @@ export default async function page() {
   /** epl 스탠딩 받아오기 */
   // const [standing] = (await getStanding(39,year)).response;
   // const [stands] = standing?.league?.standings;
+  // console.log(stands);
 
   /** 전 세계 리그정보 가져오기 */
   // const leagueData = (await getAllLeagues(year)).response;

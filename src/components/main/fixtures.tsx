@@ -61,7 +61,7 @@ export default function Fixtures() {
   const getLocation = async () => {
     const response = await fetch(
       `${GEOLOCATION_URL}?apiKey=${process.env.NEXT_PUBLIC_GEOLOCATION_API_KEY}`
-    );
+    ); 
     return response.json();
   };
 
