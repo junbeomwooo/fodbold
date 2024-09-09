@@ -2,7 +2,8 @@ import type { Metadata } from "next";
 import "../../styles/global.css";
 import Header from "../../components/header/header";
 import Footer from "../../components/footer/footer";
-import Providers from "../../components/provider";
+import Providers from "./provider";
+import StoreProvider from "./StoreProvider";
 import React from "react";
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages } from "next-intl/server";
@@ -35,11 +36,13 @@ export default async function RootLayout({
       <body>
         <NextIntlClientProvider messages={messages}>
           {/**JSX 문법에서는 자식 요소를 직접 컴포넌트의 태그 안에 넣기만 하면 자동으로 children prop으로 전달됩니다. 따라서 children을 명시적으로 전달할 필요가 없음 */}
+          <StoreProvider>
           <Providers>
             <Header />
             {children}
             <Footer />
           </Providers>
+          </StoreProvider>
         </NextIntlClientProvider>
       </body>
     </html>
