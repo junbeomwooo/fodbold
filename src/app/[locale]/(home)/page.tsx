@@ -10,7 +10,7 @@ export const GEOLOCATION_URL = "https://api.ipgeolocation.io/ipgeo";
 /** 해당 리그 id를 통한 리그 스탠딩 데이터 받아오기 */
 const getStanding = async (id: number, year: number) => {
   const response = await fetch(
-    `${FOOTBALL_URL}/standings?league=${id}&season=2024`,
+    `${FOOTBALL_URL}/standings?league=${id}&season=${year}`,
     {
       method: "GET",
       headers: {
@@ -43,7 +43,7 @@ export default async function page() {
   const year = new Date().getFullYear();
 
   /** epl 스탠딩 받아오기 */
-  // const [standing] = (await getStanding(39,year)).response;
+  const [standing] = (await getStanding(39,year)).response;
   // const [stands] = standing?.league?.standings;
 
   /** 전 세계 리그정보 가져오기 */
@@ -412,6 +412,7 @@ export default async function page() {
       update: "2024-05-28T00:00:00+00:00",
     },
   ];
+  
   const leagueData = [
     {
       league: {

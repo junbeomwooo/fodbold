@@ -5,19 +5,8 @@ import Image from "next/image";
 import { FOOTBALL_IMAGE } from "@/app/[locale]/(home)/page";
 import { useTranslations } from "next-intl";
 
-import { useAppDispatch } from "@/lib/storeHooks";
-import { setData } from "@/lib/features/standingSlice";
-
 export default function Standing({ stands }: { stands: any }) {
   const t = useTranslations("main");
-
-  const dispatch = useAppDispatch();
-
-  useEffect(() => {
-    dispatch(setData(stands))
-  },[stands, dispatch])
-
-
 
   return (
     <div className="w-1/5 max-xl:hidden">
