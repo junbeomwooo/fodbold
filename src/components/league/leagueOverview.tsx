@@ -1,32 +1,57 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
+import { usePathname } from "next/navigation";
+import { useLocale } from "next-intl";
 
 import Image from "next/image";
+import triangle from "../../../public/img/triangle.png";
+
+import Link from "next/link";
 
 import { FOOTBALL_URL } from "@/app/[locale]/(home)/page";
 import { FOOTBALL_IMAGE } from "@/app/[locale]/(home)/page";
 
 import { useAppDispatch, useAppSelector } from "@/lib/storeHooks";
-import { getList } from "@/lib/features/standingSlice";
+import { getList, setStanding } from "@/lib/features/standingSlice";
 
-export default function League({ id }: { id: number }) {
+import { useTranslations } from "next-intl";
+
+export default function LeagueOverview({ id, league }: { id: number, league: string }) {
+
+  const c = useTranslations("countries");
+  const l = useTranslations("league");
+
+  const pathname = usePathname();
+
+  const locale = useLocale();
+
   const dispatch = useAppDispatch();
+
   const { data }: any = useAppSelector((state) => state.standingSlice);
 
   /** 현재 년도 가져오기 */
   const nowYear = new Date().getFullYear();
 
   /** 년도 상태값 */
-  const [year, setYear] = useState(nowYear);
+  const [selectedYear, setSelectedYear] = useState<number>(nowYear);
 
-  useEffect(() => {
-    dispatch(getList({ id: id, year: year }));
-  }, [dispatch, id, year]);
+  // useEffect(() => {    
+  //   /** 스탠딩 데이터 가져온 뒤 상태값에 저장 */
+  //   dispatch(getList({ id: id, year: selectedYear })).then(({payload}) => {
+  //     dispatch(setStanding(payload));
+  //   });
+    
+  // }, [dispatch, id, selectedYear]);
 
-  console.log(data);
+  /** 사용할 실제 데이터 */
+  // const leagueName = data?.name;
+  // const leageCountry = data?.country;
+  // const stands = data?.standings[0];
 
-  /** 지울 데이터(예시 데이터) */
+    /** 지울 데이터(예시 데이터) */
+  const leagueName = "Premier League";
+  const leageCountry = "England";
   const stands = [
     {
       rank: 1,
@@ -74,7 +99,7 @@ export default function League({ id }: { id: number }) {
       points: 82,
       goalsDiff: 45,
       group: "Premier League",
-      form: "WDWDL",
+      form: "WDW",
       status: "same",
       description: "Promotion - Champions League (Group Stage: )",
       all: { played: 38, win: 24, draw: 10, lose: 4 },
@@ -390,100 +415,233 @@ export default function League({ id }: { id: number }) {
     },
   ];
 
+
+  /** 배열의 첫 인덱스만 가져와서 form이 있는지 길이가 몇인지 확인하는 용도 */
+  const form = stands ? stands[0]?.form : null;
+
+  /** 2010 년도부터 현재년도까지 년도 배열값구하기  */
+  let totalYears = [];
+
+  for (let i = 2010; i <= nowYear; i++) {
+    totalYears.push(i);
+  }
+
   return (
     <>
-      <div className="w-full h-32 bg-white rounded-xl">
-        <div>
-          <Image
-            src={`${FOOTBALL_IMAGE}/leagues/${id}.png`}
-            alt="league logo"
-            width={50}
-            height={50}
-            style={{ width: "auto", height: "auto" }}
-          />
+      <div className="w-full h-auto bg-white rounded-xl px-8 pt-10  dark:bg-custom-dark dark:border-0">
+        <div className="flex items-center justify-between">
+          <div className="flex">
+            <Image
+              src={`${FOOTBALL_IMAGE}/leagues/${id}.png`}
+              alt="league logo"
+              width={35}
+              height={35}
+              style={{ width: "auto", height: "auto" }}
+            />
+            <div className="flex flex-col justify-center ml-4">
+              <h1 className="text-lg">{leagueName}</h1>
+              <h1 className="text-xsm text-custom-gray ">{c(leageCountry)}</h1>
+            </div>
+          </div>
+          <div className="relative">
+            <select
+              className="border border-black rounded-full text-xsm p-1.5 font-medium appearance-none pr-5 pl-3 dark:bg-custom-dark dark:border-custom-gray2"
+              onChange={(e) => {
+                setSelectedYear(parseInt(e.currentTarget.value));
+              }}
+              defaultValue={nowYear}
+            >
+              {totalYears.map((v, i) => {
+                return (
+                  <option key={i} value={v}>
+                    {`${v}/${v + 1}`}
+                  </option>
+                );
+              })}
+            </select>
+            <span>
+              <Image
+                src={triangle}
+                alt="change date"
+                width={14}
+                height={14}
+                style={{ width: "14px", height: "14px" }}
+                className={`ml-3 absolute top-1.5 right-1.5 dark:invert`}
+              />
+            </span>
+          </div>
+        </div>
+        <div className="flex pt-10" style={{ fontSize: "15px" }}>
+          <div className="flex flex-col">
+            <Link
+              href={`/${locale}/leagues/${id}/${league}/overview`}
+              className="hover:no-underline  hover:text-custom-gray tracking-wide"
+            >
+              {l("overview")}
+            </Link>
+            {pathname === `/${locale}/leagues/${id}/${league}/overview` ? (
+              <div className="bg-green-600 w-auto h-1 mt-6 rounded-full"></div>
+            ) : (
+              <></>
+            )}
+          </div>
+          <div>
+            <Link
+              href={`/${locale}/leagues/${id}/${league}/tables`}
+              className="ml-6 hover:no-underline hover:text-custom-gray tracking-wide"
+            >
+                      {l("table")}
+            </Link>
+            {pathname === `/${locale}/leagues/${id}/${league}/tables` ? (
+              <div className="bg-green-600 w-auto h-1 mt-6 rounded-full ml-6"></div>
+            ) : (
+              <></>
+            )}
+          </div>
+          <div>
+            <Link
+              href={`/${locale}/leagues/${id}/${league}/matches`}
+              className="ml-6 hover:no-underline hover:text-custom-gray tracking-wide"
+            >
+                   {l("matches")}
+            </Link>
+            {pathname === `/${locale}/leagues/${id}/${league}/matches` ? (
+              <div className="bg-green-600 w-auto h-1 mt-6 rounded-full ml-6 tracking-wide"></div>
+            ) : (
+              <></>
+            )}
+          </div>
+          <div>
+            <Link
+              href={`/${locale}/leagues/${id}/stats`}
+              className="ml-6 hover:no-underline hover:text-custom-gray"
+            >
+                   {l("stats")}
+            </Link>
+            {pathname === `/${locale}/leagues/${id}/${league}/stats` ? (
+              <div className="bg-green-600 w-auto h-1 mt-6 rounded-full ml-6"></div>
+            ) : (
+              <></>
+            )}
+          </div>
         </div>
       </div>
-      <div className="w-3/5">
-        {/* epl */}
-        <div className="w-full h-auto bg-white rounded-xl border-solid border border-slate-200 pb-6 dark:bg-custom-dark dark:border-0">
-          <div className="hover:cursor-pointer hover:opacity-60 w-full h-full flex pt-6 pb-5 px-7 justify-between">
-            <div>
-              <h1 className="text-base font-medium dark:text-custom-green">
-              1
-              </h1>
-              <h2 className="text-xsm mt-1 text- text-custom-gray">
-               1
-              </h2>
-            </div>
-            <div className="border-solid border border-slate-200 rounded-full w-10 h-10 flex justify-center items-center dark:border-custom-gray">
-              <Image
-                src={`${FOOTBALL_IMAGE}/leagues/${id}.png`}
-                alt="Premier League"
-                width={25}
-                height={25}
-                style={{ width: 25, height: 25 }}
-              />
-            </div>
-          </div>
-          <hr className="border-solid border-slate-200 w-full dark:border-custom-gray2" />
-          <div className="flex justify-between mx-4 mt-3 text-custom-gray font-semibold">
-            <div>
-              <h2 className="text-xs">#</h2>
-            </div>
-            <div className="flex">
-              <h2 className="text-xs ml-2">PL</h2>
-              <h2 className="text-xs ml-2">GD</h2>
-              <h2 className="text-xs ml-2">PTS</h2>
-            </div>
-          </div>
-          <div className="mt-3 flex flex-col">
-            {stands.map((v: any, i: any) => {
-              // 승급
-              const champions = "Champions League";
-              const europa = "Europa League";
-              const conference = "Europa Conference League";
-              // 강등
-              const relegation = "Relegation";
-              return (
-                <div
-                  key={i}
-                  className="w-full flex justify-between py-2  hover:cursor-pointer  hover:bg-slate-100 dark:hover:bg-zinc-700"
-                >
-                  {v.description &&
-                  v.description.includes(relegation) === true ? (
-                    <div className="w-0.5 h-5 bg-red-500 absolute" />
-                  ) : v.description &&
-                    v.description.includes(champions) === true ? (
-                    <div className="w-0.5 h-5 bg-custom-green absolute" />
-                  ) : v.description &&
-                    v.description.includes(europa) === true ? (
-                    <div className="w-0.5 h-5 bg-blue-500 absolute" />
-                  ) : v.description &&
-                    v.description.includes(conference) === true ? (
-                    <div className="w-0.5 h-5 bg-sky-300 absolute" />
-                  ) : (
-                    <></>
-                  )}
-                  <div className="flex pl-4 dark:text-white">
-                    <h2 className="text-xs pr-4 font-semibold">{v?.rank}</h2>
-                    <Image
-                      src={v?.team?.logo}
-                      alt={v?.team?.name}
-                      width={50}
-                      height={50}
-                      style={{ width: 15, height: 15 }}
-                    />
-                    <h2 className="text-xs pl-3">{v?.team?.name}</h2>
-                  </div>
-                  <div className="flex pr-1 dark:text-white">
-                    <h2 className="text-xs w-7">{v.all.played}</h2>
-                    <h2 className="text-xs w-7">{v.goalsDiff}</h2>
-                    <h2 className="text-xs w-7 ">{v.points}</h2>
-                  </div>
+
+      {/*standing */}
+      <div className="w-3/5 mt-6">
+        <div className="w-full h-auto bg-white rounded-xl border-solid border border-slate-200 pb-6 dark:bg-custom-dark dark:border-0 pt-6">
+          {stands ? (
+            <>
+              <div className="flex justify-between mx-4 mt-3 text-custom-gray font-semibold">
+                <div>
+                  <h2 className="text-xs">#</h2>
                 </div>
-              );
-            })}
-          </div>
+                <div className="flex mr-3">
+                  <h2 className="text-xs w-5 px-5">PL</h2>
+                  <h2 className="text-xs w-5 px-5">W</h2>
+                  <h2 className="text-xs w-5 px-5">D</h2>
+                  <h2 className="text-xs w-5 px-5">L</h2>
+                  <h2 className="text-xs w-5 px-5">GD</h2>
+                  <h2 className="text-xs w-5 px-5">PTS</h2>
+                  {
+                    /** 데이터에 form 필드가 있다면 보여주고 없다면 보여주지않기
+                     * form데이터 길이에 따라 너비 조절
+                     */
+                    form ? (
+                      <>
+                        <h2
+                          className="text-xs w-5 px-5"
+                          style={{ marginRight: "103px" }}
+                        >
+                          Form
+                        </h2>
+                      </>
+                    ) : (
+                      <></>
+                    )
+                  }
+                </div>
+              </div>
+              <div className="mt-3 flex flex-col">
+                {stands?.map((v: any, i: any) => {
+                  // 승급
+                  const champions = "Champions League";
+                  const europa = "Europa League";
+                  const conference = "Europa Conference League";
+                  // 강등
+                  const relegation = "Relegation";
+
+                  // 최근전적
+                  const recentResult = v.form?.split("");
+                  return (
+                    <div
+                      key={i}
+                      className="w-full flex justify-between py-2  hover:cursor-pointer  hover:bg-slate-100 dark:hover:bg-zinc-700"
+                    >
+                      {v.description &&
+                      v.description.includes(relegation) === true ? (
+                        <div className="w-0.5 h-5 bg-red-500 absolute" />
+                      ) : v.description &&
+                        v.description.includes(champions) === true ? (
+                        <div className="w-0.5 h-5 bg-custom-green absolute" />
+                      ) : v.description &&
+                        v.description.includes(europa) === true ? (
+                        <div className="w-0.5 h-5 bg-blue-500 absolute" />
+                      ) : v.description &&
+                        v.description.includes(conference) === true ? (
+                        <div className="w-0.5 h-5 bg-sky-300 absolute" />
+                      ) : (
+                        <></>
+                      )}
+                      <div className="flex pl-4 dark:text-white">
+                        <h2 className="text-xs pr-4 font-semibold">
+                          {v?.rank}
+                        </h2>
+                        <Image
+                          src={v?.team?.logo}
+                          alt={v?.team?.name}
+                          width={50}
+                          height={50}
+                          style={{ width: 15, height: 15 }}
+                        />
+                        <h2 className="text-xs pl-3">{v?.team?.name}</h2>
+                      </div>
+                      <div className="flex dark:text-white mr-3">
+                        <h2 className="text-xs w-5 px-5">{v.all.played}</h2>
+                        <h2 className="text-xs w-5 px-5">{v.all.win}</h2>
+                        <h2 className="text-xs w-5 px-5">{v.all.draw}</h2>
+                        <h2 className="text-xs w-5 px-5">{v.all.lose}</h2>
+                        <h2 className="text-xs w-5 px-5">{v.goalsDiff}</h2>
+                        <h2 className="text-xs w-5 px-5">{v.points}</h2>
+                        <div className="flex items-center ml-4 w-36">
+                          {recentResult?.map((v: string, i: number) => {
+                            return (
+                              <h2
+                                className={`text-xs w-5 py-0.5 ml-2 text-center text-white rounded-md ${
+                                  v === "W"
+                                    ? "bg-green-500"
+                                    : v === "D"
+                                    ? "bg-custom-gray"
+                                    : "bg-red-500"
+                                }`}
+                                key={i}
+                              >
+                                {v}
+                              </h2>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </>
+          ) : (
+            <div className="w-full h-20 px-8 py-10">
+              <h1 className="text-base">No data available</h1>
+            </div>
+          )}
         </div>
       </div>
     </>

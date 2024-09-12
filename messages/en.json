@@ -18,28 +18,28 @@
     "search": "Search"
   },
   "Date": {
-      "sunday": "Sunday",
-      "monday": "Monday",
-      "tuesday": "Tuesday",
-      "wednesday": "Wednesday",
-      "thursday": "Thursday",
-      "friday": "Friday",
-      "saturday": "Saturday",
-      "january": "January",
-      "february": "February",
-      "march": "March",
-      "april": "April",
-      "may": "May",
-      "june": "June",
-      "july": "July",
-      "august": "August",
-      "september": "September",
-      "october": "October",
-      "november": "November",
-      "december": "December",
-      "today": "Today",
-      "yesterday": "Yesterday",
-      "tomorrow":"Tomorrow"
+    "sunday": "Sunday",
+    "monday": "Monday",
+    "tuesday": "Tuesday",
+    "wednesday": "Wednesday",
+    "thursday": "Thursday",
+    "friday": "Friday",
+    "saturday": "Saturday",
+    "january": "January",
+    "february": "February",
+    "march": "March",
+    "april": "April",
+    "may": "May",
+    "june": "June",
+    "july": "July",
+    "august": "August",
+    "september": "September",
+    "october": "October",
+    "november": "November",
+    "december": "December",
+    "today": "Today",
+    "yesterday": "Yesterday",
+    "tomorrow": "Tomorrow"
   },
   "countries": {
     "World": "World",
@@ -170,11 +170,16 @@
     "Zimbabwe": "Zimbabwe"
   },
   "status": {
-  "all": "All",
-  "live": "Live",
-  "finished": "Finished",
-  "scheduled": "Scheduled",
-      "filter": "Filter"
-  
-}
+    "all": "All",
+    "live": "Live",
+    "finished": "Finished",
+    "scheduled": "Scheduled",
+    "filter": "Filter"
+  },
+  "league": {
+    "overview": "Overview",
+    "table": "Table",
+    "matches": "Matches",
+    "stats": "Stats"
+  }
 }

@@ -8,7 +8,7 @@ import triangle from "../../../public/img/triangle.png";
 import earth from "../../../public/img/earth.png";
 
 import { useTranslations } from "next-intl";
-import { useRouter,usePathname, useParams } from "next/navigation";
+import { useRouter, usePathname, useParams } from "next/navigation";
 
 export default function Leagues({ leagueData }: { leagueData: any }) {
   const t = useTranslations("main");
@@ -56,10 +56,12 @@ export default function Leagues({ leagueData }: { leagueData: any }) {
           {t("topLeagues")}
         </h1>
         <ul>
-          <li className="flex hover:cursor-pointer hover:bg-slate-100 p-3 pl-7 dark:hover:bg-zinc-700"
-          onClick={() => {
-            router.push(`${locale}/leagues/39`)
-          }}>
+          <li
+            className="flex hover:cursor-pointer hover:bg-slate-100 p-3 pl-7 dark:hover:bg-zinc-700"
+            onClick={() => {
+              router.push(`${locale}/leagues/39/premier-league/overview`);
+            }}
+          >
             <Image
               src={`${FOOTBALL_IMAGE}/leagues/39.png`}
               alt="Premier League"
@@ -69,10 +71,12 @@ export default function Leagues({ leagueData }: { leagueData: any }) {
             />
             <h2 className="text-xsm ml-5 dark:text-white">Premier League</h2>
           </li>
-          <li className="flex hover:cursor-pointer hover:bg-slate-100 p-3 pl-7 dark:hover:bg-zinc-700"
+          <li
+            className="flex hover:cursor-pointer hover:bg-slate-100 p-3 pl-7 dark:hover:bg-zinc-700"
             onClick={() => {
-              router.push(`${locale}/leagues/140`)
-            }}>
+              router.push(`${locale}/leagues/140/la-liga/overview`);
+            }}
+          >
             <Image
               src={`${FOOTBALL_IMAGE}/leagues/140.png`}
               alt="La Liga"
@@ -82,10 +86,12 @@ export default function Leagues({ leagueData }: { leagueData: any }) {
             />
             <h2 className="text-xsm ml-5 dark:text-white">La Liga</h2>
           </li>
-          <li className="flex hover:cursor-pointer hover:bg-slate-100 p-3 pl-7 dark:hover:bg-zinc-700"
+          <li
+            className="flex hover:cursor-pointer hover:bg-slate-100 p-3 pl-7 dark:hover:bg-zinc-700"
             onClick={() => {
-              router.push(`${locale}/leagues/78`)
-            }}>
+              router.push(`${locale}/leagues/78/bundesliga/overview`);
+            }}
+          >
             <Image
               src={`${FOOTBALL_IMAGE}/leagues/78.png`}
               alt="Bundesliga"
@@ -95,10 +101,12 @@ export default function Leagues({ leagueData }: { leagueData: any }) {
             />
             <h2 className="text-xsm ml-5 dark:text-white">Bundesliga</h2>
           </li>
-          <li className="flex hover:cursor-pointer hover:bg-slate-100 p-3 pl-7 dark:hover:bg-zinc-700"
+          <li
+            className="flex hover:cursor-pointer hover:bg-slate-100 p-3 pl-7 dark:hover:bg-zinc-700"
             onClick={() => {
-              router.push(`${locale}/leagues/135`)
-            }}>
+              router.push(`${locale}/leagues/135/serie/overview`);
+            }}
+          >
             <Image
               src={`${FOOTBALL_IMAGE}/leagues/135.png`}
               alt="Serie A"
@@ -108,10 +116,12 @@ export default function Leagues({ leagueData }: { leagueData: any }) {
             />
             <h2 className="text-xsm ml-5 dark:text-white">Serie A</h2>
           </li>
-          <li className="flex hover:cursor-pointer hover:bg-slate-100 p-3 pl-7 dark:hover:bg-zinc-700"
+          <li
+            className="flex hover:cursor-pointer hover:bg-slate-100 p-3 pl-7 dark:hover:bg-zinc-700"
             onClick={() => {
-              router.push(`${locale}/leagues/61`)
-            }}>
+              router.push(`${locale}/leagues/61/ligue-1/overview`);
+            }}
+          >
             <Image
               src={`${FOOTBALL_IMAGE}/leagues/61.png`}
               alt="Ligue 1"
@@ -121,10 +131,12 @@ export default function Leagues({ leagueData }: { leagueData: any }) {
             />
             <h2 className="text-xsm ml-5 dark:text-white">Ligue 1</h2>
           </li>
-          <li className="flex hover:cursor-pointer hover:bg-slate-100 p-3 pl-7 dark:hover:bg-zinc-700"
+          <li
+            className="flex hover:cursor-pointer hover:bg-slate-100 p-3 pl-7 dark:hover:bg-zinc-700"
             onClick={() => {
-              router.push(`${locale}/leagues/2`)
-            }}>
+              router.push(`${locale}/leagues/2/champions-league/overview`);
+            }}
+          >
             <Image
               src={`${FOOTBALL_IMAGE}/leagues/2.png`}
               alt="Champions League"
@@ -134,10 +146,12 @@ export default function Leagues({ leagueData }: { leagueData: any }) {
             />
             <h2 className="text-xsm ml-5 dark:text-white">Champions League</h2>
           </li>
-          <li className="flex hover:cursor-pointer hover:bg-slate-100 p-3 pl-7 dark:hover:bg-zinc-700" 
+          <li
+            className="flex hover:cursor-pointer hover:bg-slate-100 p-3 pl-7 dark:hover:bg-zinc-700"
             onClick={() => {
-              router.push(`${locale}/leagues/3`)
-            }}>
+              router.push(`${locale}/leagues/3/europa-league/overview`);
+            }}
+          >
             <Image
               src={`${FOOTBALL_IMAGE}/leagues/3.png`}
               alt="Europa League"
@@ -147,10 +161,12 @@ export default function Leagues({ leagueData }: { leagueData: any }) {
             />
             <h2 className="text-xsm ml-5 dark:text-white">Europa League</h2>
           </li>
-          <li className="flex hover:cursor-pointer hover:bg-slate-100 p-3 pl-7 dark:hover:bg-zinc-700" 
+          <li
+            className="flex hover:cursor-pointer hover:bg-slate-100 p-3 pl-7 dark:hover:bg-zinc-700"
             onClick={() => {
-              router.push(`${locale}/leagues/1`)
-            }}>
+              router.push(`${locale}/leagues/1/world-cup/overview`);
+            }}
+          >
             <Image
               src={`${FOOTBALL_IMAGE}/leagues/1.png`}
               alt="World Cup"
@@ -160,10 +176,12 @@ export default function Leagues({ leagueData }: { leagueData: any }) {
             />
             <h2 className="text-xsm ml-5 dark:text-white">World Cup</h2>
           </li>
-          <li className="flex hover:cursor-pointer hover:bg-slate-100 p-3 pl-7 dark:hover:bg-zinc-700"
+          <li
+            className="flex hover:cursor-pointer hover:bg-slate-100 p-3 pl-7 dark:hover:bg-zinc-700"
             onClick={() => {
-              router.push(`${locale}/leagues/4`)
-            }}>
+              router.push(`${locale}/leagues/4/euro-championship/overview`);
+            }}
+          >
             <Image
               src={`${FOOTBALL_IMAGE}/leagues/4.png`}
               alt="Euro Championship"
@@ -173,10 +191,12 @@ export default function Leagues({ leagueData }: { leagueData: any }) {
             />
             <h2 className="text-xsm ml-5 dark:text-white">Euro Championship</h2>
           </li>
-          <li className="flex hover:cursor-pointer hover:bg-slate-100 p-3 pl-7 dark:hover:bg-zinc-700"
+          <li
+            className="flex hover:cursor-pointer hover:bg-slate-100 p-3 pl-7 dark:hover:bg-zinc-700"
             onClick={() => {
-              router.push(`${locale}/leagues/39`)
-            }}>
+              router.push(`${locale}/leagues/9/copa-america/overview`);
+            }}
+          >
             <Image
               src={`${FOOTBALL_IMAGE}/leagues/9.png`}
               alt="Copa America"
@@ -230,6 +250,28 @@ export default function Leagues({ leagueData }: { leagueData: any }) {
                 />
               </div>
               {leagues.map((v: any, i: number) => {
+                
+                // 하이픈을 모두 삭제합니다.
+                const noHyphens = v.name.replace(/-/g, " ");
+
+                // 두 번 이상의 연속 공백을 하나로 줄입니다.
+                const cleanedString = noHyphens.replace(/\s{2,}/g, " ");
+
+                // 1. 공백을 하이픈으로 변경
+                const hyphenated = cleanedString.replace(/\s+/g, "-");
+
+                // 2. 온점을 제거
+                const withoutDots = hyphenated.replace(/\./g, "");
+
+                // 3. 대문자 뒤에 하이픈 추가 (선택 사항)
+                const withHyphens = withoutDots.replace(
+                  /(?<=[A-Z])-(?=[a-z])/g,
+                  "-"
+                );
+
+                /** 최종 */
+                const name = withHyphens.toLowerCase();
+
                 return (
                   <li
                     key={i}
@@ -241,6 +283,9 @@ export default function Leagues({ leagueData }: { leagueData: any }) {
                       ? "max-h-auto  p-3"
                       : "max-h-0 p-0"
                   }`}
+                    onClick={() => {
+                      router.push(`${locale}/leagues/${v.id}/${name}/overview`);
+                    }}
                   >
                     <Image
                       src={v.logo}
@@ -251,7 +296,9 @@ export default function Leagues({ leagueData }: { leagueData: any }) {
                       className={`
                           transition-all
                        ${
-                         leagueDropdown[countryName] ? "max-h-auto " : "max-h-0 hidden"
+                         leagueDropdown[countryName]
+                           ? "max-h-auto "
+                           : "max-h-0 hidden"
                        }`}
                     />
                     <h1 className="text-xsm ml-5 text-slate-500 dark:text-custom-gray overflow-y-hidden">

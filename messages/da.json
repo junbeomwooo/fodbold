@@ -175,5 +175,11 @@
   "finished": "Afsluttet",
   "scheduled": "Planlagt",
   "filter": "Filter"
+},
+"league": {
+  "overview": "Oversigt",
+  "table": "Stilling",
+  "matches": "Kampe",
+  "stats": "Statistik"
 }
 }
