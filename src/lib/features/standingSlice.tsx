@@ -8,18 +8,26 @@ export const getList = createAsyncThunk(
   async ({ id, year }: { id: number; year: number }, { rejectWithValue }) => {
     let result = null;
     try {
-      const response = await axios.get(
-        `${url}/standings?league=${id}&season=${year}`,
-        {
-          method: "GET",
+      // 두 개 병렬 통신
+      const [response, season] = await Promise.all([
+        axios.get(`${url}/standings?league=${id}&season=${year}`, {
           headers: {
             "x-rapidapi-host": "v3.football.api-sports.io",
             "x-rapidapi-key": `${process.env.NEXT_PUBLIC_FOOTBALL_API_KEY}`,
           },
-        }
-      );
-      
-      result = response.data.response[0].league;
+        }),
+        axios.get(`${url}/leagues?id=${id}`, {
+          headers: {
+            "x-rapidapi-host": "v3.football.api-sports.io",
+            "x-rapidapi-key": `${process.env.NEXT_PUBLIC_FOOTBALL_API_KEY}`,
+          },
+        }),
+      ]);
+
+      result = {
+        stands: response.data.response[0].league.standings[0],
+        season: season.data.response[0],
+      };
     } catch (err) {
       const axiosErr = err as AxiosError;
       console.group("getList Error");
@@ -27,6 +35,7 @@ export const getList = createAsyncThunk(
 
       console.groupEnd();
     }
+
     return result;
   }
 );
@@ -35,6 +44,7 @@ export const standingSlice = createSlice({
   name: "standingSlice",
   initialState: {
     data: null,
+    season: null,
     error: null,
   },
   reducers: {
@@ -48,10 +58,13 @@ export const standingSlice = createSlice({
     },
   },
   extraReducers: (builder) => {
-    builder
-      .addCase(getList.fulfilled, (state, {payload}) => {
+    builder.addCase(
+      getList.fulfilled,
+      (state, { payload }: { payload: any }) => {
+        console.log(payload);
         state.data = payload;
-      })
+      }
+    );
   },
 });
 

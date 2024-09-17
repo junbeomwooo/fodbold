@@ -17,8 +17,13 @@ import { getList, setStanding } from "@/lib/features/standingSlice";
 
 import { useTranslations } from "next-intl";
 
-export default function LeagueOverview({ id, league }: { id: number, league: string }) {
-
+export default function LeagueOverview({
+  id,
+  league,
+}: {
+  id: number;
+  league: string;
+}) {
   const c = useTranslations("countries");
   const l = useTranslations("league");
 
@@ -36,395 +41,625 @@ export default function LeagueOverview({ id, league }: { id: number, league: str
   /** 년도 상태값 */
   const [selectedYear, setSelectedYear] = useState<number>(nowYear);
 
-  // useEffect(() => {    
-  //   /** 스탠딩 데이터 가져온 뒤 상태값에 저장 */
-  //   dispatch(getList({ id: id, year: selectedYear })).then(({payload}) => {
-  //     dispatch(setStanding(payload));
-  //   });
-    
-  // }, [dispatch, id, selectedYear]);
+  useEffect(() => {
+    /** 스탠딩 데이터 가져온 뒤 상태값에 저장 */
+    dispatch(getList({ id: id, year: selectedYear })).then(({payload}) => {
+      dispatch(setStanding(payload));
+    });
 
-  /** 사용할 실제 데이터 */
-  // const leagueName = data?.name;
-  // const leageCountry = data?.country;
-  // const stands = data?.standings[0];
+  }, [dispatch, id, selectedYear]);
 
-    /** 지울 데이터(예시 데이터) */
-  const leagueName = "Premier League";
-  const leageCountry = "England";
-  const stands = [
-    {
-      rank: 1,
-      team: {
-        id: 50,
-        name: "Manchester City",
-        logo: "https://media.api-sports.io/football/teams/50.png",
-      },
-      points: 91,
-      goalsDiff: 62,
-      group: "Premier League",
-      form: "WWWWW",
-      status: "same",
-      description: "Promotion - Champions League (Group Stage: )",
-      all: { played: 38, win: 28, draw: 7, lose: 3 },
-      home: { played: 19, win: 14, draw: 5, lose: 0 },
-      away: { played: 19, win: 14, draw: 2, lose: 3 },
-      update: "2024-05-28T00:00:00+00:00",
-    },
-    {
-      rank: 2,
-      team: {
-        id: 42,
-        name: "Arsenal",
-        logo: "https://media.api-sports.io/football/teams/42.png",
-      },
-      points: 89,
-      goalsDiff: 62,
-      group: "Premier League",
-      form: "WWWWW",
-      status: "same",
-      description: "Promotion - Champions League (Group Stage: )",
-      all: { played: 38, win: 28, draw: 5, lose: 5 },
-      home: { played: 19, win: 15, draw: 2, lose: 2 },
-      away: { played: 19, win: 13, draw: 3, lose: 3 },
-      update: "2024-05-28T00:00:00+00:00",
-    },
-    {
-      rank: 3,
-      team: {
-        id: 40,
-        name: "Liverpool",
-        logo: "https://media.api-sports.io/football/teams/40.png",
-      },
-      points: 82,
-      goalsDiff: 45,
-      group: "Premier League",
-      form: "WDW",
-      status: "same",
-      description: "Promotion - Champions League (Group Stage: )",
-      all: { played: 38, win: 24, draw: 10, lose: 4 },
-      home: { played: 19, win: 15, draw: 3, lose: 1 },
-      away: { played: 19, win: 9, draw: 7, lose: 3 },
-      update: "2024-05-28T00:00:00+00:00",
-    },
-    {
-      rank: 4,
-      team: {
-        id: 66,
-        name: "Aston Villa",
-        logo: "https://media.api-sports.io/football/teams/66.png",
-      },
-      points: 68,
-      goalsDiff: 15,
-      group: "Premier League",
-      form: "LDLDW",
-      status: "same",
-      description: "Promotion - Champions League (Group Stage: )",
-      all: { played: 38, win: 20, draw: 8, lose: 10 },
-      home: { played: 19, win: 12, draw: 4, lose: 3 },
-      away: { played: 19, win: 8, draw: 4, lose: 7 },
-      update: "2024-05-28T00:00:00+00:00",
-    },
-    {
-      rank: 5,
-      team: {
-        id: 47,
-        name: "Tottenham",
-        logo: "https://media.api-sports.io/football/teams/47.png",
-      },
-      points: 66,
-      goalsDiff: 13,
-      group: "Premier League",
-      form: "WLWLL",
-      status: "same",
-      description: "Promotion - Europa League (Group Stage: )",
-      all: { played: 38, win: 20, draw: 6, lose: 12 },
-      home: { played: 19, win: 13, draw: 0, lose: 6 },
-      away: { played: 19, win: 7, draw: 6, lose: 6 },
-      update: "2024-05-28T00:00:00+00:00",
-    },
-    {
-      rank: 6,
-      team: {
-        id: 49,
-        name: "Chelsea",
-        logo: "https://media.api-sports.io/football/teams/49.png",
-      },
-      points: 63,
-      goalsDiff: 14,
-      group: "Premier League",
-      form: "WWWWW",
-      status: "same",
-      description: "Promotion - Europa Conference League (Qualification: )",
-      all: { played: 38, win: 18, draw: 9, lose: 11 },
-      home: { played: 19, win: 11, draw: 4, lose: 4 },
-      away: { played: 19, win: 7, draw: 5, lose: 7 },
-      update: "2024-05-28T00:00:00+00:00",
-    },
-    {
-      rank: 7,
-      team: {
-        id: 34,
-        name: "Newcastle",
-        logo: "https://media.api-sports.io/football/teams/34.png",
-      },
-      points: 60,
-      goalsDiff: 23,
-      group: "Premier League",
-      form: "WLDWW",
-      status: "same",
-      description: null,
-      all: { played: 38, win: 18, draw: 6, lose: 14 },
-      home: { played: 19, win: 12, draw: 4, lose: 3 },
-      away: { played: 19, win: 6, draw: 2, lose: 11 },
-      update: "2024-05-28T00:00:00+00:00",
-    },
-    {
-      rank: 8,
-      team: {
-        id: 33,
-        name: "Manchester United",
-        logo: "https://media.api-sports.io/football/teams/33.png",
-      },
-      points: 60,
-      goalsDiff: -1,
-      group: "Premier League",
-      form: "WWLLD",
-      status: "same",
-      description: "Promotion - Europa League (Group Stage: )",
-      all: { played: 38, win: 18, draw: 6, lose: 14 },
-      home: { played: 19, win: 10, draw: 3, lose: 6 },
-      away: { played: 19, win: 8, draw: 3, lose: 8 },
-      update: "2024-05-28T00:00:00+00:00",
-    },
-    {
-      rank: 9,
-      team: {
-        id: 48,
-        name: "West Ham",
-        logo: "https://media.api-sports.io/football/teams/48.png",
-      },
-      points: 52,
-      goalsDiff: -14,
-      group: "Premier League",
-      form: "LWLDL",
-      status: "same",
-      description: null,
-      all: { played: 38, win: 14, draw: 10, lose: 14 },
-      home: { played: 19, win: 7, draw: 8, lose: 4 },
-      away: { played: 19, win: 7, draw: 2, lose: 10 },
-      update: "2024-05-28T00:00:00+00:00",
-    },
-    {
-      rank: 10,
-      team: {
-        id: 52,
-        name: "Crystal Palace",
-        logo: "https://media.api-sports.io/football/teams/52.png",
-      },
-      points: 49,
-      goalsDiff: -1,
-      group: "Premier League",
-      form: "WWWDW",
-      status: "same",
-      description: null,
-      all: { played: 38, win: 13, draw: 10, lose: 15 },
-      home: { played: 19, win: 8, draw: 4, lose: 7 },
-      away: { played: 19, win: 5, draw: 6, lose: 8 },
-      update: "2024-05-28T00:00:00+00:00",
-    },
-    {
-      rank: 11,
-      team: {
-        id: 51,
-        name: "Brighton",
-        logo: "https://media.api-sports.io/football/teams/51.png",
-      },
-      points: 48,
-      goalsDiff: -7,
-      group: "Premier League",
-      form: "LLDWL",
-      status: "same",
-      description: null,
-      all: { played: 38, win: 12, draw: 12, lose: 14 },
-      home: { played: 19, win: 8, draw: 6, lose: 5 },
-      away: { played: 19, win: 4, draw: 6, lose: 9 },
-      update: "2024-05-28T00:00:00+00:00",
-    },
-    {
-      rank: 12,
-      team: {
-        id: 67,
-        name: "Fulham",
-        logo: "https://media.api-sports.io/football/teams/67.png",
-      },
-      points: 48,
-      goalsDiff: -9,
-      group: "Premier League",
-      form: "DLWLW",
-      status: "same",
-      description: null,
-      all: { played: 38, win: 13, draw: 9, lose: 16 },
-      home: { played: 19, win: 9, draw: 5, lose: 5 },
-      away: { played: 19, win: 4, draw: 4, lose: 11 },
-      update: "2024-05-28T00:00:00+00:00",
-    },
-    {
-      rank: 13,
-      team: {
-        id: 37,
-        name: "Wolverhampton",
-        logo: "https://media.api-sports.io/football/teams/37.png",
-      },
-      points: 47,
-      goalsDiff: -7,
-      group: "Premier League",
-      form: "DLWLD",
-      status: "same",
-      description: null,
-      all: { played: 38, win: 12, draw: 11, lose: 15 },
-      home: { played: 19, win: 9, draw: 5, lose: 5 },
-      away: { played: 19, win: 3, draw: 6, lose: 10 },
-      update: "2024-05-28T00:00:00+00:00",
-    },
-    {
-      rank: 14,
-      team: {
-        id: 68,
-        name: "Everton",
-        logo: "https://media.api-sports.io/football/teams/68.png",
-      },
-      points: 46,
-      goalsDiff: -13,
-      group: "Premier League",
-      form: "LWLWL",
-      status: "same",
-      description: null,
-      all: { played: 38, win: 13, draw: 7, lose: 18 },
-      home: { played: 19, win: 8, draw: 4, lose: 7 },
-      away: { played: 19, win: 5, draw: 3, lose: 11 },
-      update: "2024-05-28T00:00:00+00:00",
-    },
-    {
-      rank: 15,
-      team: {
-        id: 71,
-        name: "Nottingham Forest",
-        logo: "https://media.api-sports.io/football/teams/71.png",
-      },
-      points: 45,
-      goalsDiff: -13,
-      group: "Premier League",
-      form: "WDLDL",
-      status: "same",
-      description: null,
-      all: { played: 38, win: 13, draw: 6, lose: 19 },
-      home: { played: 19, win: 6, draw: 6, lose: 7 },
-      away: { played: 19, win: 7, draw: 0, lose: 12 },
-      update: "2024-05-28T00:00:00+00:00",
-    },
-    {
-      rank: 16,
-      team: {
-        id: 53,
-        name: "Bournemouth",
-        logo: "https://media.api-sports.io/football/teams/53.png",
-      },
-      points: 43,
-      goalsDiff: -12,
-      group: "Premier League",
-      form: "WLDLD",
-      status: "same",
-      description: null,
-      all: { played: 38, win: 11, draw: 10, lose: 17 },
-      home: { played: 19, win: 5, draw: 6, lose: 8 },
-      away: { played: 19, win: 6, draw: 4, lose: 9 },
-      update: "2024-05-28T00:00:00+00:00",
-    },
-    {
-      rank: 17,
-      team: {
-        id: 63,
-        name: "Brentford",
-        logo: "https://media.api-sports.io/football/teams/63.png",
-      },
-      points: 42,
-      goalsDiff: -18,
-      group: "Premier League",
-      form: "LDLDW",
-      status: "same",
-      description: "Relegation - Championship",
-      all: { played: 38, win: 10, draw: 12, lose: 16 },
-      home: { played: 19, win: 6, draw: 6, lose: 7 },
-      away: { played: 19, win: 4, draw: 6, lose: 10 },
-      update: "2024-05-28T00:00:00+00:00",
-    },
-    {
-      rank: 18,
-      team: {
-        id: 60,
-        name: "Sheffield Utd",
-        logo: "https://media.api-sports.io/football/teams/60.png",
-      },
-      points: 36,
-      goalsDiff: -31,
-      group: "Premier League",
-      form: "LLWLL",
-      status: "same",
-      description: "Relegation - Championship",
-      all: { played: 38, win: 9, draw: 9, lose: 20 },
-      home: { played: 19, win: 6, draw: 5, lose: 8 },
-      away: { played: 19, win: 3, draw: 4, lose: 12 },
-      update: "2024-05-28T00:00:00+00:00",
-    },
-    {
-      rank: 19,
-      team: {
-        id: 70,
-        name: "Burnley",
-        logo: "https://media.api-sports.io/football/teams/70.png",
-      },
-      points: 30,
-      goalsDiff: -40,
-      group: "Premier League",
-      form: "LDLDW",
-      status: "same",
-      description: "Relegation - Championship",
-      all: { played: 38, win: 7, draw: 9, lose: 22 },
-      home: { played: 19, win: 4, draw: 5, lose: 10 },
-      away: { played: 19, win: 3, draw: 4, lose: 12 },
-      update: "2024-05-28T00:00:00+00:00",
-    },
-    {
-      rank: 20,
-      team: {
-        id: 62,
-        name: "Luton Town",
-        logo: "https://media.api-sports.io/football/teams/62.png",
-      },
-      points: 28,
-      goalsDiff: -50,
-      group: "Premier League",
-      form: "LLLLL",
-      status: "same",
-      description: "Relegation - Championship",
-      all: { played: 38, win: 6, draw: 10, lose: 22 },
-      home: { played: 19, win: 4, draw: 4, lose: 11 },
-      away: { played: 19, win: 2, draw: 6, lose: 12 },
-      update: "2024-05-28T00:00:00+00:00",
-    },
-  ];
+  // /** 사용할 실제 데이터 */
+  const stands = data?.stands[0];
+  const season = data?.season;
+  const leagueName = season?.league?.name;
+  const leageCountry = season?.country?.name;
 
+  // /** 2010 년도부터 현재년도까지 년도 배열값구하기  */
+  // const totalYears = season?.seasons;
 
+  /** 지울 데이터(예시 데이터) */
+  // const totalYears = [
+  //   { year: 2000 },
+  //   { year: 2001 },
+  //   { year: 2003 },
+  //   { year: 2004 },
+  //   { year: 2005 },
+  //   { year: 2024 },
+  // ];
+  // const leagueName = "Premier League";
+  // const leageCountry = "England";
+  // const stands = [
+  //   {
+  //     rank: 1,
+  //     team: {
+  //       id: 50,
+  //       name: "Manchester City",
+  //       logo: "https://media.api-sports.io/football/teams/50.png",
+  //     },
+  //     points: 91,
+  //     goalsDiff: 62,
+  //     group: "Premier League",
+  //     form: "WWWWW",
+  //     status: "same",
+  //     description: "Promotion - Champions League (Group Stage: )",
+  //     all: { played: 38, win: 28, draw: 7, lose: 3 },
+  //     home: { played: 19, win: 14, draw: 5, lose: 0 },
+  //     away: { played: 19, win: 14, draw: 2, lose: 3 },
+  //     update: "2024-05-28T00:00:00+00:00",
+  //   },
+  //   {
+  //     rank: 2,
+  //     team: {
+  //       id: 42,
+  //       name: "Arsenal",
+  //       logo: "https://media.api-sports.io/football/teams/42.png",
+  //     },
+  //     points: 89,
+  //     goalsDiff: 62,
+  //     group: "Premier League",
+  //     form: "WWWWW",
+  //     status: "same",
+  //     description: "Promotion - Champions League (Group Stage: )",
+  //     all: { played: 38, win: 28, draw: 5, lose: 5 },
+  //     home: { played: 19, win: 15, draw: 2, lose: 2 },
+  //     away: { played: 19, win: 13, draw: 3, lose: 3 },
+  //     update: "2024-05-28T00:00:00+00:00",
+  //   },
+  //   {
+  //     rank: 3,
+  //     team: {
+  //       id: 40,
+  //       name: "Liverpool",
+  //       logo: "https://media.api-sports.io/football/teams/40.png",
+  //     },
+  //     points: 82,
+  //     goalsDiff: 45,
+  //     group: "Premier League",
+  //     form: "WDW",
+  //     status: "same",
+  //     description: "Promotion - Champions League (Group Stage: )",
+  //     all: { played: 38, win: 24, draw: 10, lose: 4 },
+  //     home: { played: 19, win: 15, draw: 3, lose: 1 },
+  //     away: { played: 19, win: 9, draw: 7, lose: 3 },
+  //     update: "2024-05-28T00:00:00+00:00",
+  //   },
+  //   {
+  //     rank: 4,
+  //     team: {
+  //       id: 66,
+  //       name: "Aston Villa",
+  //       logo: "https://media.api-sports.io/football/teams/66.png",
+  //     },
+  //     points: 68,
+  //     goalsDiff: 15,
+  //     group: "Premier League",
+  //     form: "LDLDW",
+  //     status: "same",
+  //     description: "Promotion - Champions League (Group Stage: )",
+  //     all: { played: 38, win: 20, draw: 8, lose: 10 },
+  //     home: { played: 19, win: 12, draw: 4, lose: 3 },
+  //     away: { played: 19, win: 8, draw: 4, lose: 7 },
+  //     update: "2024-05-28T00:00:00+00:00",
+  //   },
+  //   {
+  //     rank: 5,
+  //     team: {
+  //       id: 47,
+  //       name: "Tottenham",
+  //       logo: "https://media.api-sports.io/football/teams/47.png",
+  //     },
+  //     points: 66,
+  //     goalsDiff: 13,
+  //     group: "Premier League",
+  //     form: "WLWLL",
+  //     status: "same",
+  //     description: "Promotion - Europa League (Group Stage: )",
+  //     all: { played: 38, win: 20, draw: 6, lose: 12 },
+  //     home: { played: 19, win: 13, draw: 0, lose: 6 },
+  //     away: { played: 19, win: 7, draw: 6, lose: 6 },
+  //     update: "2024-05-28T00:00:00+00:00",
+  //   },
+  //   {
+  //     rank: 6,
+  //     team: {
+  //       id: 49,
+  //       name: "Chelsea",
+  //       logo: "https://media.api-sports.io/football/teams/49.png",
+  //     },
+  //     points: 63,
+  //     goalsDiff: 14,
+  //     group: "Premier League",
+  //     form: "WWWWW",
+  //     status: "same",
+  //     description: "Promotion - Europa Conference League (Qualification: )",
+  //     all: { played: 38, win: 18, draw: 9, lose: 11 },
+  //     home: { played: 19, win: 11, draw: 4, lose: 4 },
+  //     away: { played: 19, win: 7, draw: 5, lose: 7 },
+  //     update: "2024-05-28T00:00:00+00:00",
+  //   },
+  //   {
+  //     rank: 7,
+  //     team: {
+  //       id: 34,
+  //       name: "Newcastle",
+  //       logo: "https://media.api-sports.io/football/teams/34.png",
+  //     },
+  //     points: 60,
+  //     goalsDiff: 23,
+  //     group: "Premier League",
+  //     form: "WLDWW",
+  //     status: "same",
+  //     description: null,
+  //     all: { played: 38, win: 18, draw: 6, lose: 14 },
+  //     home: { played: 19, win: 12, draw: 4, lose: 3 },
+  //     away: { played: 19, win: 6, draw: 2, lose: 11 },
+  //     update: "2024-05-28T00:00:00+00:00",
+  //   },
+  //   {
+  //     rank: 8,
+  //     team: {
+  //       id: 33,
+  //       name: "Manchester United",
+  //       logo: "https://media.api-sports.io/football/teams/33.png",
+  //     },
+  //     points: 60,
+  //     goalsDiff: -1,
+  //     group: "Premier League",
+  //     form: "WWLLD",
+  //     status: "same",
+  //     description: "Promotion - Europa League (Group Stage: )",
+  //     all: { played: 38, win: 18, draw: 6, lose: 14 },
+  //     home: { played: 19, win: 10, draw: 3, lose: 6 },
+  //     away: { played: 19, win: 8, draw: 3, lose: 8 },
+  //     update: "2024-05-28T00:00:00+00:00",
+  //   },
+  //   {
+  //     rank: 9,
+  //     team: {
+  //       id: 48,
+  //       name: "West Ham",
+  //       logo: "https://media.api-sports.io/football/teams/48.png",
+  //     },
+  //     points: 52,
+  //     goalsDiff: -14,
+  //     group: "Premier League",
+  //     form: "LWLDL",
+  //     status: "same",
+  //     description: null,
+  //     all: { played: 38, win: 14, draw: 10, lose: 14 },
+  //     home: { played: 19, win: 7, draw: 8, lose: 4 },
+  //     away: { played: 19, win: 7, draw: 2, lose: 10 },
+  //     update: "2024-05-28T00:00:00+00:00",
+  //   },
+  //   {
+  //     rank: 10,
+  //     team: {
+  //       id: 52,
+  //       name: "Crystal Palace",
+  //       logo: "https://media.api-sports.io/football/teams/52.png",
+  //     },
+  //     points: 49,
+  //     goalsDiff: -1,
+  //     group: "Premier League",
+  //     form: "WWWDW",
+  //     status: "same",
+  //     description: null,
+  //     all: { played: 38, win: 13, draw: 10, lose: 15 },
+  //     home: { played: 19, win: 8, draw: 4, lose: 7 },
+  //     away: { played: 19, win: 5, draw: 6, lose: 8 },
+  //     update: "2024-05-28T00:00:00+00:00",
+  //   },
+  //   {
+  //     rank: 11,
+  //     team: {
+  //       id: 51,
+  //       name: "Brighton",
+  //       logo: "https://media.api-sports.io/football/teams/51.png",
+  //     },
+  //     points: 48,
+  //     goalsDiff: -7,
+  //     group: "Premier League",
+  //     form: "LLDWL",
+  //     status: "same",
+  //     description: null,
+  //     all: { played: 38, win: 12, draw: 12, lose: 14 },
+  //     home: { played: 19, win: 8, draw: 6, lose: 5 },
+  //     away: { played: 19, win: 4, draw: 6, lose: 9 },
+  //     update: "2024-05-28T00:00:00+00:00",
+  //   },
+  //   {
+  //     rank: 12,
+  //     team: {
+  //       id: 67,
+  //       name: "Fulham",
+  //       logo: "https://media.api-sports.io/football/teams/67.png",
+  //     },
+  //     points: 48,
+  //     goalsDiff: -9,
+  //     group: "Premier League",
+  //     form: "DLWLW",
+  //     status: "same",
+  //     description: null,
+  //     all: { played: 38, win: 13, draw: 9, lose: 16 },
+  //     home: { played: 19, win: 9, draw: 5, lose: 5 },
+  //     away: { played: 19, win: 4, draw: 4, lose: 11 },
+  //     update: "2024-05-28T00:00:00+00:00",
+  //   },
+  //   {
+  //     rank: 13,
+  //     team: {
+  //       id: 37,
+  //       name: "Wolverhampton",
+  //       logo: "https://media.api-sports.io/football/teams/37.png",
+  //     },
+  //     points: 47,
+  //     goalsDiff: -7,
+  //     group: "Premier League",
+  //     form: "DLWLD",
+  //     status: "same",
+  //     description: null,
+  //     all: { played: 38, win: 12, draw: 11, lose: 15 },
+  //     home: { played: 19, win: 9, draw: 5, lose: 5 },
+  //     away: { played: 19, win: 3, draw: 6, lose: 10 },
+  //     update: "2024-05-28T00:00:00+00:00",
+  //   },
+  //   {
+  //     rank: 14,
+  //     team: {
+  //       id: 68,
+  //       name: "Everton",
+  //       logo: "https://media.api-sports.io/football/teams/68.png",
+  //     },
+  //     points: 46,
+  //     goalsDiff: -13,
+  //     group: "Premier League",
+  //     form: "LWLWL",
+  //     status: "same",
+  //     description: null,
+  //     all: { played: 38, win: 13, draw: 7, lose: 18 },
+  //     home: { played: 19, win: 8, draw: 4, lose: 7 },
+  //     away: { played: 19, win: 5, draw: 3, lose: 11 },
+  //     update: "2024-05-28T00:00:00+00:00",
+  //   },
+  //   {
+  //     rank: 15,
+  //     team: {
+  //       id: 71,
+  //       name: "Nottingham Forest",
+  //       logo: "https://media.api-sports.io/football/teams/71.png",
+  //     },
+  //     points: 45,
+  //     goalsDiff: -13,
+  //     group: "Premier League",
+  //     form: "WDLDL",
+  //     status: "same",
+  //     description: null,
+  //     all: { played: 38, win: 13, draw: 6, lose: 19 },
+  //     home: { played: 19, win: 6, draw: 6, lose: 7 },
+  //     away: { played: 19, win: 7, draw: 0, lose: 12 },
+  //     update: "2024-05-28T00:00:00+00:00",
+  //   },
+  //   {
+  //     rank: 16,
+  //     team: {
+  //       id: 53,
+  //       name: "Bournemouth",
+  //       logo: "https://media.api-sports.io/football/teams/53.png",
+  //     },
+  //     points: 43,
+  //     goalsDiff: -12,
+  //     group: "Premier League",
+  //     form: "WLDLD",
+  //     status: "same",
+  //     description: null,
+  //     all: { played: 38, win: 11, draw: 10, lose: 17 },
+  //     home: { played: 19, win: 5, draw: 6, lose: 8 },
+  //     away: { played: 19, win: 6, draw: 4, lose: 9 },
+  //     update: "2024-05-28T00:00:00+00:00",
+  //   },
+  //   {
+  //     rank: 17,
+  //     team: {
+  //       id: 63,
+  //       name: "Brentford",
+  //       logo: "https://media.api-sports.io/football/teams/63.png",
+  //     },
+  //     points: 42,
+  //     goalsDiff: -18,
+  //     group: "Premier League",
+  //     form: "LDLDW",
+  //     status: "same",
+  //     description: "Relegation - Championship",
+  //     all: { played: 38, win: 10, draw: 12, lose: 16 },
+  //     home: { played: 19, win: 6, draw: 6, lose: 7 },
+  //     away: { played: 19, win: 4, draw: 6, lose: 10 },
+  //     update: "2024-05-28T00:00:00+00:00",
+  //   },
+  //   {
+  //     rank: 18,
+  //     team: {
+  //       id: 60,
+  //       name: "Sheffield Utd",
+  //       logo: "https://media.api-sports.io/football/teams/60.png",
+  //     },
+  //     points: 36,
+  //     goalsDiff: -31,
+  //     group: "Premier League",
+  //     form: "LLWLL",
+  //     status: "same",
+  //     description: "Relegation - Championship",
+  //     all: { played: 38, win: 9, draw: 9, lose: 20 },
+  //     home: { played: 19, win: 6, draw: 5, lose: 8 },
+  //     away: { played: 19, win: 3, draw: 4, lose: 12 },
+  //     update: "2024-05-28T00:00:00+00:00",
+  //   },
+  //   {
+  //     rank: 19,
+  //     team: {
+  //       id: 70,
+  //       name: "Burnley",
+  //       logo: "https://media.api-sports.io/football/teams/70.png",
+  //     },
+  //     points: 30,
+  //     goalsDiff: -40,
+  //     group: "Premier League",
+  //     form: "LDLDW",
+  //     status: "same",
+  //     description: "Relegation - Championship",
+  //     all: { played: 38, win: 7, draw: 9, lose: 22 },
+  //     home: { played: 19, win: 4, draw: 5, lose: 10 },
+  //     away: { played: 19, win: 3, draw: 4, lose: 12 },
+  //     update: "2024-05-28T00:00:00+00:00",
+  //   },
+  //   {
+  //     rank: 20,
+  //     team: {
+  //       id: 62,
+  //       name: "Luton Town",
+  //       logo: "https://media.api-sports.io/football/teams/62.png",
+  //     },
+  //     points: 28,
+  //     goalsDiff: -50,
+  //     group: "Premier League",
+  //     form: "LLLLL",
+  //     status: "same",
+  //     description: "Relegation - Championship",
+  //     all: { played: 38, win: 6, draw: 10, lose: 22 },
+  //     home: { played: 19, win: 4, draw: 4, lose: 11 },
+  //     away: { played: 19, win: 2, draw: 6, lose: 12 },
+  //     update: "2024-05-28T00:00:00+00:00",
+  //   },
+  // ];
+
+  // const groupStands = [
+  //   [
+  //     {
+  //       all: {
+  //         played: 6,
+  //         win: 5,
+  //         draw: 1,
+  //         lose: 0,
+  //         goals: {},
+  //       },
+  //       away: {
+  //         played: 3,
+  //         win: 3,
+  //         draw: 0,
+  //         lose: 0,
+  //         goals: {},
+  //       },
+  //       description: "Promotion - Champions League (Play Offs: 1/8-finals)",
+  //       form: "WDWWW",
+  //       goalsDiff: 6,
+  //       group: "Group A",
+  //       home: {
+  //         played: 3,
+  //         win: 2,
+  //         draw: 1,
+  //         lose: 0,
+  //         goals: {},
+  //       },
+  //       points: 16,
+  //       rank: 1,
+  //       status: "same",
+  //       team: {
+  //         id: 157,
+  //         name: "Bayern Munich",
+  //         logo: "https://media.api-sports.io/football/teams/157.png",
+  //       },
+  //       update: "2024-05-24T00:00:00+00:00",
+  //     },
+  //     {
+  //       rank: 2,
+  //       team: {
+  //         id: 157,
+  //         name: "Bayern Munich",
+  //         logo: "https://media.api-sports.io/football/teams/157.png",
+  //       },
+  //       points: 8,
+  //       goalsDiff: 0,
+  //       group: "Group A",
+  //       update: "",
+  //     },
+  //     {
+  //       rank: 3,
+  //       team: {
+  //         id: 157,
+  //         name: "Bayern Munich",
+  //         logo: "https://media.api-sports.io/football/teams/157.png",
+  //       },
+  //       points: 5,
+  //       goalsDiff: -3,
+  //       group: "Group A",
+  //       update: "",
+  //     },
+  //     {
+  //       rank: 4,
+  //       team: {
+  //         id: 157,
+  //         name: "Bayern Munich",
+  //         logo: "https://media.api-sports.io/football/teams/157.png",
+  //       },
+  //       points: 4,
+  //       goalsDiff: -3,
+  //       group: "Group A",
+  //       update: "",
+  //     },
+  //   ],
+  //   [
+  //     {
+  //       rank: 1,
+  //       team: {
+  //         id: 157,
+  //         name: "Bayern Munich",
+  //         logo: "https://media.api-sports.io/football/teams/157.png",
+  //       },
+  //       points: 13,
+  //       goalsDiff: 12,
+  //       group: "Group B",
+  //       update: "",
+  //     },
+  //     {
+  //       rank: 2,
+  //       team: {
+  //         id: 157,
+  //         name: "Bayern Munich",
+  //         logo: "https://media.api-sports.io/football/teams/157.png",
+  //       },
+  //       points: 9,
+  //       goalsDiff: -2,
+  //       group: "Group B",
+  //       update: "",
+  //     },
+  //     {
+  //       rank: 3,
+  //       team: {
+  //         id: 157,
+  //         name: "Bayern Munich",
+  //         logo: "https://media.api-sports.io/football/teams/157.png",
+  //       },
+  //       points: 8,
+  //       goalsDiff: -5,
+  //       group: "Group B",
+  //       update: "",
+  //     },
+  //     {
+  //       rank: 4,
+  //       team: {
+  //         id: 157,
+  //         name: "Bayern Munich",
+  //         logo: "https://media.api-sports.io/football/teams/157.png",
+  //       },
+  //       points: 2,
+  //       goalsDiff: -5,
+  //       group: "Group B",
+  //       update: "",
+  //     },
+  //   ],
+  //   [
+  //     {
+  //       rank: 1,
+  //       team: {
+  //         id: 157,
+  //         name: "Bayern Munich",
+  //         logo: "https://media.api-sports.io/football/teams/157.png",
+  //       },
+  //       points: 18,
+  //       goalsDiff: 9,
+  //       group: "Group C",
+  //       update: "",
+  //     },
+  //     {
+  //       rank: 2,
+  //       team: {
+  //         id: 157,
+  //         name: "Bayern Munich",
+  //         logo: "https://media.api-sports.io/football/teams/157.png",
+  //       },
+  //       points: 10,
+  //       goalsDiff: 1,
+  //       group: "Group C",
+  //       update: "",
+  //     },
+  //     {
+  //       rank: 3,
+  //       team: {
+  //         id: 157,
+  //         name: "Bayern Munich",
+  //         logo: "https://media.api-sports.io/football/teams/157.png",
+  //       },
+  //       points: 4,
+  //       goalsDiff: -6,
+  //       group: "Group C",
+  //       update: "",
+  //     },
+  //     {
+  //       rank: 4,
+  //       team: {
+  //         id: 157,
+  //         name: "Bayern Munich",
+  //         logo: "https://media.api-sports.io/football/teams/157.png",
+  //       },
+  //       points: 2,
+  //       goalsDiff: -4,
+  //       group: "Group C",
+  //       update: "",
+  //     },
+  //   ],
+  //   [
+  //     {
+  //       rank: 1,
+  //       team: {
+  //         id: 157,
+  //         name: "Bayern Munich",
+  //         logo: "https://media.api-sports.io/football/teams/157.png",
+  //       },
+  //       points: 12,
+  //       goalsDiff: 5,
+  //       group: "Group D",
+  //       update: "",
+  //     },
+  //     {
+  //       team: {
+  //         id: 157,
+  //         name: "Bayern Munich",
+  //         logo: "https://media.api-sports.io/football/teams/157.png",
+  //       },
+  //       points: 12,
+  //       goalsDiff: 3,
+  //       group: "Group D",
+  //       update: "",
+  //     },
+  //     {
+  //       rank: 3,
+  //       team: {
+  //         id: 157,
+  //         name: "Bayern Munich",
+  //         logo: "https://media.api-sports.io/football/teams/157.png",
+  //       },
+  //       points: 4,
+  //       goalsDiff: -4,
+  //       group: "Group D",
+  //       update: "",
+  //     },
+  //     {
+  //       team: {
+  //         id: 157,
+  //         name: "Bayern Munich",
+  //         logo: "https://media.api-sports.io/football/teams/157.png",
+  //       },
+  //       points: 4,
+  //       goalsDiff: -4,
+  //       group: "Group D",
+  //       update: "",
+  //     },
+  //   ],
+  // ];
+
+  
   /** 배열의 첫 인덱스만 가져와서 form이 있는지 길이가 몇인지 확인하는 용도 */
   const form = stands ? stands[0]?.form : null;
-
-  /** 2010 년도부터 현재년도까지 년도 배열값구하기  */
-  let totalYears = [];
-
-  for (let i = 2010; i <= nowYear; i++) {
-    totalYears.push(i);
-  }
 
   return (
     <>
@@ -449,12 +684,12 @@ export default function LeagueOverview({ id, league }: { id: number, league: str
               onChange={(e) => {
                 setSelectedYear(parseInt(e.currentTarget.value));
               }}
-              defaultValue={nowYear}
+              value={selectedYear}
             >
-              {totalYears.map((v, i) => {
+              {totalYears?.map((v: any, i: number) => {
                 return (
-                  <option key={i} value={v}>
-                    {`${v}/${v + 1}`}
+                  <option key={i} value={v?.year}>
+                    {`${v?.year}/${v?.year + 1}`}
                   </option>
                 );
               })}
@@ -490,7 +725,7 @@ export default function LeagueOverview({ id, league }: { id: number, league: str
               href={`/${locale}/leagues/${id}/${league}/tables`}
               className="ml-6 hover:no-underline hover:text-custom-gray tracking-wide"
             >
-                      {l("table")}
+              {l("table")}
             </Link>
             {pathname === `/${locale}/leagues/${id}/${league}/tables` ? (
               <div className="bg-green-600 w-auto h-1 mt-6 rounded-full ml-6"></div>
@@ -503,7 +738,7 @@ export default function LeagueOverview({ id, league }: { id: number, league: str
               href={`/${locale}/leagues/${id}/${league}/matches`}
               className="ml-6 hover:no-underline hover:text-custom-gray tracking-wide"
             >
-                   {l("matches")}
+              {l("matches")}
             </Link>
             {pathname === `/${locale}/leagues/${id}/${league}/matches` ? (
               <div className="bg-green-600 w-auto h-1 mt-6 rounded-full ml-6 tracking-wide"></div>
@@ -516,7 +751,7 @@ export default function LeagueOverview({ id, league }: { id: number, league: str
               href={`/${locale}/leagues/${id}/stats`}
               className="ml-6 hover:no-underline hover:text-custom-gray"
             >
-                   {l("stats")}
+              {l("stats")}
             </Link>
             {pathname === `/${locale}/leagues/${id}/${league}/stats` ? (
               <div className="bg-green-600 w-auto h-1 mt-6 rounded-full ml-6"></div>
