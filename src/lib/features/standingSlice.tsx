@@ -25,7 +25,7 @@ export const getList = createAsyncThunk(
       ]);
 
       result = {
-        stands: response.data.response[0].league.standings[0],
+        stands: response.data.response[0].league.standings,
         season: season.data.response[0],
       };
     } catch (err) {
