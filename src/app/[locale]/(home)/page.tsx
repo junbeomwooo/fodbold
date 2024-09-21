@@ -15,7 +15,7 @@ const getStanding = async (id: number, year: number) => {
       method: "GET",
       headers: {
         "x-rapidapi-host": "v3.football.api-sports.io",
-        "x-rapidapi-key": `${process.env.FOOTBALL_API_KEY}`,
+        // "x-rapidapi-key": `${process.env.FOOTBALL_API_KEY}`,
       },
     }
   );
@@ -43,7 +43,7 @@ export default async function page() {
   const year = new Date().getFullYear();
 
   /** epl 스탠딩 받아오기 */
-  const [standing] = (await getStanding(39,year)).response;
+  // const [standing] = (await getStanding(39,year)).response;
   // const [stands] = standing?.league?.standings;
 
   /** 전 세계 리그정보 가져오기 */

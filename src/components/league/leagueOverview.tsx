@@ -13,9 +13,18 @@ import { FOOTBALL_URL } from "@/app/[locale]/(home)/page";
 import { FOOTBALL_IMAGE } from "@/app/[locale]/(home)/page";
 
 import { useAppDispatch, useAppSelector } from "@/lib/storeHooks";
-import { getList, setStanding } from "@/lib/features/standingSlice";
+import {
+  getLeague,
+  getStanding,
+  getMatches,
+  setStanding,
+} from "@/lib/features/leagueSlice";
+
+import { getCurrentData } from "@/lib/features/locationSlice";
 
 import { useTranslations } from "next-intl";
+
+import nowTimezone from "@/lib/nowTimezone";
 
 /** 지울 데이터 */
 import { leagueStands, groupStands } from "../../../public/example";
@@ -36,27 +45,54 @@ export default function LeagueOverview({
 
   const dispatch = useAppDispatch();
 
-  const { data }: any = useAppSelector((state) => state.standingSlice);
+  const { standing, seasons }: any = useAppSelector((state) => state.leagueSlice);
 
-  /** 현재 년도 가져오기 */
-  const nowYear = new Date().getFullYear();
+  const { location }: any = useAppSelector((state) => state.locationSlice);
 
   /** 년도 상태값 */
-  const [selectedYear, setSelectedYear] = useState<number>(nowYear);
+  const [selectedYear, setSelectedYear] = useState<number>(0);
 
+
+  // 상태값 data를 standing이라는 이름으로 바꾸고 일일제한떄문에 확인을 못했으니 제대로 작동하는지 확인, 그리고 getMatch함수 구현
   // useEffect(() => {
-  //   /** 스탠딩 데이터 가져온 뒤 상태값에 저장 */
-  //   dispatch(getList({ id: id, year: selectedYear })).then(({ payload }) => {
-  //     dispatch(setStanding(payload));
-  //   });
-  // }, [dispatch, id, selectedYear]);
+  //   /** selectedYear가 비어있을 때 **/
 
-  // // /** 사용할 실제 데이터 */
-  // const stands = data?.stands;
-  // const season = data?.season;
-  // const leagueName = season?.league?.name;
-  // const leageCountry = season?.country?.name;
-  // const totalYears = season?.seasons;
+  //   if (selectedYear === 0) {
+  //     // 스탠딩 데이터 가져온 뒤 상태값에 저장
+  //     dispatch(getLeague({ id })).then(({ payload }) => {
+  //       const season = payload?.seasons;
+  //       const lastSeason = season[season?.length - 1].year;
+
+  //       // selectedYear이 변경됨으로 useEffect가 다시 실행되며 selectYear 값이 0이 아니니 else 부분으로 넘어감
+  //       setSelectedYear(lastSeason);
+  //     });
+
+  //     //   /** selectedYear가 비어있지 않을 때 */
+  //   } else {
+  //     // 선택된 시즌의 스탠딩 정보 가져오기
+  //     dispatch(getStanding({ id: id, year: selectedYear })).then(
+  //       ({ payload }) => {
+  //         dispatch(setStanding(payload));
+  //       }
+  //     );
+
+  //     /** 전역 상태값 location 가져오기  */
+  //     dispatch(getCurrentData());
+
+  //     /** 가져온 location을 토대로 현재 날짜값 구하기 */
+  //     const currentDate = nowTimezone(location);
+
+  //     /** 해당 시즌의 경기 데이터 구하기  */
+  //     // dispatch(getMatches({leagueID:id, season:selectedYear, date: currentDate, timezone:location}));
+  //     // console.log(data);
+  //   }
+  // }, [dispatch, id, selectedYear, location, standing]);
+
+  // /** 사용할 실제 데이터 */
+  // const stands = standing;
+  // const leagueName = seasons?.league?.name;
+  // const leageCountry = (seasons?.country?.name)?.toString();
+  // const totalYears = seasons?.seasons;
 
   /** 지울 데이터(예시 데이터) */
   const totalYears = [
@@ -146,6 +182,22 @@ export default function LeagueOverview({
               <></>
             )}
           </div>
+          {/** 형식이 컵 대회일 경우에만 플레이오프 추가 */}
+          {seasons?.league?.type === "Cup" && (
+            <div>
+              <Link
+                href={`/${locale}/leagues/${id}/${league}/playoff`}
+                className="ml-6 hover:no-underline hover:text-custom-gray tracking-wide"
+              >
+                {l("knockout")}
+              </Link>
+              {pathname === `/${locale}/leagues/${id}/${league}/tables` ? (
+                <div className="bg-green-600 w-auto h-1 mt-6 rounded-full ml-6"></div>
+              ) : (
+                <></>
+              )}
+            </div>
+          )}
           <div>
             <Link
               href={`/${locale}/leagues/${id}/${league}/matches`}
@@ -187,8 +239,8 @@ export default function LeagueOverview({
                   {stands.map((v: any, i: number) => {
                     return (
                       <div key={i} className="mb-7">
-                        <h1 >{v[0].group}</h1>
-                        <hr className="border-custom-gray3 my-5"/>
+                        <h1>{v[0].group}</h1>
+                        <hr className="border-custom-gray3 my-5" />
                         <div className="flex justify-between">
                           <div>
                             <h2 className="text-xs">#</h2>

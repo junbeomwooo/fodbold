@@ -1,14 +1,15 @@
 import { configureStore } from '@reduxjs/toolkit'
-import standingSlice from "./features/standingSlice";
 import leagueSlice from "./features/leagueSlice";
+import locationSlice from './features/locationSlice';
 
 
 
 export const makeStore = () => {
   return configureStore({
     reducer: {
-      standingSlice : standingSlice,
-      leagueSlice: leagueSlice
+      leagueSlice : leagueSlice,
+      locationSlice: locationSlice
+      
     }
   })
 }

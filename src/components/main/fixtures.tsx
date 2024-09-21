@@ -18,7 +18,11 @@ import stringFormatDate from "@/lib/stringFormatDate";
 
 import { useTranslations } from "next-intl";
 
+import { useAppDispatch } from "@/lib/storeHooks";
+import { setLocation } from "@/lib/features/locationSlice";
+
 export default function Fixtures() {
+  const dispatch = useAppDispatch();
   // 참조변수
   const inputRef = useRef<HTMLInputElement>(null);
   // 번역
@@ -106,6 +110,9 @@ export default function Fixtures() {
           const timezone =
             (await getLocation())?.time_zone?.name || "Europe/Copenhagen";
           setTimezone(timezone);
+
+          /** 타임존을 전역 상태값에 저장 */
+          dispatch(setLocation(timezone));
         }
 
         // 처음 렌더링시 isDate가 빈 문자열이니 처음에만 설정 // isTimezone값이 있을때만
@@ -162,7 +169,7 @@ export default function Fixtures() {
     };
 
     fetch();
-  }, [isDate, filter, isTimezone]);
+  }, [isDate, filter, isTimezone, dispatch]);
 
   /** 날짜 포맷 useEffect*/
   useEffect(() => {
