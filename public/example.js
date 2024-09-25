@@ -804,3 +804,743 @@ export const groupStands = [
       },
     ],
   ];
+
+  /** fixture */
+export const example = [{
+    "fixture": {
+      "date": "2025-05-25T00:00:00+00:00",
+      "id": 1223974,
+      "periods": {
+        "first": null,
+        "second": null
+      },
+      "referee": null,
+      "status": {
+        "long": "Time to be defined",
+        "short": "TBD",
+        "elapsed": null
+      },
+      "timestamp": 1748131200,
+      "timezone": "UTC",
+      "venue": {
+        "id": null,
+        "name": "Stadio Pier Luigi Penzo",
+        "city": "Venezia"
+      }
+    },
+    "goals": {
+      "away": null,
+      "home": null
+    },
+    "league": {
+      "country": "Italy",
+      "flag": "https://media.api-sports.io/flags/it.svg",
+      "id": 135,
+      "logo": "https://media.api-sports.io/football/leagues/135.png",
+      "name": "Serie A",
+      "round": "Regular Season - 38",
+      "season": 2024
+    },
+    "score": {
+      "extratime": {
+        "home": null,
+        "away": null
+      },
+      "fulltime": {
+        "home": null,
+        "away": null
+      },
+      "halftime": {
+        "home": null,
+        "away": null
+      },
+      "penalty": {
+        "home": null,
+        "away": null
+      }
+    },
+    "teams": {
+      "away": {
+        "id": 496,
+        "name": "Juventus",
+        "logo": "https://media.api-sports.io/football/teams/496.png",
+        "winner": null
+      },
+      "home": {
+        "id": 517,
+        "name": "Venezia",
+        "logo": "https://media.api-sports.io/football/teams/517.png",
+        "winner": null
+      }
+    }
+  },{
+    "fixture": {
+      "date": "2025-05-25T00:00:00+00:00",
+      "id": 1223974,
+      "periods": {
+        "first": null,
+        "second": null
+      },
+      "referee": null,
+      "status": {
+        "long": "Time to be defined",
+        "short": "TBD",
+        "elapsed": null
+      },
+      "timestamp": 1748131200,
+      "timezone": "UTC",
+      "venue": {
+        "id": null,
+        "name": "Stadio Pier Luigi Penzo",
+        "city": "Venezia"
+      }
+    },
+    "goals": {
+      "away": null,
+      "home": null
+    },
+    "league": {
+      "country": "Italy",
+      "flag": "https://media.api-sports.io/flags/it.svg",
+      "id": 135,
+      "logo": "https://media.api-sports.io/football/leagues/135.png",
+      "name": "Serie A",
+      "round": "Regular Season - 38",
+      "season": 2024
+    },
+    "score": {
+      "extratime": {
+        "home": null,
+        "away": null
+      },
+      "fulltime": {
+        "home": null,
+        "away": null
+      },
+      "halftime": {
+        "home": null,
+        "away": null
+      },
+      "penalty": {
+        "home": null,
+        "away": null
+      }
+    },
+    "teams": {
+      "away": {
+        "id": 496,
+        "name": "Juventus",
+        "logo": "https://media.api-sports.io/football/teams/496.png",
+        "winner": null
+      },
+      "home": {
+        "id": 517,
+        "name": "Venezia",
+        "logo": "https://media.api-sports.io/football/teams/517.png",
+        "winner": null
+      }
+    }
+  },{
+    "fixture": {
+      "date": "2025-05-25T00:00:00+00:00",
+      "id": 1223974,
+      "periods": {
+        "first": null,
+        "second": null
+      },
+      "referee": null,
+      "status": {
+        "long": "Time to be defined",
+        "short": "TBD",
+        "elapsed": null
+      },
+      "timestamp": 1748131200,
+      "timezone": "UTC",
+      "venue": {
+        "id": null,
+        "name": "Stadio Pier Luigi Penzo",
+        "city": "Venezia"
+      }
+    },
+    "goals": {
+      "away": null,
+      "home": null
+    },
+    "league": {
+      "country": "Italy",
+      "flag": "https://media.api-sports.io/flags/it.svg",
+      "id": 135,
+      "logo": "https://media.api-sports.io/football/leagues/135.png",
+      "name": "Serie A",
+      "round": "Regular Season - 38",
+      "season": 2024
+    },
+    "score": {
+      "extratime": {
+        "home": null,
+        "away": null
+      },
+      "fulltime": {
+        "home": null,
+        "away": null
+      },
+      "halftime": {
+        "home": null,
+        "away": null
+      },
+      "penalty": {
+        "home": null,
+        "away": null
+      }
+    },
+    "teams": {
+      "away": {
+        "id": 496,
+        "name": "Juventus",
+        "logo": "https://media.api-sports.io/football/teams/496.png",
+        "winner": null
+      },
+      "home": {
+        "id": 517,
+        "name": "Venezia",
+        "logo": "https://media.api-sports.io/football/teams/517.png",
+        "winner": null
+      }
+    }
+  },{
+    "fixture": {
+      "date": "2025-05-25T00:00:00+00:00",
+      "id": 1223974,
+      "periods": {
+        "first": null,
+        "second": null
+      },
+      "referee": null,
+      "status": {
+        "long": "Time to be defined",
+        "short": "TBD",
+        "elapsed": null
+      },
+      "timestamp": 1748131200,
+      "timezone": "UTC",
+      "venue": {
+        "id": null,
+        "name": "Stadio Pier Luigi Penzo",
+        "city": "Venezia"
+      }
+    },
+    "goals": {
+      "away": null,
+      "home": null
+    },
+    "league": {
+      "country": "Italy",
+      "flag": "https://media.api-sports.io/flags/it.svg",
+      "id": 135,
+      "logo": "https://media.api-sports.io/football/leagues/135.png",
+      "name": "Serie A",
+      "round": "Regular Season - 38",
+      "season": 2024
+    },
+    "score": {
+      "extratime": {
+        "home": null,
+        "away": null
+      },
+      "fulltime": {
+        "home": null,
+        "away": null
+      },
+      "halftime": {
+        "home": null,
+        "away": null
+      },
+      "penalty": {
+        "home": null,
+        "away": null
+      }
+    },
+    "teams": {
+      "away": {
+        "id": 496,
+        "name": "Juventus",
+        "logo": "https://media.api-sports.io/football/teams/496.png",
+        "winner": null
+      },
+      "home": {
+        "id": 517,
+        "name": "Venezia",
+        "logo": "https://media.api-sports.io/football/teams/517.png",
+        "winner": null
+      }
+    }
+  },{
+    "fixture": {
+      "date": "2025-05-25T00:00:00+00:00",
+      "id": 1223974,
+      "periods": {
+        "first": null,
+        "second": null
+      },
+      "referee": null,
+      "status": {
+        "long": "Time to be defined",
+        "short": "TBD",
+        "elapsed": null
+      },
+      "timestamp": 1748131200,
+      "timezone": "UTC",
+      "venue": {
+        "id": null,
+        "name": "Stadio Pier Luigi Penzo",
+        "city": "Venezia"
+      }
+    },
+    "goals": {
+      "away": null,
+      "home": null
+    },
+    "league": {
+      "country": "Italy",
+      "flag": "https://media.api-sports.io/flags/it.svg",
+      "id": 135,
+      "logo": "https://media.api-sports.io/football/leagues/135.png",
+      "name": "Serie A",
+      "round": "Regular Season - 38",
+      "season": 2024
+    },
+    "score": {
+      "extratime": {
+        "home": null,
+        "away": null
+      },
+      "fulltime": {
+        "home": null,
+        "away": null
+      },
+      "halftime": {
+        "home": null,
+        "away": null
+      },
+      "penalty": {
+        "home": null,
+        "away": null
+      }
+    },
+    "teams": {
+      "away": {
+        "id": 496,
+        "name": "Juventus",
+        "logo": "https://media.api-sports.io/football/teams/496.png",
+        "winner": null
+      },
+      "home": {
+        "id": 517,
+        "name": "Venezia",
+        "logo": "https://media.api-sports.io/football/teams/517.png",
+        "winner": null
+      }
+    }
+  },{
+    "fixture": {
+      "date": "2025-05-25T00:00:00+00:00",
+      "id": 1223974,
+      "periods": {
+        "first": null,
+        "second": null
+      },
+      "referee": null,
+      "status": {
+        "long": "Time to be defined",
+        "short": "TBD",
+        "elapsed": null
+      },
+      "timestamp": 1748131200,
+      "timezone": "UTC",
+      "venue": {
+        "id": null,
+        "name": "Stadio Pier Luigi Penzo",
+        "city": "Venezia"
+      }
+    },
+    "goals": {
+      "away": null,
+      "home": null
+    },
+    "league": {
+      "country": "Italy",
+      "flag": "https://media.api-sports.io/flags/it.svg",
+      "id": 135,
+      "logo": "https://media.api-sports.io/football/leagues/135.png",
+      "name": "Serie A",
+      "round": "Regular Season - 38",
+      "season": 2024
+    },
+    "score": {
+      "extratime": {
+        "home": null,
+        "away": null
+      },
+      "fulltime": {
+        "home": null,
+        "away": null
+      },
+      "halftime": {
+        "home": null,
+        "away": null
+      },
+      "penalty": {
+        "home": null,
+        "away": null
+      }
+    },
+    "teams": {
+      "away": {
+        "id": 496,
+        "name": "Juventus",
+        "logo": "https://media.api-sports.io/football/teams/496.png",
+        "winner": null
+      },
+      "home": {
+        "id": 517,
+        "name": "Venezia",
+        "logo": "https://media.api-sports.io/football/teams/517.png",
+        "winner": null
+      }
+    }
+  },{
+    "fixture": {
+      "date": "2025-05-25T00:00:00+00:00",
+      "id": 1223974,
+      "periods": {
+        "first": null,
+        "second": null
+      },
+      "referee": null,
+      "status": {
+        "long": "Time to be defined",
+        "short": "TBD",
+        "elapsed": null
+      },
+      "timestamp": 1748131200,
+      "timezone": "UTC",
+      "venue": {
+        "id": null,
+        "name": "Stadio Pier Luigi Penzo",
+        "city": "Venezia"
+      }
+    },
+    "goals": {
+      "away": null,
+      "home": null
+    },
+    "league": {
+      "country": "Italy",
+      "flag": "https://media.api-sports.io/flags/it.svg",
+      "id": 135,
+      "logo": "https://media.api-sports.io/football/leagues/135.png",
+      "name": "Serie A",
+      "round": "Regular Season - 38",
+      "season": 2024
+    },
+    "score": {
+      "extratime": {
+        "home": null,
+        "away": null
+      },
+      "fulltime": {
+        "home": null,
+        "away": null
+      },
+      "halftime": {
+        "home": null,
+        "away": null
+      },
+      "penalty": {
+        "home": null,
+        "away": null
+      }
+    },
+    "teams": {
+      "away": {
+        "id": 496,
+        "name": "Juventus",
+        "logo": "https://media.api-sports.io/football/teams/496.png",
+        "winner": null
+      },
+      "home": {
+        "id": 517,
+        "name": "Venezia",
+        "logo": "https://media.api-sports.io/football/teams/517.png",
+        "winner": null
+      }
+    }
+  },{
+    "fixture": {
+      "date": "2025-05-25T00:00:00+00:00",
+      "id": 1223974,
+      "periods": {
+        "first": null,
+        "second": null
+      },
+      "referee": null,
+      "status": {
+        "long": "Time to be defined",
+        "short": "TBD",
+        "elapsed": null
+      },
+      "timestamp": 1748131200,
+      "timezone": "UTC",
+      "venue": {
+        "id": null,
+        "name": "Stadio Pier Luigi Penzo",
+        "city": "Venezia"
+      }
+    },
+    "goals": {
+      "away": null,
+      "home": null
+    },
+    "league": {
+      "country": "Italy",
+      "flag": "https://media.api-sports.io/flags/it.svg",
+      "id": 135,
+      "logo": "https://media.api-sports.io/football/leagues/135.png",
+      "name": "Serie A",
+      "round": "Regular Season - 38",
+      "season": 2024
+    },
+    "score": {
+      "extratime": {
+        "home": null,
+        "away": null
+      },
+      "fulltime": {
+        "home": null,
+        "away": null
+      },
+      "halftime": {
+        "home": null,
+        "away": null
+      },
+      "penalty": {
+        "home": null,
+        "away": null
+      }
+    },
+    "teams": {
+      "away": {
+        "id": 496,
+        "name": "Juventus",
+        "logo": "https://media.api-sports.io/football/teams/496.png",
+        "winner": null
+      },
+      "home": {
+        "id": 517,
+        "name": "Venezia",
+        "logo": "https://media.api-sports.io/football/teams/517.png",
+        "winner": null
+      }
+    }
+  },{
+    "fixture": {
+      "date": "2025-05-25T00:00:00+00:00",
+      "id": 1223974,
+      "periods": {
+        "first": null,
+        "second": null
+      },
+      "referee": null,
+      "status": {
+        "long": "Time to be defined",
+        "short": "TBD",
+        "elapsed": null
+      },
+      "timestamp": 1748131200,
+      "timezone": "UTC",
+      "venue": {
+        "id": null,
+        "name": "Stadio Pier Luigi Penzo",
+        "city": "Venezia"
+      }
+    },
+    "goals": {
+      "away": null,
+      "home": null
+    },
+    "league": {
+      "country": "Italy",
+      "flag": "https://media.api-sports.io/flags/it.svg",
+      "id": 135,
+      "logo": "https://media.api-sports.io/football/leagues/135.png",
+      "name": "Serie A",
+      "round": "Regular Season - 38",
+      "season": 2024
+    },
+    "score": {
+      "extratime": {
+        "home": null,
+        "away": null
+      },
+      "fulltime": {
+        "home": null,
+        "away": null
+      },
+      "halftime": {
+        "home": null,
+        "away": null
+      },
+      "penalty": {
+        "home": null,
+        "away": null
+      }
+    },
+    "teams": {
+      "away": {
+        "id": 496,
+        "name": "Juventus",
+        "logo": "https://media.api-sports.io/football/teams/496.png",
+        "winner": null
+      },
+      "home": {
+        "id": 517,
+        "name": "Venezia",
+        "logo": "https://media.api-sports.io/football/teams/517.png",
+        "winner": null
+      }
+    }
+  },{
+    "fixture": {
+      "date": "2025-05-25T00:00:00+00:00",
+      "id": 1223974,
+      "periods": {
+        "first": null,
+        "second": null
+      },
+      "referee": null,
+      "status": {
+        "long": "Time to be defined",
+        "short": "TBD",
+        "elapsed": null
+      },
+      "timestamp": 1748131200,
+      "timezone": "UTC",
+      "venue": {
+        "id": null,
+        "name": "Stadio Pier Luigi Penzo",
+        "city": "Venezia"
+      }
+    },
+    "goals": {
+      "away": null,
+      "home": null
+    },
+    "league": {
+      "country": "Italy",
+      "flag": "https://media.api-sports.io/flags/it.svg",
+      "id": 135,
+      "logo": "https://media.api-sports.io/football/leagues/135.png",
+      "name": "Serie A",
+      "round": "Regular Season - 38",
+      "season": 2024
+    },
+    "score": {
+      "extratime": {
+        "home": null,
+        "away": null
+      },
+      "fulltime": {
+        "home": null,
+        "away": null
+      },
+      "halftime": {
+        "home": null,
+        "away": null
+      },
+      "penalty": {
+        "home": null,
+        "away": null
+      }
+    },
+    "teams": {
+      "away": {
+        "id": 496,
+        "name": "Juventus",
+        "logo": "https://media.api-sports.io/football/teams/496.png",
+        "winner": null
+      },
+      "home": {
+        "id": 517,
+        "name": "Venezia",
+        "logo": "https://media.api-sports.io/football/teams/517.png",
+        "winner": null
+      }
+    }
+  },{
+    "fixture": {
+      "date": "2025-05-25T00:00:00+00:00",
+      "id": 1223974,
+      "periods": {
+        "first": null,
+        "second": null
+      },
+      "referee": null,
+      "status": {
+        "long": "Time to be defined",
+        "short": "TBD",
+        "elapsed": null
+      },
+      "timestamp": 1748131200,
+      "timezone": "UTC",
+      "venue": {
+        "id": null,
+        "name": "Stadio Pier Luigi Penzo",
+        "city": "Venezia"
+      }
+    },
+    "goals": {
+      "away": null,
+      "home": null
+    },
+    "league": {
+      "country": "Italy",
+      "flag": "https://media.api-sports.io/flags/it.svg",
+      "id": 135,
+      "logo": "https://media.api-sports.io/football/leagues/135.png",
+      "name": "Serie A",
+      "round": "Regular Season - 38",
+      "season": 2024
+    },
+    "score": {
+      "extratime": {
+        "home": null,
+        "away": null
+      },
+      "fulltime": {
+        "home": null,
+        "away": null
+      },
+      "halftime": {
+        "home": null,
+        "away": null
+      },
+      "penalty": {
+        "home": null,
+        "away": null
+      }
+    },
+    "teams": {
+      "away": {
+        "id": 496,
+        "name": "Juventus",
+        "logo": "https://media.api-sports.io/football/teams/496.png",
+        "winner": null
+      },
+      "home": {
+        "id": 517,
+        "name": "Venezia",
+        "logo": "https://media.api-sports.io/football/teams/517.png",
+        "winner": null
+      }
+    }
+  }]

@@ -1,0 +1,72 @@
+.swiper {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  padding: 0 48px;
+}
+
+.swiper-slide {
+  text-align: center;
+  font-size: 18px;
+  background: #fff;
+
+  /* Center slide text vertically */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.swiper-button-prev,
+.swiper-button-next {
+  width: 30px;
+  height: 30px;
+  background-color: #EDEDED;
+  color: black;
+  border: none;
+  border-radius: 50%;
+}
+
+.swiper-button-prev:hover,
+.swiper-button-next:hover {
+  background-color: rgba(0, 0, 0, 0.8);
+  color:white;
+}
+
+/* 버튼 내부의 아이콘 또는 텍스트 스타일 */
+.swiper-button-prev::after,
+.swiper-button-next::after {
+  font-size: 12px; /* 아이콘 크기 */
+}
+
+.swiper-button-prev {
+  left: 0;
+}
+
+.swiper-button-next {
+  right: 0;
+}
+
+/** 다크모드 */
+
+  .dark .swiper-button-prev,
+  .dark .swiper-button-next {
+    background-color: #4a4a4a;
+    color: white;
+  }
+
+  .dark .swiper-button-prev:hover,
+  .dark .swiper-button-next:hover {
+    background-color: white;
+    color: black;
+  }
+
+  /** 미디어쿼리 */
+  @media (max-width: 400px) {
+    .swiper {
+      width: 100%;
+      height: 100%;
+      position: relative;
+      padding: 0 0px;
+    }
+    
+  }

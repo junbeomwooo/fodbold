@@ -32,7 +32,7 @@ export default async function Page({
   params: { id: number, league: any};
 }) {
   return (
-    <div className="px-14 max-md:px-12 pt-28">
+    <div className="px-14 max-msm:px-4 pt-28 ">
       <LeagueOverview id={id} league={league} />
     </div>
   );

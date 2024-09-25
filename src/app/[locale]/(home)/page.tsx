@@ -30,7 +30,7 @@ const getAllLeagues = async (year: number) => {
       method: "GET",
       headers: {
         "x-rapidapi-host": "v3.football.api-sports.io",
-        "x-rapidapi-key": `${process.env.FOOTBALL_API_KEY}`,
+        // "x-rapidapi-key": `${process.env.FOOTBALL_API_KEY}`,
       },
     });
 
@@ -1705,7 +1705,7 @@ export default async function page() {
   ];
 
   return (
-    <div className="flex w-full h-full px-14 pt-28 dark:bg-black max-lg:block max-msm:px-6">
+    <div className="flex w-full h-full px-14 pt-28 dark:bg-black max-lg:block max-msm:px-4">
       <League leagueData={leagueData} />
       <Fixtures />
       <Standing stands={stands} />

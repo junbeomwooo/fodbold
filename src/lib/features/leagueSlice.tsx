@@ -10,20 +10,18 @@ export const getMatches = createAsyncThunk(
     {
       leagueID,
       season,
-      date,
       timezone,
     }: {
       leagueID: number;
       season: number;
-      date: string;
       timezone: string;
     },
-    { rejectWithValue }:any
+    { rejectWithValue }: any
   ) => {
     let result = null;
     try {
       const response = await axios.get(
-        `${url}/fixtures?league=${leagueID}&season=${season}&date=${date}&timezone=${timezone}`,
+        `${url}/fixtures?league=${leagueID}&season=${season}&timezone=${timezone}`,
         {
           method: "GET",
           headers: {
@@ -32,8 +30,23 @@ export const getMatches = createAsyncThunk(
           },
         }
       );
-      result = response.data;
-      console.log(result);
+
+      // /** 날짜별로 경기 데이터 묶기 */
+      // const groupedByDate = response?.data?.response?.reduce((acc: any, match: any) => {
+      //   // acc : 반환할 총 데이터 값 , match : 한가지 경기
+      //   const matchDate = match.fixture.date.substring(0,10);
+      //   if (!acc[matchDate]) {
+      //     acc[matchDate] = {
+      //       matches: [],
+      //     };
+      //   }
+      //   acc[matchDate]?.matches?.push(match);
+
+      //   return acc;
+      // }, []);
+
+      result = response?.data?.response;
+      
     } catch (err) {
       const axiosErr = err as AxiosError;
       console.group("getMatches Error");
@@ -41,6 +54,7 @@ export const getMatches = createAsyncThunk(
 
       console.groupEnd();
     }
+
     return result;
   }
 );
@@ -48,20 +62,18 @@ export const getMatches = createAsyncThunk(
 // 리그 정보 / 시즌 정보 가져오기
 export const getLeague = createAsyncThunk(
   "leagueSlice/getLeague",
-  async({id}:{id:number}, { rejectWithValue }) => {
+  async ({ id }: { id: number }, { rejectWithValue }) => {
     let result = null;
 
     try {
-      const response = 
-      await axios.get(`${url}/leagues?id=${id}`, {
+      const response = await axios.get(`${url}/leagues?id=${id}`, {
         headers: {
           "x-rapidapi-host": "v3.football.api-sports.io",
           "x-rapidapi-key": `${process.env.NEXT_PUBLIC_FOOTBALL_API_KEY}`,
         },
-      })
+      });
 
       result = response.data.response[0];
-
     } catch (err) {
       const axiosErr = err as AxiosError;
       console.group("getLeague Error");
@@ -71,27 +83,26 @@ export const getLeague = createAsyncThunk(
 
     return result;
   }
-)
+);
 
 // 해당되는 리그의 스탠딩 정보 가져오기
 export const getStanding = createAsyncThunk(
   "leagueSlice/getStanding",
   async ({ id, year }: { id: number; year: number }, { rejectWithValue }) => {
-
     let result = null;
 
     try {
-      
-      const response = 
-      await axios.get(`${url}/standings?league=${id}&season=${year}`, {
+      const response = await axios.get(
+        `${url}/standings?league=${id}&season=${year}`,
+        {
           headers: {
             "x-rapidapi-host": "v3.football.api-sports.io",
             "x-rapidapi-key": `${process.env.NEXT_PUBLIC_FOOTBALL_API_KEY}`,
           },
-        })
+        }
+      );
 
-      result = response.data.response[0].league.standings
-      
+      result = response.data.response[0].league.standings;
     } catch (err) {
       const axiosErr = err as AxiosError;
       console.group("getStanding Error");
@@ -115,10 +126,6 @@ export const leagueSlice = createSlice({
     // 현재 상태값 불러오기
     getCurrentData: (state) => {
       return state;
-    },
-    // 현재 스탠딩 값을 상태값에 저장하기
-    setStanding: (state, { payload }) => {
-      state.standing = payload;
     },
   },
   extraReducers: (builder) => {
@@ -146,6 +153,6 @@ export const leagueSlice = createSlice({
 });
 
 // Action creators are generated for each case reducer function
-export const { getCurrentData, setStanding } = leagueSlice.actions;
+export const { getCurrentData } = leagueSlice.actions;
 
 export default leagueSlice.reducer;

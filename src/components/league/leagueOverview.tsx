@@ -6,6 +6,7 @@ import { useLocale } from "next-intl";
 
 import Image from "next/image";
 import triangle from "../../../public/img/triangle.png";
+import LeagueSwiper from "./swiper/leagueSwiper";
 
 import Link from "next/link";
 
@@ -13,12 +14,7 @@ import { FOOTBALL_URL } from "@/app/[locale]/(home)/page";
 import { FOOTBALL_IMAGE } from "@/app/[locale]/(home)/page";
 
 import { useAppDispatch, useAppSelector } from "@/lib/storeHooks";
-import {
-  getLeague,
-  getStanding,
-  getMatches,
-  setStanding,
-} from "@/lib/features/leagueSlice";
+import { getLeague, getStanding, getMatches } from "@/lib/features/leagueSlice";
 
 import { getCurrentData } from "@/lib/features/locationSlice";
 
@@ -45,50 +41,47 @@ export default function LeagueOverview({
 
   const dispatch = useAppDispatch();
 
-  const { standing, seasons }: any = useAppSelector((state) => state.leagueSlice);
+  const { standing, seasons, match }: any = useAppSelector(
+    (state) => state.leagueSlice
+  );
 
   const { location }: any = useAppSelector((state) => state.locationSlice);
 
+  /** match 슬라이드를 위한 상태값 */
+  const [currentPage, setCurrentPage] = useState(0); 
+
   /** 년도 상태값 */
-  const [selectedYear, setSelectedYear] = useState<number>(0);
+  const [selectedYear, setSelectedYear] = useState<number>(2024);
 
+  useEffect(() => {
+    /** selectedYear가 비어있을 때 **/
+    if (selectedYear === 0) {
+      // 스탠딩 데이터 가져온 뒤 상태값에 저장
+      // dispatch(getLeague({ id })).then(({ payload }) => {
+      //   const season = payload?.seasons;
+      //   const lastSeason = season[season?.length - 1].year;
+      //   // selectedYear이 변경됨으로 useEffect가 다시 실행되며 selectYear 값이 0이 아니니 else 부분으로 넘어감
+      //   setSelectedYear(lastSeason);
+      // });
+      //   /** selectedYear가 비어있지 않을 때 */
+    } else {
+      // 선택된 시즌의 스탠딩 정보 가져오기
+      // dispatch(getStanding({ id: id, year: selectedYear }));
 
-  // 상태값 data를 standing이라는 이름으로 바꾸고 일일제한떄문에 확인을 못했으니 제대로 작동하는지 확인, 그리고 getMatch함수 구현
-  // useEffect(() => {
-  //   /** selectedYear가 비어있을 때 **/
+      /** 전역 상태값 location 가져오기  */
+      dispatch(getCurrentData());
 
-  //   if (selectedYear === 0) {
-  //     // 스탠딩 데이터 가져온 뒤 상태값에 저장
-  //     dispatch(getLeague({ id })).then(({ payload }) => {
-  //       const season = payload?.seasons;
-  //       const lastSeason = season[season?.length - 1].year;
+      /** 해당 시즌의 경기 데이터 구하기  */
+      dispatch(
+        getMatches({ leagueID: id, season: selectedYear, timezone: location })
+      );
+    }
+  }, [dispatch, id, selectedYear, location]);
 
-  //       // selectedYear이 변경됨으로 useEffect가 다시 실행되며 selectYear 값이 0이 아니니 else 부분으로 넘어감
-  //       setSelectedYear(lastSeason);
-  //     });
+  /** 타임존을 베이스로한 오늘 날짜 알아내기 */
+  const currentDate = nowTimezone(location);
 
-  //     //   /** selectedYear가 비어있지 않을 때 */
-  //   } else {
-  //     // 선택된 시즌의 스탠딩 정보 가져오기
-  //     dispatch(getStanding({ id: id, year: selectedYear })).then(
-  //       ({ payload }) => {
-  //         dispatch(setStanding(payload));
-  //       }
-  //     );
-
-  //     /** 전역 상태값 location 가져오기  */
-  //     dispatch(getCurrentData());
-
-  //     /** 가져온 location을 토대로 현재 날짜값 구하기 */
-  //     const currentDate = nowTimezone(location);
-
-  //     /** 해당 시즌의 경기 데이터 구하기  */
-  //     // dispatch(getMatches({leagueID:id, season:selectedYear, date: currentDate, timezone:location}));
-  //     // console.log(data);
-  //   }
-  // }, [dispatch, id, selectedYear, location, standing]);
-
-  // /** 사용할 실제 데이터 */
+  /** 사용할 실제 데이터 */
   // const stands = standing;
   // const leagueName = seasons?.league?.name;
   // const leageCountry = (seasons?.country?.name)?.toString();
@@ -110,9 +103,11 @@ export default function LeagueOverview({
 
   /** 배열의 첫 인덱스만 가져와서 form이 있는지 길이가 몇인지 확인하는 용도 */
   const form = stands ? stands[0][0]?.form : null;
+
   return (
     <>
-      <div className="w-full h-auto bg-white rounded-xl px-8 pt-10  dark:bg-custom-dark dark:border-0">
+      {/** header */}
+      <div className="w-full h-auto bg-white rounded-xl px-8 pt-10  dark:bg-custom-dark dark:border-0 max-sm:px-4">
         <div className="flex items-center justify-between">
           <div className="flex">
             <Image
@@ -227,9 +222,18 @@ export default function LeagueOverview({
         </div>
       </div>
 
+      {/** match slide */}
+      <div className="w-full bg-white rounded-xl mt-6 px-8 py-5 dark:bg-custom-dark max-sm:px-4">
+        <div className="flex justify-between text-base mb-4">
+          <h3>경기</h3>
+          <h3 className="text-green-500 cursor-pointer hover:underline">모든 경기</h3>
+        </div>
+        <LeagueSwiper match={match} today={currentDate} />
+        
+      </div>
       {/*standing */}
       <div className="w-3/5 mt-6">
-        <div className="w-full h-auto bg-white rounded-xl border-solid border border-slate-200 pb-6 dark:bg-custom-dark dark:border-0 pt-6">
+        <div className="w-full h-auto bg-white rounded-xl border-solid border border-slate-200 pb-6 dark:bg-custom-dark dark:border-0 pt-6 max-sm:px-4">
           {/* 데이터가 있을 경우 데이터를 보여주고 없을 경우 데이터가 없다고 알려줌 */}
           {stands ? (
             /** 조별리그 스탠딩 */
