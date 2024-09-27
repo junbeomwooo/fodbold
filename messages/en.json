@@ -180,7 +180,14 @@
     "overview": "Overview",
     "table": "Table",
     "matches": "Matches",
+    "allmatches": "All Matches",
     "stats": "Stats",
-    "knockout": "Knockout"
+    "knockout": "Knockout",
+    "topscorers": "Top Scorers",
+    "goals":"Goals",
+    "topassists": "Top Assists",
+    "assists": "Assists",
+    "viewall":"View All"
+    
   }
 }

@@ -3,6 +3,48 @@ import axios, { AxiosError } from "axios";
 
 const url = "https://v3.football.api-sports.io";
 
+
+/** 득점왕 및 어시왕 정보 가져오기*/
+export const getTopScoreAssist = createAsyncThunk(
+  "leagueSlice/getTopScore",
+  async ({ season, leagueID }: { season: number, leagueID: number }, { rejectWithValue }) => {
+    let result = null;
+
+    try {
+
+      const [goal, assist] = await Promise.all([
+        axios.get(`${url}/players/topscorers?season=${season}&league=${leagueID}`, {
+          headers: {
+            "x-rapidapi-host": "v3.football.api-sports.io",
+            "x-rapidapi-key": `${process.env.NEXT_PUBLIC_FOOTBALL_API_KEY}`,
+          },
+        }),
+        axios.get(`${url}/players/topassists?season=${season}&league=${leagueID}`, {
+          headers: {
+            "x-rapidapi-host": "v3.football.api-sports.io",
+            "x-rapidapi-key": `${process.env.NEXT_PUBLIC_FOOTBALL_API_KEY}`,
+          },
+        })
+      ])
+
+      result = {
+        goal: goal.data.response,
+        assist: assist.data.response
+      }
+      
+      
+    } catch (err) {
+      const axiosErr = err as AxiosError;
+      console.group("getTopScore Error");
+      result = rejectWithValue(axiosErr.response);
+      console.groupEnd();
+    }
+
+    return result;
+  }
+);
+
+
 /** 경기 정보 가져오기 */
 export const getMatches = createAsyncThunk(
   "leagueSlice/getMatches",
@@ -121,6 +163,7 @@ export const leagueSlice = createSlice({
     match: null,
     seasons: null,
     error: null,
+    topScoreAssist: null,
   },
   reducers: {
     // 현재 상태값 불러오기
@@ -147,6 +190,13 @@ export const leagueSlice = createSlice({
       getMatches.fulfilled,
       (state, { payload }: { payload: any }) => {
         state.match = payload;
+      }
+    );
+
+    builder.addCase(
+      getTopScoreAssist.fulfilled,
+      (state, { payload }: { payload: any }) => {
+        state.topScoreAssist = payload;
       }
     );
   },

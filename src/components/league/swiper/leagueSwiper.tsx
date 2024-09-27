@@ -17,6 +17,7 @@ import moment from "moment-timezone";
 import { useTranslations } from "next-intl";
 
 import stringFormatDate from "@/lib/stringFormatDate";
+import { usePathname } from "next/navigation";
 
 /** 예제 파일 */
 import { example } from "../../../../public/example";
@@ -31,6 +32,9 @@ export default function LeagueSwiper({
   // 번역
   const t = useTranslations("Date");
 
+  // 패스네임
+  const pathname = usePathname();
+
   // match가 배열인지 확인하고, 배열이 아니면 빈 배열로 설정
   const matches = Array.isArray(match) ? match : [];
 
@@ -39,19 +43,6 @@ export default function LeagueSwiper({
 
   //내일
   const tomorrow = moment().add(1, "days").format("YYYY-MM-DD");
-
-  //   let translated = "";
-
-  //   window.location.pathname === "/en"
-  //     ? (translated = `${t(weekday)} ${day} ${t(month)}`)
-  //     : window.location.pathname === "/da"
-  //     ? (translated = `${t(weekday)} ${day}. ${t(month)}`)
-  //     : window.location.pathname === "/ko"
-  //     ? (translated = `${t(month)} ${day}일 ${t(weekday)}`)
-  //     : null;
-
-  //   setFormattedDate(translated);
-  // }
 
   /** 받아온 데이터를 시간순으로 정렬 */
   const sortedMatch = [...matches].sort((a: any, b: any) => {
@@ -63,7 +54,11 @@ export default function LeagueSwiper({
     return v.fixture.date.split("T")[0] >= today;
   });
 
-  const location = window.location.pathname.split("/")[1];
+  // locale 정보 받은 후 변수에 저장
+  const location = pathname?.split("/")[1];
+
+  // 현재 년도
+  const nowYear = today.substring(0,4);
 
   /** key값을 통한 자동 재렌더링은 성능 저하를 야기할 수 있으니 이걸 해결하고 각 경기 상태에 따른 클라이언트 렌더링 구현하기 */
   return (
@@ -115,6 +110,9 @@ export default function LeagueSwiper({
           // YYYY-MM-DD
           let date = v.fixture.date.split("T")[0];
 
+          // YYYY-MM-DD 형식의 date / date는 값이 변경되기때문에 이런 형식의 데이터를 변수에 저장해두기
+          const yyyymmdd = date;
+
           // 경기 년도
           const matchYear = date.substring(0, 4);
 
@@ -144,14 +142,19 @@ export default function LeagueSwiper({
               : location === "ko"
               ? (date = `${t(month)} ${day}일`)
               : null;
+
+              // 현재년도와 매치의 년도가 다르다면 yyyy-mm-dd 형식으로 보여줌
+              if(nowYear !== matchYear) {
+                date = yyyymmdd;
+              }
           }
           // 스코어
           const score = `${v.goals.home} - ${v.goals.away}`;
 
           return (
             <SwiperSlide key={i} className="dark:bg-custom-dark">
-              <div className="w-full h-full flex justify-around items-center border border-solid  border-black rounded-xl py-7 px-4 cursor-pointer hover:opacity-50 dark:border-custom-gray3">
-                <div className="flex flex-col items-center text-xsm ">
+              <div className="w-full h-full flex justify-around items-center border border-solid  border-slate-200 rounded-xl py-7 px-4 cursor-pointer hover:opacity-50 dark:border-custom-gray3">
+                <div className="flex flex-col items-center text-xsm w-1/3">
                   <Image
                     src={v.teams.home.logo}
                     alt="home tame logo"
@@ -164,25 +167,33 @@ export default function LeagueSwiper({
 
                 {/* 경기가 시작하지 않았을 때 */}
                 {scheduled.includes(v.fixture.status.short) ? (
-                  <div className="flex flex-col items-center text-xsm justify-between h-14 ">
+                  <div className="flex flex-col items-center text-xsm justify-between h-14 w-1/3">
                     <h3 className="text-base font-medium">{time}</h3>
                     <h4>{date}</h4>
                   </div>
                 ) : //  경기가 진행 중이거나 중단된 경우
                 live.includes(v.fixture.status.short) ||
                   stop.includes(v.fixture.status.short) ? (
-                  <div>
+                  <div className="flex flex-col items-center text-xsm justify-between h-14 w-1/3">
                     <h3 className="text-base font-medium">{score}</h3>
-                    <h4></h4>
+                    <h4 className="text-green-600">
+                      {v.fixture.status.elapsed}&apos;
+                    </h4>
                   </div>
-                ) : // 경기가 끝났을 경우
-                finish.includes(v.fixture.status.short) ? (
-                  <div className="flex flex-col items-center text-xsm justify-between h-14 ">
+                ) : // 경기가 끝났을 경우 || 부전승인 경우
+                finish.includes(v.fixture.status.short) || unearned.includes(v.fixture.status.short) ? (
+                  <div className="flex flex-col items-center text-xsm justify-between h-14 w-1/3">
                     <h3 className="text-base font-medium">{score}</h3>
                     <h4>{date}</h4>
                   </div>
+                  // 경기가 취소, 지연되었을 경우
+                ) : cancle.includes(v.fixture.status.short) ? (
+                  <div className="flex flex-col items-center text-xsm justify-between h-14 w-1/3">
+                    <h3 className="text-base font-medium line-through">{score}</h3>
+                    <h4>Match off</h4>
+                  </div>
                 ) : null}
-                <div className="flex flex-col items-center text-xsm ">
+                <div className="flex flex-col items-center text-xsm w-1/3">
                   <Image
                     src={v.teams.away.logo}
                     alt="away tame logo"

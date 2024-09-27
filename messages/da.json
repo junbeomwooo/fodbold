@@ -180,7 +180,13 @@
   "overview": "Oversigt",
   "table": "Stilling",
   "matches": "Kampe",
+  "allmatches": "Alle Kampe",
   "stats": "Statistik",
-  "knockout": "Slutspil"
+  "knockout": "Slutspil",
+  "topscorers": "Topscorere",
+  "goals":"Mål",
+  "topassists": "Top Assists",
+  "assists": "Assist",
+  "viewall":"Se Alle"
 }
 }

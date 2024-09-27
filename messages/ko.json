@@ -181,7 +181,14 @@
     "overview" : "팀 개요",
     "table" : "순위",
     "matches": "경기",
+    "allmatches": "모든 경기",
     "stats": "통계",
-    "knockout": "플레이오프"
+    "knockout": "플레이오프",
+    "topscorers": "최고 득점",
+    "goals":"득점",
+    "topassists": "최고 도움",
+    "assists": "도움",
+    "viewall":"전체보기"
+
   }
 }
