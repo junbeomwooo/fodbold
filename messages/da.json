@@ -17,7 +17,12 @@
     "allLeagues": "Alle Ligaer",
     "search": "Søg"
   },
-  "Date": {
+
+  "general": {
+    "noresults": "Ingen resultater" 
+  },
+
+  "date": {
     "sunday": "Søndag",
     "monday": "Mandag",
     "tuesday": "Tirsdag",

@@ -26,9 +26,10 @@ export default function Fixtures() {
   // 참조변수
   const inputRef = useRef<HTMLInputElement>(null);
   // 번역
-  const t = useTranslations("Date");
+  const t = useTranslations("date");
   const s = useTranslations("status");
   const m = useTranslations("main");
+  const g = useTranslations("general");
 
   // 데이터 조회할 날짜 상태값
   const [isDate, setIsDate] = useState("");
@@ -597,7 +598,7 @@ export default function Fixtures() {
           ) : (
             <div className="bg-white border-solid border border-slate-200 mt-5 rounded-xl dark:border-0 dark:bg-custom-dark py-8">
               <h1 className="text-center text-base dark:text-white">
-                No results
+                {g("noresults")}
               </h1>
             </div>
           )}

@@ -16,9 +16,13 @@
     "england": "영국",
     "allLeagues": "모든 리그",
     "search": "검색"
-    
   },
-  "Date": {
+
+  "general": {
+    "noresults": "결과가 없습니다" 
+  },
+
+  "date": {
     "sunday": "일요일",
     "monday": "월요일",
     "tuesday": "화요일",

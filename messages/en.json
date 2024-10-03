@@ -17,7 +17,12 @@
     "allLeagues": "All Leagues",
     "search": "Search"
   },
-  "Date": {
+
+  "general": {
+    "noresults": "No results" 
+  },
+
+  "date": {
     "sunday": "Sunday",
     "monday": "Monday",
     "tuesday": "Tuesday",
@@ -188,6 +193,5 @@
     "topassists": "Top Assists",
     "assists": "Assists",
     "viewall":"View All"
-    
   }
 }

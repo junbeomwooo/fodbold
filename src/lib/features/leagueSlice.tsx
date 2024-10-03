@@ -172,6 +172,7 @@ export const leagueSlice = createSlice({
     },
   },
   extraReducers: (builder) => {
+
     builder.addCase(
       getStanding.fulfilled,
       (state, { payload }: { payload: any }) => {
