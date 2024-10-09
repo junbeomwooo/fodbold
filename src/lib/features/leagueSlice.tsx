@@ -162,6 +162,7 @@ export const leagueSlice = createSlice({
     standing: null,
     match: null,
     seasons: null,
+    selectedSeason: null,
     error: null,
     topScoreAssist: null,
   },
@@ -170,6 +171,10 @@ export const leagueSlice = createSlice({
     getCurrentData: (state) => {
       return state;
     },
+    setSelectedSeason: (state, {payload}: {payload: any}) => {
+      console.log(payload);
+      state.selectedSeason = payload;
+    }
   },
   extraReducers: (builder) => {
 
@@ -204,6 +209,6 @@ export const leagueSlice = createSlice({
 });
 
 // Action creators are generated for each case reducer function
-export const { getCurrentData } = leagueSlice.actions;
+export const { getCurrentData, setSelectedSeason } = leagueSlice.actions;
 
 export default leagueSlice.reducer;

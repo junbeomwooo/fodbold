@@ -9,7 +9,8 @@ import Link from "next/link";
 
 import { usePathname } from "next/navigation";
 
-export default function LeagueHeader({id, seasons ,setSelectedYear, selectedYear ,locale, league}:{id:number , seasons:any, setSelectedYear:any, selectedYear:number, locale:string, league:string}) {
+export default function LeagueHeader({id, seasons ,setSelectedYear, selectedYear ,locale, league, setSelectedYearChanged }:{id:number , seasons:any, setSelectedYear:any, selectedYear:number, locale:string, league:string, setSelectedYearChanged?:any}) {
+  
   /** 번역 */
   const c = useTranslations("countries");
   const l = useTranslations("league");
@@ -59,6 +60,9 @@ export default function LeagueHeader({id, seasons ,setSelectedYear, selectedYear
               className="border border-black rounded-full text-xsm p-1.5 font-medium appearance-none pr-5 pl-3 dark:bg-custom-dark dark:border-custom-gray2"
               onChange={(e) => {
                 setSelectedYear(parseInt(e.currentTarget.value));
+                if(setSelectedYearChanged) {
+                  setSelectedYearChanged(true)
+                }
               }}
               value={selectedYear}
             >

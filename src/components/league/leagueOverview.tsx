@@ -18,6 +18,7 @@ import {
 import { useTranslations } from "next-intl";
 
 import nowTimezone from "@/lib/nowTimezone";
+import { setSelectedSeason } from "@/lib/features/leagueSlice";
 
 /** 지울 데이터 */
 import {
@@ -64,18 +65,24 @@ export default function LeagueOverview({
       dispatch(getLeague({ id })).then(({ payload }) => {
         const season = payload?.seasons;
 
-        if(season && season.length > 0) {
+        if (season && season.length > 0) {
           const lastSeason = season[season?.length - 1].year;
           // selectedYear이 변경됨으로 useEffect가 다시 실행되며 selectYear 값이 0이 아니니 else 부분으로 넘어감
           setSelectedYear(lastSeason);
+          dispatch(setSelectedSeason(lastSeason));
+          /** 전역 상태값으로 써 공유를 하기위해 선택한 년도를 상태값으로써 저장 */
+          dispatch(setSelectedSeason(lastSeason));
         } else {
-          console.error("season error")
+          console.error("season error");
         }
       });
       //   /** selectedYear가 비어있지 않을 때 */
     } else {
       // 선택된 시즌의 스탠딩 정보 가져오기
       dispatch(getStanding({ id: id, year: selectedYear }));
+      /** 전역 상태값으로 써 공유를 하기위해 선택한 년도를 상태값으로써 저장 */
+      dispatch(setSelectedSeason(selectedYear));
+
       /** 해당 시즌의 경기 데이터 구하기  */
       // dispatch(
       //   getMatches({ leagueID: id, season: selectedYear, timezone: location })
@@ -110,7 +117,14 @@ export default function LeagueOverview({
   return (
     <>
       {/** header */}
-      <LeagueHeader id={id} seasons={seasons} setSelectedYear={setSelectedYear} selectedYear={selectedYear} locale={locale} league={league} />
+      <LeagueHeader
+        id={id}
+        seasons={seasons}
+        setSelectedYear={setSelectedYear}
+        selectedYear={selectedYear}
+        locale={locale}
+        league={league}
+      />
 
       {/** match slide */}
       <div className="w-full bg-white rounded-xl mt-6 px-8 py-5 dark:bg-custom-dark max-sm:px-4">
@@ -481,7 +495,7 @@ export default function LeagueOverview({
                   {l("assists")}
                 </h4>
               </div>
-              {assist && assist.length > 0  ? (
+              {assist && assist.length > 0 ? (
                 <div>
                   {assist?.slice(0, 3).map((v: any, i: number) => {
                     return (

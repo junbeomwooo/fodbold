@@ -9,11 +9,9 @@ import leagueSlice, {
 import { useLocale } from "next-intl";
 
 import Image from "next/image";
-/** 지울 데이터 */
-import { leagueStands, groupStands } from "../../../public/example";
+
 import { useTranslations } from "next-intl";
 import LeagueHeader from "./header/leagueHeader";
-import locationSlice from "@/lib/features/locationSlice";
 
 export default function LeagueTable({
   id,
@@ -28,14 +26,13 @@ export default function LeagueTable({
 
   /** 리덕스 */
   const dispatch = useAppDispatch();
-  const { standing, seasons }: { standing: any; seasons: any } = useAppSelector(
+  const {
+    standing,
+    seasons,
+    selectedSeason,
+  }: { standing: any; seasons: any; selectedSeason: any } = useAppSelector(
     (state) => state.leagueSlice
   );
-
-  const { location }: any = useAppSelector((state) => state.locationSlice);
-
-  /** 년도 상태값 */
-  const [selectedYear, setSelectedYear] = useState<number>(0);
 
   /** useEffect */
   useEffect(() => {}, [dispatch]);
@@ -43,20 +40,29 @@ export default function LeagueTable({
   /** 사용할 실제 데이터 */
   const season = seasons ? seasons.seasons : null;
   const stands = standing ? standing : null;
+  const selected = selectedSeason ? selectedSeason : 0;
 
-  /** 지울 데이터 */
-  // const stands = leagueStands;
+  /** 년도 상태값 */
+  const [selectedYear, setSelectedYear] = useState<number>(selected);
+
+  /** 시즌에 대한 변경값이 있었는지 모니터링하기 위한 상태값 */
+  const [selectedYearChanged, setSelectedYearChanged] = useState(false);
 
   /** 배열의 첫 인덱스만 가져와서 form이 있는지 길이가 몇인지 확인하는 용도 */
   const form = stands ? stands[0][0]?.form : null;
 
 
-
-  /** 의도한대로 통신이 잘 발생하는 지 확인하기  */
-  
+  /** selectedYearChanged를 사용한 게 잘 작동하는지 확인해보고 전 페이지 데이터 통신 잘작동하는지도 확인하기 */
   useEffect(() => {
-    // 스탠드와 시즌이 없는 경우
-    if (!standing && !seasons) {
+    /** 조회하려는 시즌값이 변경되지 않았으며 season과 selectedYear값이 모두 존재하는 경우 ( 즉 이전 페이지에서 전역 상태값을 잘 받아온 경우 ) */
+    if (!selectedYearChanged && season && selectedYear !== 0) {
+      return;
+    }
+    /** 이전 페이지로부터 seasons을 받아오지 못한 경우에 실행
+     * 1.getLeague를 통해 season 정보를 받아온 뒤 가장 최근 리그 데이터를 selectedYear에 저장
+     * 2.selectYear이 변경됨으로써 useEffect가 다시 실행 됨으로 else 부분으로 넘어감
+     */
+    if (!season) {
       // 리그 데이터 받아오기
       dispatch(getLeague({ id })).then(({ payload }) => {
         const season = payload?.seasons;
@@ -65,25 +71,27 @@ export default function LeagueTable({
           const lastSeason = season[season?.length - 1].year;
           // selectedYear에 저장
           setSelectedYear(lastSeason);
-
-          // 스탠딩 데이터 받아오기
-          dispatch(getStanding({ id: id, year: lastSeason }));
         } else {
           console.error("season error");
         }
       });
-      // 스탠드와 시즌이 있을 경우
-    } else if (standing && seasons){
+      /** 이전 페이지에서 못받아옴으로써 if문 실행 뒤 넘어왔거나 standing이나 seasons을 이전페이지에서 받아온 경우
+       * 1. selected가 저장된게 없다면 최근 시즌 정보를 selectedYear 상태값에 저장
+       * 2. 그후 useEffect가 다시 실행됨으로써 getStanding을 통한 해당 년도 순위 데이터 조회
+       * 3. 이전에 저장된 stands 상태값을 사용하지않고 최신 년도 데이터로 새로 받아오기 고정
+       */
+    } else {
       // 스탠드와 시즌이 있으면서 초기 상태인 경우 리턴
       if (selectedYear === 0) {
-        return;
+        const lastSeason = season[season?.length - 1].year;
+        setSelectedYear(lastSeason);
       } else {
         // 초기 상태가 아닌 경우(즉 selectedYear의변화가 생긴 경우 재통신)
         dispatch(getStanding({ id: id, year: selectedYear }));
       }
     }
-  }, [season, dispatch, id, selectedYear, standing, seasons]);
-
+  }, [dispatch, id, selectedYear, season, selectedYearChanged]);
+  
   return (
     <>
       <LeagueHeader
@@ -93,9 +101,10 @@ export default function LeagueTable({
         selectedYear={selectedYear}
         locale={locale}
         league={league}
+        setSelectedYearChanged={setSelectedYearChanged}
       />
       {/** standings*/}
-      <div className="w-3/5 mt-6 max-xl:w-full">
+      <div className="w-full mt-6 max-xl:w-full">
         <div className="w-full h-auto bg-white rounded-xl border-solid border border-slate-200 pb-6 dark:bg-custom-dark dark:border-0 pt-6 max-sm:px-4">
           {/* 데이터가 있을 경우 데이터를 보여주고 없을 경우 데이터가 없다고 알려줌 */}
           {stands ? (
