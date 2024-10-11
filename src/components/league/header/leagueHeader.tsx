@@ -38,7 +38,7 @@ export default function LeagueHeader({id, seasons ,setSelectedYear, selectedYear
   return (
    <>
           {/** header */}
-          <div className="w-full h-auto bg-white rounded-xl px-8 pt-10  dark:bg-custom-dark dark:border-0 max-sm:px-4">
+          <div className="w-full h-auto bg-white rounded-xl px-8 pt-10  border-slate-200 border border-solid dark:bg-custom-dark dark:border-0 max-sm:px-4 ">
         <div className="flex items-center justify-between">
           <div className="flex">
             <Image

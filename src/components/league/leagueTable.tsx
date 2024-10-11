@@ -5,6 +5,7 @@ import { useAppDispatch, useAppSelector } from "@/lib/storeHooks";
 import leagueSlice, {
   getLeague,
   getStanding,
+  setSelectedSeason,
 } from "@/lib/features/leagueSlice";
 import { useLocale } from "next-intl";
 
@@ -51,11 +52,9 @@ export default function LeagueTable({
   /** 배열의 첫 인덱스만 가져와서 form이 있는지 길이가 몇인지 확인하는 용도 */
   const form = stands ? stands[0][0]?.form : null;
 
-
-  /** selectedYearChanged를 사용한 게 잘 작동하는지 확인해보고 전 페이지 데이터 통신 잘작동하는지도 확인하기 */
   useEffect(() => {
     /** 조회하려는 시즌값이 변경되지 않았으며 season과 selectedYear값이 모두 존재하는 경우 ( 즉 이전 페이지에서 전역 상태값을 잘 받아온 경우 ) */
-    if (!selectedYearChanged && season && selectedYear !== 0) {
+    if (!selectedYearChanged && season && selectedYear !== 0 && stands) {
       return;
     }
     /** 이전 페이지로부터 seasons을 받아오지 못한 경우에 실행
@@ -71,6 +70,8 @@ export default function LeagueTable({
           const lastSeason = season[season?.length - 1].year;
           // selectedYear에 저장
           setSelectedYear(lastSeason);
+          /** 전역 상태값으로 써 공유를 하기위해 선택한 년도를 상태값으로써 저장 */
+          dispatch(setSelectedSeason(selectedYear));
         } else {
           console.error("season error");
         }
@@ -81,17 +82,22 @@ export default function LeagueTable({
        * 3. 이전에 저장된 stands 상태값을 사용하지않고 최신 년도 데이터로 새로 받아오기 고정
        */
     } else {
-      // 스탠드와 시즌이 있으면서 초기 상태인 경우 리턴
+
+      // 스탠드와 시즌이 있으면서 초기 상태인 경우 
+      // 왜 인지는 모르겠지만 selectedYear 관한 조건문을 여기서 안넣으면 새로고침시 league = 0 으로 데이터 통신이 한번더 발생해서 조건문을 추가하였음
       if (selectedYear === 0) {
         const lastSeason = season[season?.length - 1].year;
         setSelectedYear(lastSeason);
+        /** 전역 상태값으로 써 공유를 하기위해 선택한 년도를 상태값으로써 저장 */
+        dispatch(setSelectedSeason(selectedYear));
       } else {
         // 초기 상태가 아닌 경우(즉 selectedYear의변화가 생긴 경우 재통신)
         dispatch(getStanding({ id: id, year: selectedYear }));
       }
     }
+    // 의존성 배열 관련 경고문은 무시해도 좋음
   }, [dispatch, id, selectedYear, season, selectedYearChanged]);
-  
+
   return (
     <>
       <LeagueHeader

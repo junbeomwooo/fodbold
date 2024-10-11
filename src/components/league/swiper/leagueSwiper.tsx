@@ -155,6 +155,26 @@ export default function LeagueSwiper({
             // 스코어
             const score = `${v.goals.home} - ${v.goals.away}`;
 
+
+
+            /** 위와 같이 작성한거 아래 방법으로 변경하기 */
+            // 스코어
+            // const score = `${v.goals.home} - ${v.goals.away}`;
+
+            // const matchDate = new Date(); // 예를 들어 현재 시간
+            // const localeInfo = "da-DK"; // 예: 'en-US'
+
+            // const matchTime = matchDate.toLocaleTimeString(localeInfo, {
+            //   year: "numeric",
+            //   month: "long",
+            //   day: "numeric",
+            //   hour: "numeric",
+            //   minute: "numeric",
+            //   hour12: true,
+            // });
+
+            // console.log(matchTime); // 예: '2:30 PM'
+
             return (
               <SwiperSlide key={i} className="dark:bg-custom-dark">
                 <div className="w-full h-full flex justify-around items-center border border-solid  border-slate-200 rounded-xl py-7 px-4 cursor-pointer hover:opacity-50 dark:border-custom-gray3">

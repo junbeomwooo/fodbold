@@ -172,7 +172,6 @@ export const leagueSlice = createSlice({
       return state;
     },
     setSelectedSeason: (state, {payload}: {payload: any}) => {
-      console.log(payload);
       state.selectedSeason = payload;
     }
   },

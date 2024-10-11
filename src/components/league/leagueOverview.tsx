@@ -99,20 +99,16 @@ export default function LeagueOverview({
   const currentDate = nowTimezone(locate);
 
   /** 사용할 실제 데이터 */
-  // const stands = standing;
-  // const goal = topScoreAssist?.goal;
-  // const assist = topScoreAssist?.assist;
+  const stands = standing;
+  const goal = topScoreAssist?.goal;
+  const assist = topScoreAssist?.assist;
 
   /** 지울 데이터(예시 데이터) */
-  const stands = leagueStands;
+  // const stands = leagueStands;
   // const stands = groupStands;
-
-  console.log(location);
 
   /** 배열의 첫 인덱스만 가져와서 form이 있는지 길이가 몇인지 확인하는 용도 */
   const form = stands ? stands[0][0]?.form : null;
-
-  console.log(topScoreAssist);
 
   return (
     <>
@@ -127,7 +123,7 @@ export default function LeagueOverview({
       />
 
       {/** match slide */}
-      <div className="w-full bg-white rounded-xl mt-6 px-8 py-5 dark:bg-custom-dark max-sm:px-4">
+      <div className="w-full bg-white rounded-xl mt-6 px-8 py-5 dark:bg-custom-dark max-sm:px-4  border-slate-200 border border-solid">
         <div className="flex justify-between text-base mb-4">
           <h3>{l("matches")}</h3>
           <h3 className="text-green-600 cursor-pointer hover:underline">
