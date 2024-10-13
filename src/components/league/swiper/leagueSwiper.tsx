@@ -25,9 +25,11 @@ import { example } from "../../../../public/example";
 export default function LeagueSwiper({
   match,
   today,
+  locale,
 }: {
   match: any;
   today: any;
+  locale: string;
 }) {
   // 번역
   const t = useTranslations("date");
@@ -64,8 +66,8 @@ export default function LeagueSwiper({
   /** key값을 통한 자동 재렌더링은 성능 저하를 야기할 수 있으니 이걸 해결하고 각 경기 상태에 따른 클라이언트 렌더링 구현하기 */
   return (
     <>
-    {/* match */}
-      {match  ? (
+      {/* match */}
+      {match ? (
         <Swiper
           key={todayIndex} // index값이 변경될때마다 자동 재렌더링
           navigation={true}
@@ -114,14 +116,28 @@ export default function LeagueSwiper({
             // YYYY-MM-DD
             let date = v.fixture.date.split("T")[0];
 
-            // YYYY-MM-DD 형식의 date / date는 값이 변경되기때문에 이런 형식의 데이터를 변수에 저장해두기
-            const yyyymmdd = date;
-
             // 경기 년도
             const matchYear = date.substring(0, 4);
 
-            // MM:SS
-            const time = v.fixture.date.split("T")[1].substring(0, 5);
+            // 언어별로 국가 로케일 설정값 변경
+            const localeInfo =
+              locale === "en"
+                ? "en-US"
+                : locale === "ko"
+                ? "ko-KR"
+                : locale === "da"
+                ? "da-DK"
+                : "en-US";
+
+            /** 경기 날짜 및 시간을 로케일에 맞게 변경하도록 변경하였으니 잘 작동하는지 확인하기 */
+            
+            // 경기 시간을 언어별로 설정
+            const matchTime = new Date(v.fixture.date);
+            const time = matchTime.toLocaleTimeString(localeInfo, {
+              hour: "numeric",
+              minute: "numeric",
+              hour12: true, // 12시간제 (오전/오후)
+            });
 
             /**  지금 날짜로부터 오늘,어제,내일 일 경우, 날짜 포맷 변경 */
             if (date === today) {
@@ -134,46 +150,24 @@ export default function LeagueSwiper({
               //  내일 일 경우
               date = t("tomorrow");
             } else {
-              // 그 외 날짜 포맷 23 Oct 과 같은 형식으로 변경
-              const changedDate = stringFormatDate(date).toLowerCase();
+              // 경기 시간을 데이터 객체로 변환 후 url 파라미터에 있는 locale값을 정식 locale값으로 변환 후 toLocaleDateString을 통해 해당 언어에 해당하는 시간 값으로 반환
+              const matchDate = new Date(date);
+              date = matchDate.toLocaleDateString(localeInfo?.toString(), {
+                month: "long",
+                day: "numeric",
+              });
 
-              const [weekday, day, month] = changedDate?.split(" ");
-
-              location === "en"
-                ? (date = `${day} ${t(month)}`)
-                : location === "da"
-                ? (date = `${day}. ${t(month)}`)
-                : location === "ko"
-                ? (date = `${t(month)} ${day}일`)
-                : null;
-
-              // 현재년도와 매치의 년도가 다르다면 yyyy-mm-dd 형식으로 보여줌
+              // 현재년도와 매치의 년도가 다르다면 년도를 포함한 형식으로 보여줌
               if (nowYear !== matchYear) {
-                date = yyyymmdd;
+                date = matchDate.toLocaleDateString(localeInfo?.toString(), {
+                  year: "numeric",
+                  month: "long",
+                  day: "numeric",
+                });
               }
             }
             // 스코어
             const score = `${v.goals.home} - ${v.goals.away}`;
-
-
-
-            /** 위와 같이 작성한거 아래 방법으로 변경하기 */
-            // 스코어
-            // const score = `${v.goals.home} - ${v.goals.away}`;
-
-            // const matchDate = new Date(); // 예를 들어 현재 시간
-            // const localeInfo = "da-DK"; // 예: 'en-US'
-
-            // const matchTime = matchDate.toLocaleTimeString(localeInfo, {
-            //   year: "numeric",
-            //   month: "long",
-            //   day: "numeric",
-            //   hour: "numeric",
-            //   minute: "numeric",
-            //   hour12: true,
-            // });
-
-            // console.log(matchTime); // 예: '2:30 PM'
 
             return (
               <SwiperSlide key={i} className="dark:bg-custom-dark">

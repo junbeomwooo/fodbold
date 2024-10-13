@@ -27,13 +27,13 @@ export async function generateMetadata({
 }
 
 export default async function Page({
-  params: { id, league },
+  params: { id, league, locale },
 }: {
-  params: { id: number, league: any};
+  params: { id: number, league: any, locale: string};
 }) {
   return (
     <div className="px-14 max-msm:px-4 pt-28 ">
-      <LeagueOverview id={id} league={league} />
+      <LeagueOverview id={id} league={league} locale={locale} />
     </div>
   );
 }

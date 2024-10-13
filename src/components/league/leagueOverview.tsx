@@ -32,17 +32,17 @@ import LeagueHeader from "./header/leagueHeader";
 export default function LeagueOverview({
   id,
   league,
+  locale
 }: {
   id: number;
   league: string;
+  locale:string;
 }) {
   const c = useTranslations("countries");
   const l = useTranslations("league");
   const g = useTranslations("general");
 
   const pathname = usePathname();
-
-  const locale = useLocale();
 
   const dispatch = useAppDispatch();
 
@@ -53,7 +53,6 @@ export default function LeagueOverview({
   /** 접속 해당 위치의 전역 상태값 가져오기 */
   const { location }: any = useAppSelector((state) => state.locationSlice);
 
-  console.log(location);
 
   /** 년도 상태값 */
   const [selectedYear, setSelectedYear] = useState<number>(0);
@@ -84,9 +83,9 @@ export default function LeagueOverview({
       dispatch(setSelectedSeason(selectedYear));
 
       /** 해당 시즌의 경기 데이터 구하기  */
-      // dispatch(
-      //   getMatches({ leagueID: id, season: selectedYear, timezone: location })
-      // );
+      dispatch(
+        getMatches({ leagueID: id, season: selectedYear, timezone: location })
+      );
       /** 득점왕 및 어시왕 정보 가져오기 */
       // dispatch(getTopScoreAssist({ season: selectedYear, leagueID: id }));
     }
@@ -130,7 +129,7 @@ export default function LeagueOverview({
             {l("allmatches")}
           </h3>
         </div>
-        <LeagueSwiper match={match} today={currentDate} />
+        <LeagueSwiper match={match} today={currentDate} locale={locale}/>
       </div>
 
       {/*standing, top score and assist */}
