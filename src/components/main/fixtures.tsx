@@ -20,8 +20,13 @@ import { useTranslations } from "next-intl";
 
 import { useAppDispatch } from "@/lib/storeHooks";
 import { setLocation } from "@/lib/features/locationSlice";
+import { useRouter } from "next/navigation";
+import { useLocale } from "next-intl";
 
 export default function Fixtures() {
+  const router = useRouter();
+  const locale = useLocale();
+
   const dispatch = useAppDispatch();
   // 참조변수
   const inputRef = useRef<HTMLInputElement>(null);
@@ -66,7 +71,7 @@ export default function Fixtures() {
   const getLocation = async () => {
     const response = await fetch(
       `${GEOLOCATION_URL}?apiKey=${process.env.NEXT_PUBLIC_GEOLOCATION_API_KEY}`
-    ); 
+    );
     return response.json();
   };
 
@@ -78,7 +83,7 @@ export default function Fixtures() {
         method: "GET",
         headers: {
           "x-rapidapi-host": "v3.football.api-sports.io",
-          // "x-rapidapi-key": `${process.env.NEXT_PUBLIC_FOOTBALL_API_KEY}`,
+          "x-rapidapi-key": `${process.env.NEXT_PUBLIC_FOOTBALL_API_KEY}`,
         },
       }
     );
@@ -93,7 +98,7 @@ export default function Fixtures() {
         method: "GET",
         headers: {
           "x-rapidapi-host": "v3.football.api-sports.io",
-          // "x-rapidapi-key": `${process.env.NEXT_PUBLIC_FOOTBALL_API_KEY}`,
+          "x-rapidapi-key": `${process.env.NEXT_PUBLIC_FOOTBALL_API_KEY}`,
         },
       }
     );
@@ -165,7 +170,7 @@ export default function Fixtures() {
         console.error(e);
         return;
       } finally {
-        forSearchRef.current = false // 검색이 끝난 후에는 고정적으로 false로 변경
+        forSearchRef.current = false; // 검색이 끝난 후에는 고정적으로 false로 변경
       }
     };
 
@@ -215,7 +220,7 @@ export default function Fixtures() {
     forSearchRef.current = true;
 
     /** 특정 [진행중,예정된,종료된]과 같이 특정 필터가 선택된 상태에서는 사용자 편의상 검색된 결과가 전체 결과라는 것을 알려주기위해 필터를 [전체]로 바꾸어줘야하는데
-     * 이런 케이스는 useState로인해 자동적으로 데이터가 다시한번 받아와져서 불필요한 통신이 생기니 
+     * 이런 케이스는 useState로인해 자동적으로 데이터가 다시한번 받아와져서 불필요한 통신이 생기니
      * useState문안에서 if else 조건문을 통하여 검색 중일땐 데이터 통신을 하지않고 스킵하게 끔 forSearchRef 참조변수가 true또는 false를 구분하여 구현
      * forSearchRef.current를 앞에 명시함으로써 한번의 검색 후 다시 한 번 검색시에도 불필요한 데이터 통신은 발생하지 않게 됌
      */
@@ -437,12 +442,40 @@ export default function Fixtures() {
               // 변수[키값]을 통해 해당하는 리그의 경기 데이터를 모두 가져옴
               const leagueMatch = groupedByLeague[leagueName].matches;
 
+              // 하이픈을 모두 삭제합니다.
+              const noHyphens = leagueMatch[0].league.name.replace(/-/g, " ");
+
+              // 두 번 이상의 연속 공백을 하나로 줄입니다.
+              const cleanedString = noHyphens.replace(/\s{2,}/g, " ");
+
+              // 1. 공백을 하이픈으로 변경
+              const hyphenated = cleanedString.replace(/\s+/g, "-");
+
+              // 2. 온점을 제거
+              const withoutDots = hyphenated.replace(/\./g, "");
+
+              // 3. 대문자 뒤에 하이픈 추가 (선택 사항)
+              const withHyphens = withoutDots.replace(
+                /(?<=[A-Z])-(?=[a-z])/g,
+                "-"
+              );
+
+              /** 최종 */
+              const name = withHyphens.toLowerCase();
+              
               return (
                 <ul
                   key={leagueIndex}
                   className="bg-white border-solid border border-slate-200 mt-5 rounded-xl dark:border-0 dark:bg-custom-dark"
                 >
-                  <div className="p-4 bg-slate-100 rounded-t-xl flex cursor-pointer hover:bg-slate-200 dark:bg-custom-lightDark dark:hover:bg-custom-gray3 max-msm:p-2.5">
+                  <div
+                    className="p-4 bg-slate-100 rounded-t-xl flex cursor-pointer hover:bg-slate-200 dark:bg-custom-lightDark dark:hover:bg-custom-gray3 max-msm:p-2.5"
+                    onClick={() => {
+                      router.push(
+                        `${locale}/leagues/${leagueMatch[0].league.id}/${name}/overview`
+                      );
+                    }}
+                  >
                     <Image
                       src={leagueMatch[0].league.logo}
                       alt={leagueMatch[0].league.name}

@@ -215,7 +215,7 @@ export default function Leagues({ leagueData }: { leagueData: any }) {
         </h1>
         {countryKeys.map((countryName: string, countryIndex: number) => {
           const flag = allLeagues[countryName]?.flag;
-          const leagues = allLeagues[countryName].league;
+          const leagues = allLeagues[countryName]?.league;
 
           return (
             <ul key={countryIndex}>
@@ -249,7 +249,7 @@ export default function Leagues({ leagueData }: { leagueData: any }) {
                   className="opacity-60 dark:invert"
                 />
               </div>
-              {leagues.map((v: any, i: number) => {
+              {leagues?.map((v: any, i: number) => {
                 
                 // 하이픈을 모두 삭제합니다.
                 const noHyphens = v.name.replace(/-/g, " ");

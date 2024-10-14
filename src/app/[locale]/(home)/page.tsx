@@ -15,7 +15,7 @@ const getStanding = async (id: number, year: number) => {
       method: "GET",
       headers: {
         "x-rapidapi-host": "v3.football.api-sports.io",
-        // "x-rapidapi-key": `${process.env.FOOTBALL_API_KEY}`,
+        "x-rapidapi-key": `${process.env.FOOTBALL_API_KEY}`,
       },
     }
   );
@@ -30,7 +30,7 @@ const getAllLeagues = async (year: number) => {
       method: "GET",
       headers: {
         "x-rapidapi-host": "v3.football.api-sports.io",
-        // "x-rapidapi-key": `${process.env.FOOTBALL_API_KEY}`,
+        "x-rapidapi-key": `${process.env.FOOTBALL_API_KEY}`,
       },
     });
 
