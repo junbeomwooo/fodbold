@@ -12,6 +12,8 @@ import {
 import { useTranslations } from "next-intl";
 
 import Image from "next/image";
+import arrow from "../../../public/img/arrow.png";
+import trianlge from "../../../public/img/triangle.png";
 
 export default function LeagueMatches({
   id,
@@ -46,6 +48,19 @@ export default function LeagueMatches({
 
   /** 시즌에 대한 변경값이 있었는지 모니터링하기 위한 상태값 */
   const [selectedYearChanged, setSelectedYearChanged] = useState(false);
+
+  /** 각 월별로 데이터 필터링을 위한 상태값 */
+  const [filterDate, setFilterDate] = useState(new Date().toISOString());
+  const [filterMonth, setFilterMonth] = useState(new Date().getMonth() + 1);
+
+  const localeInfo =
+    locale === "en"
+      ? "en-US"
+      : locale === "ko"
+      ? "ko-KR"
+      : locale === "da"
+      ? "da-DK"
+      : null;
 
   useEffect(() => {
     /** 조회하려는 시즌값이 변경되지 않았으며 season과 selectedYear값이 모두 존재하는 경우 ( 즉 이전 페이지에서 전역 상태값을 잘 받아온 경우 ) */
@@ -95,13 +110,67 @@ export default function LeagueMatches({
     // 의존성 배열 관련 경고문은 무시해도 좋음
   }, [dispatch, id, selectedYear, season, selectedYearChanged, location]);
 
-    /** 받아온 데이터를 시간순으로 정렬 */
-    const sortedMatch = Array.isArray(match) ? [...match].sort((a: any, b: any) => {
-      return a.fixture.timestamp - b.fixture.timestamp;
-    }) : null;
+  /** 받아온 데이터를 시간순으로 정렬 */
+  const sortedMatch = Array.isArray(match)
+    ? [...match].sort((a: any, b: any) => {
+        return a.fixture.timestamp - b.fixture.timestamp;
+      })
+    : null;
+
+
+
+
+
+    
+
+  /** (matches, month, year) 파라미터를 통해 같은 년도와 월의 데이터 값만 가져올 함수 */
+  const filterMatchesByMonthAndYear = (
+    matches: any[],
+    month: number,
+  ) => {
+    return matches.filter((match) => {
+      const matchDate = new Date(match.fixture.date);
+      return matchDate.getMonth() + 1 === month; // 월은 0부터 시작하므로 +1
+    });
+  };
+
+  /** 필터링된 월별 데이터 */
+  const filteredMatches = sortedMatch
+    ? filterMatchesByMonthAndYear(sortedMatch, filterMonth)
+    : [];
+
+  /** 시즌 시작일로부터 끝나는 일까지 */
+  const foundSeason = seasons?.seasons.find(
+    (season:any) => season.year === selectedYear
+  );
+
+  // 시즌 시작
+  const startedDate = new Date(foundSeason?.start);
+
+  // 시즌 종료
+  const endDate = new Date(foundSeason?.end);
+
+  const onClickNextMonth = () => {
+    // 현재 데이터 객체 가져오기
+    const now = new Date(filterDate)
+
+    // 만약 시즌 종료일보다 크다면 아무 반응 없게하기
+    if (now >= endDate) {
+      return;
+    } else {
+      console.log(now.getMonth)
+    }
+  }
+
+
+
+
+
+
+
 
   /** 날짜별로 경기 데이터 묶기 */
-  const groupedByDate = match?.reduce((acc: any, match: any) => {
+  const groupedByDate = filteredMatches?.reduce((acc: any, match: any) => {
     // acc : 반환할 총 데이터 값 , match : 한가지 경기
     const matchDate = match.fixture.date.substring(0, 10);
     if (!acc[matchDate]) {
@@ -116,6 +185,7 @@ export default function LeagueMatches({
 
   /** 날짜 키 받기 */
   const dateKeys = groupedByDate ? Object.keys(groupedByDate) : [];
+
   return (
     <>
       <LeagueHeader
@@ -128,29 +198,78 @@ export default function LeagueMatches({
         setSelectedYearChanged={setSelectedYearChanged}
       />
       {/* 날짜 키 값 반복돌리기 */}
-      <div className="w-full mt-6 max-xl:w-full border-slate-200 border border-solid bg-white p-7 max-sm:px-0">
+      <div className="w-full mt-6 max-xl:w-full border-slate-200 border border-solid bg-white p-7 max-sm:px-0 rounded-xl">
+        {/* 날짜 선택 부분 */}
+        <div className="h-16 flex justify-between items-center max-msm:mx-4">
+          <div>
+            <div className="w-7 h-7 rounded-full bg-slate-200 flex justify-center items-center hover:cursor-pointer hover:bg-slate-400 dark:bg-custom-gray3 dark:hover:bg-custom-gray">
+              <Image
+                src={arrow}
+                alt="arrow"
+                width={11}
+                height={11}
+                style={{ width: "11px", height: "11px" }}
+                className="rotate-90 dark:invert"
+              />
+            </div>
+          </div>
+          <div>
+            <div className="flex items-center hover:cursor-pointer">
+              <h1 className="text-base dark:text-white">{filterDate}</h1>
+            </div>
+          </div>
+          <div className="w-7 h-7 rounded-full bg-slate-200 flex justify-center items-center hover:cursor-pointer  hover:bg-slate-400 dark:bg-custom-gray3 dark:hover:bg-custom-gray">
+            <Image
+              src={arrow}
+              alt="arrow"
+              width={11}
+              height={11}
+              style={{ width: "11px", height: "11px" }}
+              className="rotate-270 dark:invert"
+              onClick={onClickNextMonth}
+            />
+          </div>
+        </div>
+
+        {/* 경기 리스트 */}
         {dateKeys.length > 0 ? (
           dateKeys.map((date: any, dateIndex: number) => {
             const dateMatch = groupedByDate[date].matches;
+
+            let dateform = null;
+
+            /** 현재년도와 비교하여 경기년도가 같다면 일, 월만 보여주고 아니라면 년도까지 보여주기 */
+            const matchDate = new Date(date);
+
+            // 현재년도
+            const nowYear = new Date().getFullYear().toString();
+            const matchYear = date.substring(0, 4);
+
+            dateform = matchDate.toLocaleDateString(localeInfo?.toString(), {
+              weekday: "long",
+              month: "long",
+              day: "numeric",
+            });
+
+            if (nowYear !== matchYear) {
+              dateform = matchDate.toLocaleDateString(localeInfo?.toString(), {
+                weekday: "long",
+                month: "long",
+                day: "numeric",
+                year: "numeric",
+              });
+            }
+
             return (
               <div key={dateIndex}>
                 <div className="w-full h-10 bg-slate-100 rounded-xl flex items-center px-5 max-sm:rounded-none">
-                  <h1 className="text-base font-medium">{date}</h1>
+                  <h1 className="text-base font-medium">{dateform}</h1>
                 </div>
 
                 {/* 해당 날짜안의 경기 반복문 돌리기 */}
                 {dateMatch.map((match: any, matchIndex: number) => {
                   // 경기 시간을 데이터 객체로 변환 후 url 파라미터에 있는 locale값을 정식 locale값으로 변환 후 toLocaleTimeString을 통해 해당 언어에 해당하는 시간 값으로 반환
                   const matchDate = new Date(match.fixture.date);
-
-                  const localeInfo =
-                    locale === "en"
-                      ? "en-US"
-                      : locale === "ko"
-                      ? "ko-KR"
-                      : locale === "da"
-                      ? "da-DK"
-                      : null;
 
                   const matchTime = matchDate.toLocaleTimeString(
                     localeInfo?.toString(),
@@ -184,7 +303,7 @@ export default function LeagueMatches({
                   return (
                     <div
                       key={matchIndex}
-                      className="flex h-14 text-sm justify-center items-center cursor-pointer hover:bg-slate-200"
+                      className="flex h-16 text-sm justify-center items-center cursor-pointer hover:bg-slate-200"
                     >
                       {/* 경기가 시작하지 않거나 취소 및 연기 */}
                       {scheduled.includes(match.fixture.status.short) ||
@@ -222,9 +341,8 @@ export default function LeagueMatches({
                         <></>
                       )}
 
-                      {/* 미디어쿼리 적용하기 */}
-                      <div className="flex w-6/12 justify-end">
-                        <h1 className="dark:text-white max-msm:text-xxs">
+                      <div className="flex w-6/12 justify-end items-center">
+                        <h1 className="dark:text-white max-msm:text-xxs max-sm:w-14 text-center leading-3">
                           {match.teams.home.name}
                         </h1>
                         <Image
@@ -232,7 +350,7 @@ export default function LeagueMatches({
                           alt={match.teams.home.name}
                           width={15}
                           height={15}
-                          className="mr-4 ml-3 max-sm:mr-0"
+                          className="mr-4 ml-4 max-sm:mr-0"
                           style={{ width: "18px", height: "18px" }}
                         />
                       </div>
@@ -274,16 +392,16 @@ export default function LeagueMatches({
                           <></>
                         )}
                       </div>
-                      <div className="flex w-6/12 justify-start">
+                      <div className="flex w-6/12 justify-start items-center">
                         <Image
                           src={match.teams.away.logo}
                           alt={match.teams.away.name}
                           width={15}
                           height={15}
-                          className="ml-4 mr-3 max-sm:ml-0"
+                          className="ml-4 mr-4 max-sm:ml-0"
                           style={{ width: "18px", height: "18px" }}
                         />
-                        <h1 className="dark:text-white max-msm:text-xxs">
+                        <h1 className="dark:text-white max-msm:text-xxs max-sm:w-14  text-center leading-3">
                           {match.teams.away.name}
                         </h1>
                       </div>
