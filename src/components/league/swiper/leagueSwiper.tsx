@@ -16,7 +16,6 @@ import moment from "moment-timezone";
 
 import { useTranslations } from "next-intl";
 
-import stringFormatDate from "@/lib/stringFormatDate";
 import { usePathname } from "next/navigation";
 
 /** 예제 파일 */
@@ -56,9 +55,6 @@ export default function LeagueSwiper({
   const todayIndex = sortedMatch?.findIndex((v: any, i: number) => {
     return v.fixture.date.split("T")[0] >= today;
   });
-
-  // locale 정보 받은 후 변수에 저장
-  const location = pathname?.split("/")[1];
 
   // 현재 년도
   const nowYear = today.substring(0, 4);

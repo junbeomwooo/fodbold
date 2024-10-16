@@ -46,12 +46,13 @@ export default function LeagueMatches({
   /** 선택 년도 상태값 */
   const [selectedYear, setSelectedYear] = useState<number>(selected);
 
+  const initializedDate = new Date(match[0]?.fixture.date);
+
   /** 시즌에 대한 변경값이 있었는지 모니터링하기 위한 상태값 */
   const [selectedYearChanged, setSelectedYearChanged] = useState(false);
 
   /** 각 월별로 데이터 필터링을 위한 상태값 */
-  const [filterDate, setFilterDate] = useState(new Date().toISOString());
-  const [filterMonth, setFilterMonth] = useState(new Date().getMonth() + 1);
+  const [filterMonth, setFilterMonth] = useState(new Date(initializedDate));
 
   const localeInfo =
     locale === "en"
@@ -100,7 +101,6 @@ export default function LeagueMatches({
         /** 전역 상태값으로 써 공유를 하기위해 선택한 년도를 상태값으로써 저장 */
         dispatch(setSelectedSeason(selectedYear));
       } else {
-        console.log(selectedYear);
         // 초기 상태가 아닌 경우(즉 selectedYear의변화가 생긴 경우 재통신)
         dispatch(
           getMatches({ leagueID: id, season: selectedYear, timezone: location })
@@ -121,13 +121,12 @@ export default function LeagueMatches({
 
 
 
-    
 
+
+      // 잘작동하는지 확인 후 filterMonth를 현재 진행중인 시즌일 때는 현재 달로 초기상태를 지정하고 현재 달이 아닐 경우에는 항상 시즌 첫 경기 시간을 초기시간대로 지정 
+      
   /** (matches, month, year) 파라미터를 통해 같은 년도와 월의 데이터 값만 가져올 함수 */
-  const filterMatchesByMonthAndYear = (
-    matches: any[],
-    month: number,
-  ) => {
+  const filterMatchesByMonthAndYear = (matches: any[], month: number) => {
     return matches.filter((match) => {
       const matchDate = new Date(match.fixture.date);
       return matchDate.getMonth() + 1 === month; // 월은 0부터 시작하므로 +1
@@ -136,12 +135,12 @@ export default function LeagueMatches({
 
   /** 필터링된 월별 데이터 */
   const filteredMatches = sortedMatch
-    ? filterMatchesByMonthAndYear(sortedMatch, filterMonth)
+    ? filterMatchesByMonthAndYear(sortedMatch, filterMonth.getMonth() + 1)
     : [];
 
   /** 시즌 시작일로부터 끝나는 일까지 */
   const foundSeason = seasons?.seasons.find(
-    (season:any) => season.year === selectedYear
+    (season: any) => season.year === selectedYear
   );
 
   // 시즌 시작
@@ -152,15 +151,19 @@ export default function LeagueMatches({
 
   const onClickNextMonth = () => {
     // 현재 데이터 객체 가져오기
-    const now = new Date(filterDate)
+    const date = new Date(filterMonth);
 
     // 만약 시즌 종료일보다 크다면 아무 반응 없게하기
-    if (now >= endDate) {
+    if (date >= endDate) {
+      console.log("end");
       return;
     } else {
-      console.log(now.getMonth)
+      // 다음달로 변경
+      date.setMonth(date.getMonth() + 1);
+      date.setDate(1);
+      setFilterMonth(date);
     }
-  }
+  };
 
 
 
@@ -168,6 +171,7 @@ export default function LeagueMatches({
 
 
 
+  
 
   /** 날짜별로 경기 데이터 묶기 */
   const groupedByDate = filteredMatches?.reduce((acc: any, match: any) => {
@@ -215,7 +219,11 @@ export default function LeagueMatches({
           </div>
           <div>
             <div className="flex items-center hover:cursor-pointer">
-              <h1 className="text-base dark:text-white">{filterDate}</h1>
+              <h1 className="text-base dark:text-white">
+                {filterMonth.toLocaleDateString(localeInfo?.toString(), {
+                  month: "long",
+                })}
+              </h1>
             </div>
           </div>
           <div className="w-7 h-7 rounded-full bg-slate-200 flex justify-center items-center hover:cursor-pointer  hover:bg-slate-400 dark:bg-custom-gray3 dark:hover:bg-custom-gray">
