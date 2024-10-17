@@ -13,7 +13,6 @@ import { useTranslations } from "next-intl";
 
 import Image from "next/image";
 import arrow from "../../../public/img/arrow.png";
-import trianlge from "../../../public/img/triangle.png";
 
 export default function LeagueMatches({
   id,
@@ -46,14 +45,13 @@ export default function LeagueMatches({
   /** 선택 년도 상태값 */
   const [selectedYear, setSelectedYear] = useState<number>(selected);
 
-  const initializedDate = new Date(match[0]?.fixture.date);
-
   /** 시즌에 대한 변경값이 있었는지 모니터링하기 위한 상태값 */
   const [selectedYearChanged, setSelectedYearChanged] = useState(false);
 
   /** 각 월별로 데이터 필터링을 위한 상태값 */
-  const [filterMonth, setFilterMonth] = useState(new Date(initializedDate));
+  const [filterMonth, setFilterMonth] = useState(new Date());
 
+  /** 현재 url에 적용된 locale을 정보를 localeDateString 형식에 맞게 변환하기 */
   const localeInfo =
     locale === "en"
       ? "en-US"
@@ -104,7 +102,20 @@ export default function LeagueMatches({
         // 초기 상태가 아닌 경우(즉 selectedYear의변화가 생긴 경우 재통신)
         dispatch(
           getMatches({ leagueID: id, season: selectedYear, timezone: location })
-        );
+        ).then(({ payload }) => {
+
+          /** 현재년도와 검색할 년도가 같다면 현재 해당하는 Month의 데이터를 보여주고 
+           * 현재년도와 검색할 년도가 다르다면 첫번째 경기 날짜의 Month를 보여줌
+           */
+          const nowYear = new Date().getFullYear();
+          const firstMatchYear = payload[0]?.fixture?.date
+
+          if(nowYear === parseInt(firstMatchYear.substring(0,4))) {
+            setFilterMonth(new Date());
+          } else {
+            setFilterMonth(new Date(firstMatchYear));
+          }
+        });
       }
     }
     // 의존성 배열 관련 경고문은 무시해도 좋음
@@ -117,14 +128,6 @@ export default function LeagueMatches({
       })
     : null;
 
-
-
-
-
-
-
-      // 잘작동하는지 확인 후 filterMonth를 현재 진행중인 시즌일 때는 현재 달로 초기상태를 지정하고 현재 달이 아닐 경우에는 항상 시즌 첫 경기 시간을 초기시간대로 지정 
-      
   /** (matches, month, year) 파라미터를 통해 같은 년도와 월의 데이터 값만 가져올 함수 */
   const filterMatchesByMonthAndYear = (matches: any[], month: number) => {
     return matches.filter((match) => {
@@ -138,7 +141,7 @@ export default function LeagueMatches({
     ? filterMatchesByMonthAndYear(sortedMatch, filterMonth.getMonth() + 1)
     : [];
 
-  /** 시즌 시작일로부터 끝나는 일까지 */
+  /** 선택한 년도와 같은 시즌 정보 가져오기 */
   const foundSeason = seasons?.seasons.find(
     (season: any) => season.year === selectedYear
   );
@@ -149,6 +152,8 @@ export default function LeagueMatches({
   // 시즌 종료
   const endDate = new Date(foundSeason?.end);
 
+
+  /** 다음 달로 데이터 조회 */
   const onClickNextMonth = () => {
     // 현재 데이터 객체 가져오기
     const date = new Date(filterMonth);
@@ -165,13 +170,21 @@ export default function LeagueMatches({
     }
   };
 
+  /** 이전 달로 데이터 조회 */
+  const onClickPrevMonth = () => {
+    const date = new Date(filterMonth);
 
+    if(date <= startedDate) {
+      console.log("start");
+      return;
+    } else {
+      // 이전 달로 변경
+      date.setMonth(date.getMonth() - 1);
+      date.setDate(1);
+      setFilterMonth(date);
+    }
+  }
 
-
-
-
-
-  
 
   /** 날짜별로 경기 데이터 묶기 */
   const groupedByDate = filteredMatches?.reduce((acc: any, match: any) => {
@@ -189,6 +202,12 @@ export default function LeagueMatches({
 
   /** 날짜 키 받기 */
   const dateKeys = groupedByDate ? Object.keys(groupedByDate) : [];
+
+
+  /** 
+   * 1. 이번년도와 같다면 Month만 렌더링시 표기하고 다른 년도일 경우 Month Year 형식으로 표기하게 바꾸기
+   * 2. 1번을 완료 후 모든 기능 하나씩 체크하면서 데이터 통신이 과도하게 발생하지 않는지 api사이트 통신 기록을 보면서 확인하기
+   */
 
   return (
     <>
@@ -214,6 +233,7 @@ export default function LeagueMatches({
                 height={11}
                 style={{ width: "11px", height: "11px" }}
                 className="rotate-90 dark:invert"
+                onClick={onClickPrevMonth}
               />
             </div>
           </div>
