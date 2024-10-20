@@ -103,14 +103,13 @@ export default function LeagueMatches({
         dispatch(
           getMatches({ leagueID: id, season: selectedYear, timezone: location })
         ).then(({ payload }) => {
-
-          /** 현재년도와 검색할 년도가 같다면 현재 해당하는 Month의 데이터를 보여주고 
+          /** 현재년도와 검색할 년도가 같다면 현재 해당하는 Month의 데이터를 보여주고
            * 현재년도와 검색할 년도가 다르다면 첫번째 경기 날짜의 Month를 보여줌
            */
           const nowYear = new Date().getFullYear();
-          const firstMatchYear = payload[0]?.fixture?.date
+          const firstMatchYear = payload[0]?.fixture?.date;
 
-          if(nowYear === parseInt(firstMatchYear.substring(0,4))) {
+          if (nowYear === parseInt(firstMatchYear.substring(0, 4))) {
             setFilterMonth(new Date());
           } else {
             setFilterMonth(new Date(firstMatchYear));
@@ -152,39 +151,44 @@ export default function LeagueMatches({
   // 시즌 종료
   const endDate = new Date(foundSeason?.end);
 
-
   /** 다음 달로 데이터 조회 */
   const onClickNextMonth = () => {
-    // 현재 데이터 객체 가져오기
     const date = new Date(filterMonth);
+    date.setMonth(date.getMonth() + 1);
+    /** 다음 달의 첫번째 날짜로 설정
+     * ex) 시즌 끝 : 6월 30일이고 만약 현재 날짜가 5월 31일일 경우 자동으로 6월달 데이터는 없다고 판단할 수 있기에
+     * 날짜를 고정적으로 첫번째로 정해줄 경우 이러한 경우를 방지할 수 있음.
+     */
+    date.setDate(1);
 
-    // 만약 시즌 종료일보다 크다면 아무 반응 없게하기
-    if (date >= endDate) {
-      console.log("end");
+    if (date > endDate) {
       return;
-    } else {
-      // 다음달로 변경
-      date.setMonth(date.getMonth() + 1);
-      date.setDate(1);
-      setFilterMonth(date);
     }
+    // 다음달로 변경
+    setFilterMonth(date);
   };
 
   /** 이전 달로 데이터 조회 */
   const onClickPrevMonth = () => {
     const date = new Date(filterMonth);
+    date.setMonth(date.getMonth() - 1);
+  
+    /** 이 코드에서 3월달에서 2월달로 넘어가는 데이터 조회시 월이 이전 월로 넘어가지지않는 문제가 발생하니 이걸 해결하면 통계사이트 제작하기 */
 
-    if(date <= startedDate) {
-      console.log("start");
+    /** 다음 달의 마지막 날짜로 설정
+     * ex) 시즌 시작 : 8월 15일일이고 만약 현재 날짜가 9월 1일일 경우 자동으로 8월달 데이터는 없다고 판단할 수 있기에
+     * 날짜를 고정적으로 마지막으로 정해줄 경우 이러한 경우를 방지할 수 있음.
+     */
+    date.setDate(
+      new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate()
+    );
+
+    if (date < startedDate) {
       return;
-    } else {
-      // 이전 달로 변경
-      date.setMonth(date.getMonth() - 1);
-      date.setDate(1);
-      setFilterMonth(date);
     }
-  }
-
+    // 이전 달로 변경
+    setFilterMonth(date);
+  };
 
   /** 날짜별로 경기 데이터 묶기 */
   const groupedByDate = filteredMatches?.reduce((acc: any, match: any) => {
@@ -203,12 +207,6 @@ export default function LeagueMatches({
   /** 날짜 키 받기 */
   const dateKeys = groupedByDate ? Object.keys(groupedByDate) : [];
 
-
-  /** 
-   * 1. 이번년도와 같다면 Month만 렌더링시 표기하고 다른 년도일 경우 Month Year 형식으로 표기하게 바꾸기
-   * 2. 1번을 완료 후 모든 기능 하나씩 체크하면서 데이터 통신이 과도하게 발생하지 않는지 api사이트 통신 기록을 보면서 확인하기
-   */
-
   return (
     <>
       <LeagueHeader
@@ -225,7 +223,10 @@ export default function LeagueMatches({
         {/* 날짜 선택 부분 */}
         <div className="h-16 flex justify-between items-center max-msm:mx-4">
           <div>
-            <div className="w-7 h-7 rounded-full bg-slate-200 flex justify-center items-center hover:cursor-pointer hover:bg-slate-400 dark:bg-custom-gray3 dark:hover:bg-custom-gray">
+            <div
+              className="w-7 h-7 rounded-full bg-slate-200 flex justify-center items-center hover:cursor-pointer hover:bg-slate-400 dark:bg-custom-gray3 dark:hover:bg-custom-gray"
+              onClick={onClickPrevMonth}
+            >
               <Image
                 src={arrow}
                 alt="arrow"
@@ -233,20 +234,27 @@ export default function LeagueMatches({
                 height={11}
                 style={{ width: "11px", height: "11px" }}
                 className="rotate-90 dark:invert"
-                onClick={onClickPrevMonth}
               />
             </div>
           </div>
           <div>
             <div className="flex items-center hover:cursor-pointer">
               <h1 className="text-base dark:text-white">
-                {filterMonth.toLocaleDateString(localeInfo?.toString(), {
-                  month: "long",
-                })}
+                {new Date().getFullYear() === filterMonth.getFullYear()
+                  ? filterMonth.toLocaleDateString(localeInfo?.toString(), {
+                      month: "long",
+                    })
+                  : filterMonth.toLocaleDateString(localeInfo?.toString(), {
+                      year: "numeric",
+                      month: "long",
+                    })}
               </h1>
             </div>
           </div>
-          <div className="w-7 h-7 rounded-full bg-slate-200 flex justify-center items-center hover:cursor-pointer  hover:bg-slate-400 dark:bg-custom-gray3 dark:hover:bg-custom-gray">
+          <div
+            className="w-7 h-7 rounded-full bg-slate-200 flex justify-center items-center hover:cursor-pointer  hover:bg-slate-400 dark:bg-custom-gray3 dark:hover:bg-custom-gray"
+            onClick={onClickNextMonth}
+          >
             <Image
               src={arrow}
               alt="arrow"
@@ -254,7 +262,6 @@ export default function LeagueMatches({
               height={11}
               style={{ width: "11px", height: "11px" }}
               className="rotate-270 dark:invert"
-              onClick={onClickNextMonth}
             />
           </div>
         </div>
