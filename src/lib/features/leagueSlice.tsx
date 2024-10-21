@@ -3,6 +3,50 @@ import axios, { AxiosError } from "axios";
 
 const url = "https://v3.football.api-sports.io";
 
+/** Yellow , Red 카드 많이 받은 선수 */
+export const getTopYellowRed = createAsyncThunk(
+  "leagueSlice/getTopYellowRed",
+  async ({ leagueID, season }: { leagueID: number, season: number }, { rejectWithValue }) => {
+    let result = null;
+
+    try {
+
+      const [yellow, red] = await Promise.all([
+        axios.get(`${url}/players/topyellowcards?season=${season}&league=${leagueID}`, {
+          headers: {
+            "x-rapidapi-host": "v3.football.api-sports.io",
+            "x-rapidapi-key": `${process.env.NEXT_PUBLIC_FOOTBALL_API_KEY}`,
+          },
+        }),
+        axios.get(`${url}/players/topredcards?season=${season}&league=${leagueID}`, {
+          headers: {
+            "x-rapidapi-host": "v3.football.api-sports.io",
+            "x-rapidapi-key": `${process.env.NEXT_PUBLIC_FOOTBALL_API_KEY}`,
+          },
+        })
+      ])
+      console.group("slice");
+      console.log(yellow);
+      console.log(red);
+      console.groupEnd();
+
+      result = {
+        yellow: yellow.data,
+        red: red.data
+      }
+      
+      
+    } catch (err) {
+      const axiosErr = err as AxiosError;
+      console.group("getTopScore Error");
+      result = rejectWithValue(axiosErr.response);
+      console.groupEnd();
+    }
+
+    return result;
+  }
+);
+
 
 /** 득점왕 및 어시왕 정보 가져오기*/
 export const getTopScoreAssist = createAsyncThunk(
@@ -72,20 +116,6 @@ export const getMatches = createAsyncThunk(
           },
         }
       );
-
-      // /** 날짜별로 경기 데이터 묶기 */
-      // const groupedByDate = response?.data?.response?.reduce((acc: any, match: any) => {
-      //   // acc : 반환할 총 데이터 값 , match : 한가지 경기
-      //   const matchDate = match.fixture.date.substring(0,10);
-      //   if (!acc[matchDate]) {
-      //     acc[matchDate] = {
-      //       matches: [],
-      //     };
-      //   }
-      //   acc[matchDate]?.matches?.push(match);
-
-      //   return acc;
-      // }, []);
 
       result = response?.data?.response;
       
@@ -165,6 +195,7 @@ export const leagueSlice = createSlice({
     selectedSeason: null,
     error: null,
     topScoreAssist: null,
+    topYellowRed: null,
   },
   reducers: {
     // 현재 상태값 불러오기
@@ -202,6 +233,13 @@ export const leagueSlice = createSlice({
       getTopScoreAssist.fulfilled,
       (state, { payload }: { payload: any }) => {
         state.topScoreAssist = payload;
+      }
+    );
+
+    builder.addCase(
+      getTopYellowRed.fulfilled,
+      (state, { payload }: { payload: any }) => {
+        state.topYellowRed = payload;
       }
     );
   },

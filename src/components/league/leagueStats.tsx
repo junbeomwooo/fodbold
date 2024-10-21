@@ -6,7 +6,7 @@ import LeagueHeader from "./header/leagueHeader";
 import { useAppSelector, useAppDispatch } from "@/lib/storeHooks";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
-import { getLeague, getTopScoreAssist, setSelectedSeason } from "@/lib/features/leagueSlice";
+import { getLeague, getTopScoreAssist, setSelectedSeason, getTopYellowRed } from "@/lib/features/leagueSlice";
 
 export default function LeagueStats({
   locale,
@@ -17,7 +17,7 @@ export default function LeagueStats({
   id: number;
   league: string;
 }) {
-  const { seasons, selectedSeason, topScoreAssist }: any = useAppSelector(
+  const { seasons, selectedSeason, topScoreAssist, topYellowRed }: any = useAppSelector(
     (state) => state.leagueSlice
   );
 
@@ -43,6 +43,9 @@ export default function LeagueStats({
   useEffect(() => {
     /** 조회하려는 시즌값이 변경되지 않았으며 season과 selectedYear값이 모두 존재하는 경우 ( 즉 이전 페이지에서 전역 상태값을 잘 받아온 경우 ) */
     if (!selectedYearChanged && season && selectedYear !== 0 && topScoreAssist) {
+
+      // topYellowRed는 모든 데이터를 fetch하는 overview페이지에서 페칭하지 않기떄문에 다른 데이터들이 존재할 경우 getTopYellowRed만 fetch
+      dispatch(getTopYellowRed({ season: selectedYear, leagueID: id}));
       return;
     }
     /** 이전 페이지로부터 seasons을 받아오지 못한 경우에 실행
@@ -80,10 +83,17 @@ export default function LeagueStats({
       } else {
         // 초기 상태가 아닌 경우(즉 selectedYear의변화가 생긴 경우 재통신)
         dispatch(getTopScoreAssist({ season: selectedYear, leagueID: id }));
+        dispatch(getTopYellowRed({ season: selectedYear, leagueID: id}));
       }
     }
     // 의존성 배열 관련 경고문은 무시해도 좋음
   }, [dispatch, id, selectedYear, season, selectedYearChanged]);
+
+
+  /** topYellowRed 데이터를 잘받아오는지 확인 후 불필요한 데이터 통신이 다수로 발생하는지 확인도 하고난 뒤 나머지 페이지 코드 구성시키기 */
+  console.group("page console");
+  console.log(topYellowRed);
+  console.groupEnd();
 
   return (
     <>
