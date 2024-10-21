@@ -172,16 +172,13 @@ export default function LeagueMatches({
   const onClickPrevMonth = () => {
     const date = new Date(filterMonth);
     date.setMonth(date.getMonth() - 1);
-  
-    /** 이 코드에서 3월달에서 2월달로 넘어가는 데이터 조회시 월이 이전 월로 넘어가지지않는 문제가 발생하니 이걸 해결하면 통계사이트 제작하기 */
 
-    /** 다음 달의 마지막 날짜로 설정
-     * ex) 시즌 시작 : 8월 15일일이고 만약 현재 날짜가 9월 1일일 경우 자동으로 8월달 데이터는 없다고 판단할 수 있기에
-     * 날짜를 고정적으로 마지막으로 정해줄 경우 이러한 경우를 방지할 수 있음.
+    /** 다음 달의 마지막 날짜로 설정 (어떤 달은 31일이나 30일이 존재하지않아서 오류가 생겨서 월 변환이 잘이루어지지않아서 사용하지 않음)
+     *  차선책으로 startedDate의 date객체만 빼서 setDate에 지정 시
+     * 설령 시즌 시작일일지라도 같은 값을 가지고있어 return문을 발생시키지않고 시즌 시작일 보다 이전일 경우에는
+     * 시즌 시작일 값이 더 크기때문에 의도대로 잘 작동함
      */
-    date.setDate(
-      new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate()
-    );
+    date.setDate(startedDate.getDate());
 
     if (date < startedDate) {
       return;

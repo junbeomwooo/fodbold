@@ -144,7 +144,7 @@ export default function LeagueHeader({id, seasons ,setSelectedYear, selectedYear
           </div>
           <div>
             <Link
-              href={`/${locale}/leagues/${id}/stats`}
+              href={`/${locale}/leagues/${id}/${league}/stats`}
               className="ml-6 hover:no-underline hover:text-custom-gray"
             >
               {l("stats")}

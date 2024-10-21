@@ -87,7 +87,7 @@ export default function LeagueOverview({
         getMatches({ leagueID: id, season: selectedYear, timezone: location })
       );
       /** 득점왕 및 어시왕 정보 가져오기 */
-      // dispatch(getTopScoreAssist({ season: selectedYear, leagueID: id }));
+      dispatch(getTopScoreAssist({ season: selectedYear, leagueID: id }));
     }
   }, [dispatch, id, selectedYear, location]);
 
@@ -530,7 +530,7 @@ export default function LeagueOverview({
                                 "bg-green-600 text-white rounded-full text-center mr-2"
                               }`}
                             >
-                              {v.statistics[0].goals.total}
+                              {v.statistics[0].goals.assists}
                             </h1>
                           </div>
                         </div>
