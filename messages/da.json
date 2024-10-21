@@ -19,7 +19,7 @@
   },
 
   "general": {
-    "noresults": "Ingen resultater" 
+    "noresults": "Ingen resultater"
   },
 
   "date": {
@@ -175,23 +175,25 @@
     "Zimbabwe": "Zimbabwe"
   },
   "status": {
-  "all": "Alle",
-  "live": "Live",
-  "finished": "Afsluttet",
-  "scheduled": "Planlagt",
-  "filter": "Filter"
-},
-"league": {
-  "overview": "Oversigt",
-  "table": "Stilling",
-  "matches": "Kampe",
-  "allmatches": "Alle Kampe",
-  "stats": "Statistik",
-  "knockout": "Slutspil",
-  "topscorers": "Topscorere",
-  "goals":"Mål",
-  "topassists": "Top Assists",
-  "assists": "Assist",
-  "viewall":"Se Alle"
-}
+    "all": "Alle",
+    "live": "Live",
+    "finished": "Afsluttet",
+    "scheduled": "Planlagt",
+    "filter": "Filter"
+  },
+  "league": {
+    "overview": "Oversigt",
+    "table": "Stilling",
+    "matches": "Kampe",
+    "allmatches": "Alle Kampe",
+    "stats": "Statistik",
+    "knockout": "Slutspil",
+    "topscorers": "Topscorere",
+    "goals": "Mål",
+    "topassists": "Top Assists",
+    "assists": "Assist",
+    "viewall": "Se Alle",
+    "redcards": "Røde kort",
+    "yellowcards": "Gule kort"
+  }
 }

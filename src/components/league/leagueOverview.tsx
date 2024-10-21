@@ -122,7 +122,7 @@ export default function LeagueOverview({
       />
 
       {/** match slide */}
-      <div className="w-full bg-white rounded-xl mt-6 px-8 py-5 dark:bg-custom-dark max-sm:px-4  border-slate-200 border border-solid">
+      <div className="w-full bg-white rounded-xl mt-6 px-8 py-5 dark:bg-custom-dark max-sm:px-4  border-slate-200 border border-solid dark:border-0">
         <div className="flex justify-between text-base mb-4">
           <h3>{l("matches")}</h3>
           <h3 className="text-green-600 cursor-pointer hover:underline">

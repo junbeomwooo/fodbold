@@ -192,7 +192,9 @@
     "goals":"득점",
     "topassists": "최고 도움",
     "assists": "도움",
-    "viewall":"전체보기"
+    "viewall":"전체보기",
+    "redcards":"퇴장",
+    "yellowcards": "경고"
 
   }
 }

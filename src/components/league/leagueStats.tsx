@@ -240,6 +240,128 @@ export default function LeagueStats({
                 <h1 className="text-base px-8 pt-6 pb-2">{g("noresults")}</h1>
               )}
             </div>
+            {/* red cards */}
+            <div className="w-full border border-solid border-slate-200 py-4 rounded-xl mt-6 text-base dark:border-custom-gray3">
+              <div className="flex justify-between mb-4 px-8 items-center">
+                <h3>{l("redcards")}</h3>
+              </div>
+              {assist && assist.length > 0 ? (
+                <div>
+                  {assist?.slice(0, 20).map((v: any, i: number) => {
+                    return (
+                      <div key={i}>
+                        <div
+                          key={i}
+                          className="flex py-4 px-8 justify-between items-center cursor-pointer  hover:bg-slate-100 dark:hover:bg-zinc-700"
+                        >
+                          <div className="flex items-center">
+                            <Image
+                              src={v.player.photo}
+                              alt={v.player.name}
+                              width={40}
+                              height={40}
+                              className="rounded-full mr-3"
+                            />
+                            <div className="flex flex-col justify-between">
+                              <h1 className="text-xsm">{v.player.name}</h1>
+                              <div className="flex items-center">
+                                <Image
+                                  src={v.statistics[0].team.logo}
+                                  alt={v.statistics[0].team.name}
+                                  width={14}
+                                  height={14}
+                                />
+                                <h4 className="text-xxs ml-2">
+                                  {v.statistics[0].team.name}
+                                </h4>
+                              </div>
+                            </div>
+                          </div>
+                          <div>
+                            {/* 가장 많은 골을 넣었을 경우 (인덱스가 0일 경우) 테두리 효과 추가 */}
+                            <h1
+                              className={`font-normal text-sm w-5 ${
+                                i === 0 &&
+                                "bg-green-600 text-white rounded-full text-center mr-2"
+                              }`}
+                            >
+                              {v.statistics[0].goals.assists}
+                            </h1>
+                          </div>
+                        </div>
+                        {/* 마지막 인덱스가 아니라면 border표시 */}
+                        {i !== goal.length - 1 && (
+                          <hr className="border-solid border-1 border-slate-200 dark:border-custom-gray3" />
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              ) : (
+                <h1 className="text-base px-8 pt-6 pb-2">{g("noresults")}</h1>
+              )}
+            </div>
+            {/* yellow cards */}
+            <div className="w-full border border-solid border-slate-200 py-4 rounded-xl mt-6 text-base dark:border-custom-gray3">
+              <div className="flex justify-between mb-4 px-8 items-center">
+                <h3>{l("yellowcards")}</h3>
+              </div>
+              {assist && assist.length > 0 ? (
+                <div>
+                  {assist?.slice(0, 20).map((v: any, i: number) => {
+                    return (
+                      <div key={i}>
+                        <div
+                          key={i}
+                          className="flex py-4 px-8 justify-between items-center cursor-pointer  hover:bg-slate-100 dark:hover:bg-zinc-700"
+                        >
+                          <div className="flex items-center">
+                            <Image
+                              src={v.player.photo}
+                              alt={v.player.name}
+                              width={40}
+                              height={40}
+                              className="rounded-full mr-3"
+                            />
+                            <div className="flex flex-col justify-between">
+                              <h1 className="text-xsm">{v.player.name}</h1>
+                              <div className="flex items-center">
+                                <Image
+                                  src={v.statistics[0].team.logo}
+                                  alt={v.statistics[0].team.name}
+                                  width={14}
+                                  height={14}
+                                />
+                                <h4 className="text-xxs ml-2">
+                                  {v.statistics[0].team.name}
+                                </h4>
+                              </div>
+                            </div>
+                          </div>
+                          <div>
+                            {/* 가장 많은 골을 넣었을 경우 (인덱스가 0일 경우) 테두리 효과 추가 */}
+                            <h1
+                              className={`font-normal text-sm w-5 ${
+                                i === 0 &&
+                                "bg-green-600 text-white rounded-full text-center mr-2"
+                              }`}
+                            >
+                              {v.statistics[0].goals.assists}
+                            </h1>
+                          </div>
+                        </div>
+                        {/* 마지막 인덱스가 아니라면 border표시 */}
+                        {i !== goal.length - 1 && (
+                          <hr className="border-solid border-1 border-slate-200 dark:border-custom-gray3" />
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              ) : (
+                <h1 className="text-base px-8 pt-6 pb-2">{g("noresults")}</h1>
+              )}
+            </div>
           </div>
         </div>
       </div>

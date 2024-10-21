@@ -192,6 +192,8 @@
     "goals":"Goals",
     "topassists": "Top Assists",
     "assists": "Assists",
-    "viewall":"View All"
+    "viewall":"View All",
+    "redcards":"Red Cards",
+    "yellowcards": "Yellow Cards"
   }
 }

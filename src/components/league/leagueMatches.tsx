@@ -216,7 +216,7 @@ export default function LeagueMatches({
         setSelectedYearChanged={setSelectedYearChanged}
       />
       {/* 날짜 키 값 반복돌리기 */}
-      <div className="w-full mt-6 max-xl:w-full border-slate-200 border border-solid bg-white p-7 max-sm:px-0 rounded-xl">
+      <div className="w-full mt-6 max-xl:w-full border-slate-200 border border-solid bg-white p-7 max-sm:px-0 rounded-xl dark:bg-custom-dark dark:border-0" >
         {/* 날짜 선택 부분 */}
         <div className="h-16 flex justify-between items-center max-msm:mx-4">
           <div>
