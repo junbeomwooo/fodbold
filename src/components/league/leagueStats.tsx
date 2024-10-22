@@ -31,9 +31,9 @@ export default function LeagueStats({
   const goal = topScoreAssist?.goal;
   const assist = topScoreAssist?.assist;
   const season = seasons ? seasons.seasons : null;
+  const yellow = topYellowRed?.yellow;
+  const red = topYellowRed?.red;
 
-  console.log(assist);
-  console.log(goal);
   /** 선택 년도 상태값 */
   const [selectedYear, setSelectedYear] = useState<number>(selected);
 
@@ -82,6 +82,7 @@ export default function LeagueStats({
         dispatch(setSelectedSeason(selectedYear));
       } else {
         // 초기 상태가 아닌 경우(즉 selectedYear의변화가 생긴 경우 재통신)
+        // 만약 새로고침 시 season, topyellow, topred, topassist, topscore 총 다섯번의 데이터 통신이 발생함
         dispatch(getTopScoreAssist({ season: selectedYear, leagueID: id }));
         dispatch(getTopYellowRed({ season: selectedYear, leagueID: id}));
       }
@@ -89,11 +90,6 @@ export default function LeagueStats({
     // 의존성 배열 관련 경고문은 무시해도 좋음
   }, [dispatch, id, selectedYear, season, selectedYearChanged]);
 
-
-  /** topYellowRed 데이터를 잘받아오는지 확인 후 불필요한 데이터 통신이 다수로 발생하는지 확인도 하고난 뒤 나머지 페이지 코드 구성시키기 */
-  console.group("page console");
-  console.log(topYellowRed);
-  console.groupEnd();
 
   return (
     <>
@@ -107,18 +103,13 @@ export default function LeagueStats({
         setSelectedYearChanged={setSelectedYearChanged}
       />
 
-      {/* top score and assist */}
+      {/* top score and assist and yellow and red */}
       <div className="w-full mt-6 max-xl:w-full max-xl:ml-0">
         <div className="w-full h-auto bg-white rounded-xl px-8 border-solid border border-slate-200 pb-6 dark:bg-custom-dark dark:border-0 pt-6 max-sm:px-4">
-          <div className="w-full flex justify-end">
-            <h3 className="text-green-600 text-base cursor-pointer hover:underline">
-              {l("viewall")}
-            </h3>
-          </div>
           <hr className="border-1 border-solid border-r-slate-200 dark:border-custom-gray3 mt-6 mb-10" />
           <div className="flex">
             {/* top scorers*/}
-            <div className="w-full border border-solid border-slate-200 py-4 rounded-xl mt-6 text-base dark:border-custom-gray3">
+            <div className="w-full border border-solid border-slate-200 py-4 rounded-xl mt-6 text-base dark:border-custom-gray3 mr-4">
               <div className="flex justify-between mb-4 px-8 items-center">
                 <h3>{l("topscorers")}</h3>
                 <h4 className="text-xsm mr-1 text-custom-gray">{l("goals")}</h4>
@@ -177,7 +168,7 @@ export default function LeagueStats({
               )}
             </div>
             {/* top assists */}
-            <div className="w-full border border-solid border-slate-200 py-4 rounded-xl mt-6 text-base dark:border-custom-gray3">
+            <div className="w-full border border-solid border-slate-200 py-4 rounded-xl mt-6 text-base dark:border-custom-gray3 mx-4">
               <div className="flex justify-between mb-4 px-8 items-center">
                 <h3>{l("topassists")}</h3>
                 <h4 className="text-xsm mr-1 text-custom-gray">
@@ -221,7 +212,7 @@ export default function LeagueStats({
                             <h1
                               className={`font-normal text-sm w-5 ${
                                 i === 0 &&
-                                "bg-green-600 text-white rounded-full text-center mr-2"
+                                "bg-blue-600 text-white rounded-full text-center mr-2"
                               }`}
                             >
                               {v.statistics[0].goals.assists}
@@ -241,13 +232,13 @@ export default function LeagueStats({
               )}
             </div>
             {/* red cards */}
-            <div className="w-full border border-solid border-slate-200 py-4 rounded-xl mt-6 text-base dark:border-custom-gray3">
+            <div className="w-full border border-solid border-slate-200 py-4 rounded-xl mt-6 text-base dark:border-custom-gray3 mx-4">
               <div className="flex justify-between mb-4 px-8 items-center">
                 <h3>{l("redcards")}</h3>
               </div>
-              {assist && assist.length > 0 ? (
+              {red && red.length > 0 ? (
                 <div>
-                  {assist?.slice(0, 20).map((v: any, i: number) => {
+                  {red?.slice(0, 20).map((v: any, i: number) => {
                     return (
                       <div key={i}>
                         <div
@@ -278,19 +269,19 @@ export default function LeagueStats({
                             </div>
                           </div>
                           <div>
-                            {/* 가장 많은 골을 넣었을 경우 (인덱스가 0일 경우) 테두리 효과 추가 */}
+                            {/* 가장 많은 레드카드를 받았을 경우 경우 (인덱스가 0일 경우) 테두리 효과 추가 */}
                             <h1
                               className={`font-normal text-sm w-5 ${
                                 i === 0 &&
-                                "bg-green-600 text-white rounded-full text-center mr-2"
+                                "bg-red-600 text-white rounded-full text-center mr-2"
                               }`}
                             >
-                              {v.statistics[0].goals.assists}
+                              {v.statistics[0].cards.red}
                             </h1>
                           </div>
                         </div>
                         {/* 마지막 인덱스가 아니라면 border표시 */}
-                        {i !== goal.length - 1 && (
+                        {i !== red.length - 1 && (
                           <hr className="border-solid border-1 border-slate-200 dark:border-custom-gray3" />
                         )}
                       </div>
@@ -302,13 +293,13 @@ export default function LeagueStats({
               )}
             </div>
             {/* yellow cards */}
-            <div className="w-full border border-solid border-slate-200 py-4 rounded-xl mt-6 text-base dark:border-custom-gray3">
+            <div className="w-full border border-solid border-slate-200 py-4 rounded-xl mt-6 text-base dark:border-custom-gray3 ml-4">
               <div className="flex justify-between mb-4 px-8 items-center">
                 <h3>{l("yellowcards")}</h3>
               </div>
-              {assist && assist.length > 0 ? (
+              {yellow && yellow.length > 0 ? (
                 <div>
-                  {assist?.slice(0, 20).map((v: any, i: number) => {
+                  {yellow?.slice(0, 20).map((v: any, i: number) => {
                     return (
                       <div key={i}>
                         <div
@@ -339,19 +330,19 @@ export default function LeagueStats({
                             </div>
                           </div>
                           <div>
-                            {/* 가장 많은 골을 넣었을 경우 (인덱스가 0일 경우) 테두리 효과 추가 */}
+                            {/* 가장 많은 옐로 카드를 받았을 경우 경우 (인덱스가 0일 경우) 테두리 효과 추가 */}
                             <h1
                               className={`font-normal text-sm w-5 ${
                                 i === 0 &&
-                                "bg-green-600 text-white rounded-full text-center mr-2"
+                                "bg-yellow-600 text-white rounded-full text-center mr-2"
                               }`}
                             >
-                              {v.statistics[0].goals.assists}
+                              {v.statistics[0].cards.yellow}
                             </h1>
                           </div>
                         </div>
                         {/* 마지막 인덱스가 아니라면 border표시 */}
-                        {i !== goal.length - 1 && (
+                        {i !== yellow.length - 1 && (
                           <hr className="border-solid border-1 border-slate-200 dark:border-custom-gray3" />
                         )}
                       </div>

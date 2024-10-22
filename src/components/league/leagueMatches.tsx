@@ -204,6 +204,11 @@ export default function LeagueMatches({
   /** 날짜 키 받기 */
   const dateKeys = groupedByDate ? Object.keys(groupedByDate) : [];
 
+  const onClickMoveToHeadToHead = (home:string, away:string) => {
+    console.log(home);
+    console.log(away);
+  }
+
   return (
     <>
       <LeagueHeader
@@ -333,9 +338,11 @@ export default function LeagueMatches({
                   const penaltyScore = `(${match.score.penalty.home} - ${match.score.penalty.away})`;
 
                   return (
+                    /** headtohead 페이지를 위한 url 조작하기 */
                     <div
                       key={matchIndex}
                       className="flex h-16 text-sm justify-center items-center cursor-pointer hover:bg-slate-200"
+                      onClick={() => onClickMoveToHeadToHead(match.teams.home.name, match.teams.home.name)}
                     >
                       {/* 경기가 시작하지 않거나 취소 및 연기 */}
                       {scheduled.includes(match.fixture.status.short) ||

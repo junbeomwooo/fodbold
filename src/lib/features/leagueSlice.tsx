@@ -25,16 +25,11 @@ export const getTopYellowRed = createAsyncThunk(
           },
         })
       ])
-      console.group("slice");
-      console.log(yellow);
-      console.log(red);
-      console.groupEnd();
 
       result = {
-        yellow: yellow.data,
-        red: red.data
+        yellow: yellow.data.response,
+        red: red.data.response
       }
-      
       
     } catch (err) {
       const axiosErr = err as AxiosError;
