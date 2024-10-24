@@ -2488,3 +2488,145 @@ export const goal = [ {
     }
   ]
 },]
+
+/** fixture page  */
+
+export const fixture = [{
+  "events": [
+    {
+      "assist": { "id": null, "name": null },
+      "comments": "Foul",
+      "detail": "Yellow Card",
+      "player": { "id": 48372, "name": "Eray Cömert" },
+      "team": { "id": 720, "name": "Valladolid", "logo": "https://media.api-sports.io/football/teams/720.png" },
+      "time": { "elapsed": 20, "extra": null },
+      "type": "Card"
+    },
+    ...
+    {
+      "assist": { "id": null, "name": null },
+      "player": { "id": null, "name": null },
+      "team": { "id": 720, "name": "Valladolid", "logo": "https://media.api-sports.io/football/teams/720.png" },
+      "time": { "elapsed": 90, "extra": null },
+      "type": "Card"
+    }
+  ],
+  "fixture": {
+    "date": "2024-10-05T16:30:00+00:00",
+    "id": 1208574,
+    "periods": {
+      "first": 1728145800,
+      "second": 1728149400
+    },
+    "referee": "Pablo González",
+    "status": {
+      "elapsed": 90,
+      "extra": null,
+      "long": "Match Finished",
+      "short": "FT"
+    },
+    "timestamp": 1728145800,
+    "timezone": "UTC",
+    "venue": {
+      "id": 1492,
+      "name": "Estadio Municipal José Zorrilla",
+      "city": "Valladolid"
+    },
+    "goals": {
+      "away": 2,
+      "home": 1
+    }
+  },
+  "league": {
+    "country": "Spain",
+    "flag": "https://media.api-sports.io/flags/es.svg",
+    "id": 140,
+    "logo": "https://media.api-sports.io/football/leagues/140.png",
+    "name": "La Liga",
+    "round": "Regular Season - 9",
+    "season": 2024
+  },
+  "lineups": [
+    {
+      "team": { "id": 728, "name": "Rayo Vallecano", "logo": "https://media.api-sports.io/football/teams/728.png", "colors": {} },
+      "coach": { "id": 21839, "name": "Iñigo Pérez", "photo": "https://media.api-sports.io/football/coachs/21839.png" },
+      "formation": "4-4-2",
+      "startXI": [{}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}],
+      "substitutes": [{}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}]
+    }
+  ],
+  "players": [
+    {
+      "team": { "id": 728, "name": "Rayo Vallecano", "logo": "https://media.api-sports.io/football/teams/728.png", "update": "2024-10-23T04:12:37+00:00" },
+      "players": [{}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}]
+    }
+  ],
+  "score": {
+    "extratime": { "away": null, "home": null },
+    "fulltime": { "away": 2, "home": 1 },
+    "halftime": { "away": 0, "home": 0 },
+    "penalty": { "away": null, "home": null }
+  },
+  "statistics": [
+    {
+      "team": { "id": 720, "logo": "https://media.api-sports.io/football/teams/720.png", "name": "Valladolid" },
+      "statistics": [
+        { "type": "Shots on Goal", "value": 6 },
+        { "type": "Shots off Goal", "value": 5 },
+        { "type": "Total Shots", "value": 13 },
+        { "type": "Blocked Shots", "value": 2 },
+        { "type": "Shots insidebox", "value": 10 },
+        { "type": "Shots outsidebox", "value": 3 },
+        { "type": "Fouls", "value": 13 },
+        { "type": "Corner Kicks", "value": 5 },
+        { "type": "Offsides", "value": 1 },
+        { "type": "Ball Possession", "value": "39%" },
+        { "type": "Yellow Cards", "value": 4 },
+        { "type": "Red Cards", "value": null },
+        { "type": "Goalkeeper Saves", "value": 1 },
+        { "type": "Total passes", "value": 302 },
+        { "type": "Passes accurate", "value": 245 },
+        { "type": "Passes %", "value": "81%" },
+        { "type": "expected_goals", "value": "1.99" },
+        { "type": "goals_prevented", "value": 0 }
+      ]
+    },
+    {
+      "team": { "id": 728, "logo": "https://media.api-sports.io/football/teams/728.png", "name": "Rayo Vallecano" },
+      "statistics": [
+        { "type": "Shots on Goal", "value": 3 },
+        { "type": "Shots off Goal", "value": 8 },
+        { "type": "Total Shots", "value": 17 },
+        { "type": "Blocked Shots", "value": 6 },
+        { "type": "Shots insidebox", "value": 8 },
+        { "type": "Shots outsidebox", "value": 9 },
+        { "type": "Fouls", "value": 18 },
+        { "type": "Corner Kicks", "value": 13 },
+        { "type": "Offsides", "value": 2 },
+        { "type": "Ball Possession", "value": "61%" },
+        { "type": "Yellow Cards", "value": 2 },
+        { "type": "Red Cards", "value": null },
+        { "type": "Goalkeeper Saves", "value": 4 },
+        { "type": "Total passes", "value": 469 },
+        { "type": "Passes accurate", "value": 398 },
+        { "type": "Passes %", "value": "85%" },
+        { "type": "expected_goals", "value": "1.50" },
+        { "type": "goals_prevented", "value": 0 }
+      ]
+    }
+  ],
+  "teams": {
+    "home": {
+      "id": 720,
+      "logo": "https://media.api-sports.io/football/teams/720.png",
+      "name": "Valladolid",
+      "winner": false
+    },
+    "away": {
+      "id": 728,
+      "logo": "https://media.api-sports.io/football/teams/728.png",
+      "name": "Rayo Vallecano",
+      "winner": true
+    }
+  }
+}]

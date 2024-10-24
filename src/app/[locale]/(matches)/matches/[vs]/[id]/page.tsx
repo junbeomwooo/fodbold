@@ -7,7 +7,7 @@ export default function page({
 }) {
   return (
     <div className="px-14 max-msm:px-4 pt-28 ">
-      <Fixtures id={id} />
+      <Fixtures locale={locale} id={id} />
     </div>
   );
 }
