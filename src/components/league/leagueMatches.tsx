@@ -3,6 +3,8 @@
 import React, { useEffect, useState } from "react";
 import LeagueHeader from "./header/leagueHeader";
 import { useAppDispatch, useAppSelector } from "@/lib/storeHooks";
+import { useRouter } from "next/navigation";
+
 import {
   getLeague,
   setSelectedSeason,
@@ -60,6 +62,8 @@ export default function LeagueMatches({
       : locale === "da"
       ? "da-DK"
       : null;
+
+  const router = useRouter();
 
   useEffect(() => {
     /** 조회하려는 시즌값이 변경되지 않았으며 season과 selectedYear값이 모두 존재하는 경우 ( 즉 이전 페이지에서 전역 상태값을 잘 받아온 경우 ) */
@@ -204,10 +208,38 @@ export default function LeagueMatches({
   /** 날짜 키 받기 */
   const dateKeys = groupedByDate ? Object.keys(groupedByDate) : [];
 
-  const onClickMoveToHeadToHead = (home:string, away:string) => {
-    console.log(home);
-    console.log(away);
-  }
+  /** HeadToHead 페이지로 이동 */
+  const onClickMoveToHeadToHead = (
+    home: string,
+    away: string,
+    matchID: number
+  ) => {
+
+    const matchVS = `${home}-vs-${away}`
+
+    // 하이픈을 모두 삭제합니다.
+    const noHyphens = matchVS.replace(/-/g, " ");
+
+    // 두 번 이상의 연속 공백을 하나로 줄입니다.
+    const cleanedString = noHyphens.replace(/\s{2,}/g, " ");
+
+    // 1. 공백을 하이픈으로 변경
+    const hyphenated = cleanedString.replace(/\s+/g, "-");
+
+    // 2. 온점을 제거
+    const withoutDots = hyphenated.replace(/\./g, "");
+
+    // 3. 대문자 뒤에 하이픈 추가 (선택 사항)
+    const withHyphens = withoutDots.replace(/(?<=[A-Z])-(?=[a-z])/g, "-");
+
+    // 4. 소문자로 변환
+    const name = withHyphens.toLowerCase();
+
+    /** 최종 */
+    const url = `/${locale}/matches/${name}/${matchID}`;
+
+    router.push(url);
+  };
 
   return (
     <>
@@ -221,7 +253,7 @@ export default function LeagueMatches({
         setSelectedYearChanged={setSelectedYearChanged}
       />
       {/* 날짜 키 값 반복돌리기 */}
-      <div className="w-full mt-6 max-xl:w-full border-slate-200 border border-solid bg-white p-7 max-sm:px-0 rounded-xl dark:bg-custom-dark dark:border-0" >
+      <div className="w-full mt-6 max-xl:w-full border-slate-200 border border-solid bg-white p-7 max-sm:px-0 rounded-xl dark:bg-custom-dark dark:border-0">
         {/* 날짜 선택 부분 */}
         <div className="h-16 flex justify-between items-center max-msm:mx-4">
           <div>
@@ -342,7 +374,13 @@ export default function LeagueMatches({
                     <div
                       key={matchIndex}
                       className="flex h-16 text-sm justify-center items-center cursor-pointer hover:bg-slate-200"
-                      onClick={() => onClickMoveToHeadToHead(match.teams.home.name, match.teams.home.name)}
+                      onClick={() =>
+                        onClickMoveToHeadToHead(
+                          match.teams.home.name,
+                          match.teams.away.name,
+                          match.fixture.id
+                        )
+                      }
                     >
                       {/* 경기가 시작하지 않거나 취소 및 연기 */}
                       {scheduled.includes(match.fixture.status.short) ||

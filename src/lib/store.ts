@@ -1,6 +1,7 @@
 import { configureStore } from "@reduxjs/toolkit";
 import leagueSlice from "./features/leagueSlice";
 import locationSlice from "./features/locationSlice";
+import fixtureSlice  from "./features/fixtureSlice";
 
 /** redux persist */
 import {
@@ -25,6 +26,7 @@ export const makeStore = () => {
   return configureStore({
     reducer: {
       leagueSlice: leagueSlice,
+      fixtureSlice: fixtureSlice,
       locationSlice: persistedLocationReducer,
     },
     middleware: (getDefaultMiddleware) =>

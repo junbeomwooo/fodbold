@@ -195,5 +195,8 @@
     "viewall": "Se Alle",
     "redcards": "Røde kort",
     "yellowcards": "Gule kort"
+  },
+  "fixture": {
+    "back": "Tilbage"
   }
 }
