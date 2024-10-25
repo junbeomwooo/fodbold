@@ -52,6 +52,7 @@ export default function Fixtures({
   /** 경기 시간을 특정 형태로 지정 */
   const MatchTimeDateForm = new Date(fixture?.fixture.date);
 
+  // ex) Sat, October 5 형태
   const formattedDate = MatchTimeDateForm.toLocaleDateString(
     localeInfo?.toString(),
     {
@@ -61,6 +62,7 @@ export default function Fixtures({
     }
   );
 
+  // ex) 13:30 형태
   const formattedTime = MatchTimeDateForm.toLocaleTimeString(
     localeInfo?.toString(),
     {
@@ -70,9 +72,71 @@ export default function Fixtures({
     }
   );
 
+  // ex) Sat, October 5, 13:30
   const formattedDateTime = `${formattedDate}, ${formattedTime}`;
 
-  console.log(fixture);
+  // ex) Oct, 1
+  let formattedDate2 = MatchTimeDateForm.toLocaleDateString(
+    localeInfo?.toString(),
+    {
+      month: "short",
+      day: "numeric",
+    }
+  );
+
+  // ex) 1 - 1
+  const score = `${fixture?.goals.home} - ${fixture?.goals.away}`;
+
+  // ex) 5 - 4 (Pk)
+  const penaltyScore = `(${fixture?.score.penalty.home} - ${fixture?.score.penalty.away})`;
+
+  /** 리그URL로 이동하기위해 url 포맷변경하는 함수 */
+  const formattedLeagueURL = (league: string) => {
+    if (league) {
+      // 하이픈을 모두 삭제합니다.
+      const noHyphens = league.replace(/-/g, " ");
+
+      // 두 번 이상의 연속 공백을 하나로 줄입니다.
+      const cleanedString = noHyphens.replace(/\s{2,}/g, " ");
+
+      // 1. 공백을 하이픈으로 변경
+      const hyphenated = cleanedString.replace(/\s+/g, "-");
+
+      // 2. 온점을 제거
+      const withoutDots = hyphenated.replace(/\./g, "");
+
+      // 3. 대문자 뒤에 하이픈 추가 (선택 사항)
+      const withHyphens = withoutDots.replace(/(?<=[A-Z])-(?=[a-z])/g, "-");
+
+      /** 최종 */
+      return withHyphens.toLowerCase();
+    } else {
+      return null;
+    }
+  };
+
+  /** 이동시킬 리그 URL */
+  const leagueNameURL = formattedLeagueURL(fixture?.league.name);
+
+  /** 경기 별 상태  */
+
+  //시작안함
+  const scheduled = ["TBD", "NS"];
+
+  // 경기중 (하프타임 브레이킹타임 포함)
+  const live = ["1H", "2H", "ET", "P", "LIVE", "HT", "BT"];
+
+  //심판 자의로 경기중단
+  const stop = ["SUSP", "INT"];
+
+  //경기 끝
+  const finish = ["FT", "AET", "PEN"];
+
+  // 경기 취소 및 연기
+  const cancle = ["PST", "CANC", "ABD"];
+
+  // 부전승
+  const unearned = ["AWD", "WO"];
 
   return (
     <div className="w-full mt-6 max-xl:w-full border-slate-200 border border-solid bg-white p-7 rounded-xl dark:bg-custom-dark dark:border-0">
@@ -104,7 +168,12 @@ export default function Fixtures({
             height={30}
             className="mr-3"
           />
-          <h2 className="text-lg mr-8 ">{fixture?.league.name}</h2>
+          <Link
+            href={`/${locale}/leagues/${fixture?.league.id}/${leagueNameURL}/overview`}
+            className="text-lg mr-8 "
+          >
+            {fixture?.league.name}
+          </Link>
           <h3 className="text-xsm text-custom-gray3">
             {fixture?.league.round}
           </h3>
@@ -152,31 +221,70 @@ export default function Fixtures({
       </div>
       <hr className="border-slate-200 my-5 dark:border-custom-gray2" />
 
-      <div className="flex">
+      <div className="flex items-center justify-center">
         {/* 홈팀 */}
         <div className="flex items-center">
-          <Link href={"/"} className="text-2xl mr-4">
+          <Link href={"/"} className="text-xl mr-8">
             {fixture?.teams.home.name}
           </Link>
           <Image
             src={fixture?.teams.home.logo}
             alt={fixture?.teams.home.name}
-            width={60}
-            height={60}
-          ></Image>
+            width={50}
+            height={50}
+          />
+        </div>
+        {/* 경기시간 || 스코어 */}
+        <div className="flex flex-col justify-center items-center mx-10">
+          <h2 className="text-2xl font-medium">{formattedTime}</h2>
+
+          {/* 경기의 상태에 따라 렌더링 구현 다르기 하기  */}
+          {/* 경기가 시작하지않았다면 */}
+          {scheduled.includes(fixture?.fixture.status.short) ? (
+            <div>
+              <h2 className="text-2xl font-medium">{formattedTime}</h2>
+            </div>
+          ) : // 경기가 진행중, 중단, 끝났을때
+          live.includes(fixture?.fixture.status.short) ||
+            stop.includes(fixture?.fixture.status.short) ||
+            finish.includes(fixture?.fixture.status.short) ||
+            unearned.includes(fixture?.fixture.status.short) ? (
+            <div>
+              <h1 className="dark:text-white max-msm:text-xxs">{score}</h1>
+              {/* 패널티 골이 있을경우 */}
+              {fixture?.score.penalty.home || fixture?.score.penalty.away ? (
+                <h1 className="dark:text-white text-xs max-msm:text-xxs">
+                  {penaltyScore}
+                </h1>
+              ) : (
+                <></>
+              )}
+            </div>
+          ) : // 경기가 중단 및 연기되었을떄
+          cancle.includes(fixture?.fixture.status.short) ? (
+            <div>
+              <h1 className="dark:text-white max-msm:text-xxs">{formattedDate2}</h1>
+            </div>
+          ) : (
+            <></>
+          )}
+
+
+          <h3 className="text-base font-medium text-custom-gray">
+            {formattedDate2}
+          </h3>
         </div>
         {/* 원정팀 */}
         <div className="flex items-center">
           <Image
             src={fixture?.teams.away.logo}
             alt={fixture?.teams.away.name}
-            width={60}
-            height={60}
-          >
-            <Link href={"/"} className="text-2xl mr-4">
-              {fixture?.teams.away.name}
-            </Link>
-          </Image>
+            width={50}
+            height={50}
+          />
+          <Link href={"/"} className="text-xl ml-8">
+            {fixture?.teams.away.name}
+          </Link>
         </div>
       </div>
     </div>
