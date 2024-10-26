@@ -18,6 +18,8 @@ import { useTranslations } from "next-intl";
 
 import { usePathname } from "next/navigation";
 
+import { useRouter } from "next/navigation";
+
 /** 예제 파일 */
 import { example } from "../../../../public/example";
 
@@ -33,6 +35,9 @@ export default function LeagueSwiper({
   // 번역
   const t = useTranslations("date");
   const g = useTranslations("general");
+
+  // 라우터
+  const router = useRouter();
 
   // 패스네임
   const pathname = usePathname();
@@ -58,6 +63,38 @@ export default function LeagueSwiper({
 
   // 현재 년도
   const nowYear = today.substring(0, 4);
+
+  /**경기 상세 페이지로 이동 */
+  const formattedLeagueURL = (
+    home: string,
+    away: string,
+    matchID: number
+  ) => {
+    const matchVS = `${home}-vs-${away}`;
+
+    // 하이픈을 모두 삭제합니다.
+    const noHyphens = matchVS.replace(/-/g, " ");
+
+    // 두 번 이상의 연속 공백을 하나로 줄입니다.
+    const cleanedString = noHyphens.replace(/\s{2,}/g, " ");
+
+    // 1. 공백을 하이픈으로 변경
+    const hyphenated = cleanedString.replace(/\s+/g, "-");
+
+    // 2. 온점을 제거
+    const withoutDots = hyphenated.replace(/\./g, "");
+
+    // 3. 대문자 뒤에 하이픈 추가 (선택 사항)
+    const withHyphens = withoutDots.replace(/(?<=[A-Z])-(?=[a-z])/g, "-");
+
+    // 4. 소문자로 변환
+    const name = withHyphens.toLowerCase();
+
+    /** 최종 */
+    const url = `/${locale}/matches/${name}/${matchID}`;
+
+    router.push(url);
+  };
 
   /** key값을 통한 자동 재렌더링은 성능 저하를 야기할 수 있으니 이걸 해결하고 각 경기 상태에 따른 클라이언트 렌더링 구현하기 */
   return (
@@ -126,7 +163,7 @@ export default function LeagueSwiper({
                 : "en-US";
 
             /** 경기 날짜 및 시간을 로케일에 맞게 변경하도록 변경하였으니 잘 작동하는지 확인하기 */
-            
+
             // 경기 시간을 언어별로 설정
             const matchTime = new Date(v.fixture.date);
             const time = matchTime.toLocaleTimeString(localeInfo, {
@@ -167,7 +204,16 @@ export default function LeagueSwiper({
 
             return (
               <SwiperSlide key={i} className="dark:bg-custom-dark">
-                <div className="w-full h-full flex justify-around items-center border border-solid  border-slate-200 rounded-xl py-7 px-4 cursor-pointer hover:opacity-50 dark:border-custom-gray3">
+                <div
+                  className="w-full h-full flex justify-around items-center border border-solid  border-slate-200 rounded-xl py-7 px-4 cursor-pointer hover:opacity-50 dark:border-custom-gray3"
+                  onClick={() =>
+                    formattedLeagueURL(
+                      v.teams.home.name,
+                      v.teams.away.name,
+                      v.fixture.id
+                    )
+                  }
+                >
                   <div className="flex flex-col items-center text-xsm w-1/3">
                     <Image
                       src={v.teams.home.logo}

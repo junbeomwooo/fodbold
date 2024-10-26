@@ -83,7 +83,7 @@ export default function Fixtures() {
         method: "GET",
         headers: {
           "x-rapidapi-host": "v3.football.api-sports.io",
-          // "x-rapidapi-key": `${process.env.NEXT_PUBLIC_FOOTBALL_API_KEY}`,
+          "x-rapidapi-key": `${process.env.NEXT_PUBLIC_FOOTBALL_API_KEY}`,
         },
       }
     );
@@ -98,7 +98,7 @@ export default function Fixtures() {
         method: "GET",
         headers: {
           "x-rapidapi-host": "v3.football.api-sports.io",
-          // "x-rapidapi-key": `${process.env.NEXT_PUBLIC_FOOTBALL_API_KEY}`,
+          "x-rapidapi-key": `${process.env.NEXT_PUBLIC_FOOTBALL_API_KEY}`,
         },
       }
     );
@@ -285,6 +285,34 @@ export default function Fixtures() {
     setIsOpenCal(!isOpenCal);
   };
 
+  /**경기 상세 페이지로 이동 */
+  const formattedLeagueURL = (home: string, away: string, matchID: number) => {
+    const matchVS = `${home}-vs-${away}`;
+
+    // 하이픈을 모두 삭제합니다.
+    const noHyphens = matchVS.replace(/-/g, " ");
+
+    // 두 번 이상의 연속 공백을 하나로 줄입니다.
+    const cleanedString = noHyphens.replace(/\s{2,}/g, " ");
+
+    // 1. 공백을 하이픈으로 변경
+    const hyphenated = cleanedString.replace(/\s+/g, "-");
+
+    // 2. 온점을 제거
+    const withoutDots = hyphenated.replace(/\./g, "");
+
+    // 3. 대문자 뒤에 하이픈 추가 (선택 사항)
+    const withHyphens = withoutDots.replace(/(?<=[A-Z])-(?=[a-z])/g, "-");
+
+    // 4. 소문자로 변환
+    const name = withHyphens.toLowerCase();
+
+    /** 최종 */
+    const url = `/${locale}/matches/${name}/${matchID}`;
+
+    router.push(url);
+  };
+
   return (
     <div className="w-3/5 mx-6 max-xl:mx-0 max-xl:w-full mb-20">
       {/** 필터 부분 */}
@@ -462,7 +490,7 @@ export default function Fixtures() {
 
               /** 최종 */
               const name = withHyphens.toLowerCase();
-              
+
               return (
                 <ul
                   key={leagueIndex}
@@ -522,6 +550,7 @@ export default function Fixtures() {
                       <li
                         key={matchIndex}
                         className="flex px-4 py-5 text-sm cursor-pointer hover:bg-slate-200 dark:hover:bg-custom-gray3 dark:hover:rounded-b-xl"
+                        onClick={() => formattedLeagueURL(match.teams.home.name, match.teams.away.name, match.fixture.id)}
                       >
                         {/* 경기가 시작하지 않거나 취소 및 연기 */}
                         {scheduled.includes(match.fixture.status.short) ||

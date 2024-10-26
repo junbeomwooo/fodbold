@@ -15,9 +15,9 @@ import dateIcon from "@/../../public/img/date.png";
 import venueIcon from "@/../../public/img/venue.png";
 import refereeIcon from "@/../../public/img/whistle.png";
 
-import { fixture as fixtureExample } from "../../../public/example";
+// import { fixture } from "../../../public/example";
 
-export default function Fixtures({
+export default function FixturesOverView({
   id,
   locale,
 }: {
@@ -38,6 +38,8 @@ export default function Fixtures({
   useEffect(() => {
     dispatch(getFixtures({ id: id }));
   }, [dispatch, id]);
+
+  console.log(fixture);
 
   /** url을 로케일 형식에 맞게 변환 */
   const localeInfo =
@@ -88,7 +90,7 @@ export default function Fixtures({
   const score = `${fixture?.goals.home} - ${fixture?.goals.away}`;
 
   // ex) 5 - 4 (Pk)
-  const penaltyScore = `(${fixture?.score.penalty.home} - ${fixture?.score.penalty.away})`;
+  const penaltyScore = `Pen:${fixture?.score.penalty.home}-${fixture?.score.penalty.away}`;
 
   /** 리그URL로 이동하기위해 url 포맷변경하는 함수 */
   const formattedLeagueURL = (league: string) => {
@@ -220,7 +222,7 @@ export default function Fixtures({
         </div>
       </div>
       <hr className="border-slate-200 my-5 dark:border-custom-gray2" />
-
+      {/* 경기 할 팀 로고, 경기 정보 */}
       <div className="flex items-center justify-center">
         {/* 홈팀 */}
         <div className="flex items-center">
@@ -236,43 +238,50 @@ export default function Fixtures({
         </div>
         {/* 경기시간 || 스코어 */}
         <div className="flex flex-col justify-center items-center mx-10">
-          <h2 className="text-2xl font-medium">{formattedTime}</h2>
-
           {/* 경기의 상태에 따라 렌더링 구현 다르기 하기  */}
           {/* 경기가 시작하지않았다면 */}
           {scheduled.includes(fixture?.fixture.status.short) ? (
-            <div>
+            <div className="flex flex-col items-center">
               <h2 className="text-2xl font-medium">{formattedTime}</h2>
+              <h3 className="text-base font-medium text-custom-gray">
+                {formattedDate2}
+              </h3>
             </div>
-          ) : // 경기가 진행중, 중단, 끝났을때
-          live.includes(fixture?.fixture.status.short) ||
-            stop.includes(fixture?.fixture.status.short) ||
-            finish.includes(fixture?.fixture.status.short) ||
+          ) : // 경기가 끝났을때
+          finish.includes(fixture?.fixture.status.short) ||
             unearned.includes(fixture?.fixture.status.short) ? (
-            <div>
-              <h1 className="dark:text-white max-msm:text-xxs">{score}</h1>
+            <div className="flex flex-col items-center">
+              <h2 className="text-2xl font-medium">{score}</h2>
               {/* 패널티 골이 있을경우 */}
               {fixture?.score.penalty.home || fixture?.score.penalty.away ? (
-                <h1 className="dark:text-white text-xs max-msm:text-xxs">
+                <h3 className="text-base font-medium text-custom-gray">
                   {penaltyScore}
-                </h1>
+                </h3>
               ) : (
-                <></>
+                <h3 className="text-base font-medium text-custom-gray">
+                  Full time
+                </h3>
               )}
             </div>
-          ) : // 경기가 중단 및 연기되었을떄
+          ) : // 경기가 진행중, 중단 중일 때
+          live.includes(fixture?.fixture.status.short) ||
+            stop.includes(fixture?.fixture.status.short) ? (
+            <div className="flex flex-col items-center">
+              <h2 className="text-2xl font-medium">{score}</h2>
+              <h3 className="text-base font-medium text-green-600">
+                {fixture?.fixture.status.elapsed}
+              </h3>
+            </div>
+          ) : // 경기가 취소 및 연기되었을떄
           cancle.includes(fixture?.fixture.status.short) ? (
             <div>
-              <h1 className="dark:text-white max-msm:text-xxs">{formattedDate2}</h1>
+              <h1 className="dark:text-white max-msm:text-xxs line-through">
+                {formattedDate2}
+              </h1>
             </div>
           ) : (
             <></>
           )}
-
-
-          <h3 className="text-base font-medium text-custom-gray">
-            {formattedDate2}
-          </h3>
         </div>
         {/* 원정팀 */}
         <div className="flex items-center">
@@ -287,6 +296,8 @@ export default function Fixtures({
           </Link>
         </div>
       </div>
+
+
     </div>
   );
 }

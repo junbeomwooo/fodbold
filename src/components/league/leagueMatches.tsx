@@ -208,8 +208,8 @@ export default function LeagueMatches({
   /** 날짜 키 받기 */
   const dateKeys = groupedByDate ? Object.keys(groupedByDate) : [];
 
-  /** HeadToHead 페이지로 이동 */
-  const onClickMoveToHeadToHead = (
+  /**경기 상세 페이지로 이동 */
+  const formattedLeagueURL = (
     home: string,
     away: string,
     matchID: number
@@ -375,7 +375,7 @@ export default function LeagueMatches({
                       key={matchIndex}
                       className="flex h-16 text-sm justify-center items-center cursor-pointer hover:bg-slate-200"
                       onClick={() =>
-                        onClickMoveToHeadToHead(
+                        formattedLeagueURL(
                           match.teams.home.name,
                           match.teams.away.name,
                           match.fixture.id

@@ -2502,7 +2502,6 @@ export const fixture = [{
       "time": { "elapsed": 20, "extra": null },
       "type": "Card"
     },
-    ...
     {
       "assist": { "id": null, "name": null },
       "player": { "id": null, "name": null },
