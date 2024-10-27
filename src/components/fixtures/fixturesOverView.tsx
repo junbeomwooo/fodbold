@@ -9,11 +9,11 @@ import { useTranslations } from "next-intl";
 import Link from "next/link";
 
 import arrow from "@/../../public/img/arrow.png";
-import { weekdays } from "moment-timezone";
 
 import dateIcon from "@/../../public/img/date.png";
 import venueIcon from "@/../../public/img/venue.png";
 import refereeIcon from "@/../../public/img/whistle.png";
+import ball from "@/../../public/img/ball.png";
 
 // import { fixture } from "../../../public/example";
 
@@ -139,6 +139,22 @@ export default function FixturesOverView({
 
   // 부전승
   const unearned = ["AWD", "WO"];
+
+  console.log(fixture);
+
+  // 경기의 득점
+  const matchScore = fixture?.events.filter((v: any) => {
+    return v.type === "Goal";
+  });
+
+  // 홈팀 득점자
+  const homeScorer = matchScore?.filter((v: any) => {
+    return v.team.id === fixture.teams.home.id;
+  });
+  // 어웨이팀 득점자
+  const awayScorer = matchScore?.filter((v: any) => {
+    return v.team.id === fixture.teams.away.id;
+  });
 
   return (
     <div className="w-full mt-6 max-xl:w-full border-slate-200 border border-solid bg-white p-7 rounded-xl dark:bg-custom-dark dark:border-0">
@@ -296,8 +312,57 @@ export default function FixturesOverView({
           </Link>
         </div>
       </div>
+      {/* 경기가 진행중이거나 끝난 경우 득점자 보여주기 */}
+      <div>
+        {live.includes(fixture?.fixture.status.short) ||
+        stop.includes(fixture?.fixture.status.short) ||
+        finish.includes(fixture?.fixture.status.short) ||
+        unearned.includes(fixture?.fixture.status.short) ? (
+          <div className="flex justify-center mt-10">
+            {/* 홈팀 득점자 */}
+            <div className="flex flex-col items-end text-sm ">
+              {homeScorer.map((v: any, i: number) => {
+                console.log(v);
+                let homescorer = v.player.name;
 
-
+                // 페널티로 넣은 골일 경우
+                if (v.detail === "Penalty") {
+                  homescorer = `${v.player.name}(PEN)`;
+                } 
+                return (
+                  <h4 key={i}>
+                    {/* 패널티로 넣은 경우 '이름(PEN)' 으로 표현하고
+                        추가시간에 넣은 경우 '이름 시간; + 추가시간
+                        일반적인 경우면 '이름 시간' 으로 표현 */}
+                    {homescorer}
+                  </h4>
+                );
+              })}
+            </div>
+            <Image
+              src={ball}
+              alt="score"
+              width={15}
+              height={15}
+              className="invert w-3 h-3 mx-16"
+            />
+            {/* 원정팀 득점자 */}
+            {/* <div className="flex flex-col items-end text-sm ">
+            {awayScorer ? (
+              awayScorer.map((v:any,i:number) => {
+                return(
+                  <h4 key={i}>{v.player.name}</h4>
+                )
+              })
+            ):(
+              <div />
+            )}
+            </div> */}
+          </div>
+        ) : (
+          <></>
+        )}
+      </div>
     </div>
   );
 }
