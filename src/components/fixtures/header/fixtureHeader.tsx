@@ -307,14 +307,11 @@ export default function FixtureHeader({
             {/* 홈팀 득점자 */}
             <div className="flex flex-col items-end text-sm text-gray-500 w-5/12">
               {homeScorer.map((v: any, i: number) => {
-                console.log(v);
                 return !v.time.extra ? (
                   // 일반 시간에 득점
                   <div key={i} className="flex">
                     {/* player name */}
-                    <h4 className="text-xs">
-                      {v.player.name}
-                    </h4>
+                    <h4 className="text-xs">{v.player.name}</h4>
                     {/* score time */}
                     <h3 className="text-xs font-semibold ml-2">
                       {v.time.elapsed} {v.time.extra}&apos;
@@ -323,9 +320,7 @@ export default function FixtureHeader({
                 ) : (
                   // 추가시간에 득점
                   <div key={i} className="flex">
-                    <h4 className="text-xs">
-                      {v.player.name}
-                    </h4>
+                    <h4 className="text-xs">{v.player.name}</h4>
                     <h3 className="text-xs font-semibold ml-2">
                       {v.time.elapsed} {v.time.extra}
                     </h3>
@@ -345,14 +340,11 @@ export default function FixtureHeader({
             {/* 원정팀 득점자 */}
             <div className="flex flex-col items-start text-sm text-gray-500 w-5/12">
               {awayScorer.map((v: any, i: number) => {
-                console.log(v);
                 return !v.time.extra ? (
                   // 일반 시간에 득점
-                  <div className="flex">
+                  <div key={i} className="flex">
                     {/* player name */}
-                    <h4 key={i} className="text-xs">
-                      {v.player.name}
-                    </h4>
+                    <h4 className="text-xs">{v.player.name}</h4>
                     {/* score time */}
                     <h3 className="text-xs font-semibold ml-2">
                       {v.time.elapsed} {v.time.extra}&apos;
@@ -360,10 +352,8 @@ export default function FixtureHeader({
                   </div>
                 ) : (
                   // 추가시간에 득점
-                  <div className="flex">
-                    <h4 key={i} className="text-xs">
-                      {v.player.name}
-                    </h4>
+                  <div key={i} className="flex">
+                    <h4 className="text-xs">{v.player.name}</h4>
                     <h3 className="text-xs font-semibold ml-2">
                       {v.time.elapsed}+{v.time.extra}&apos;
                     </h3>
@@ -375,11 +365,6 @@ export default function FixtureHeader({
         ) : (
           <></>
         )}
-      </div>
-
-      {/* 카테고리 */}
-      <div>
-        
       </div>
     </div>
   );

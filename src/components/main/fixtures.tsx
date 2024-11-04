@@ -243,16 +243,22 @@ export default function Fixtures() {
     }
   };
 
+  // 리그 id가 낮은 순서부터 보여주기 위해 재배열
+  const sortedData = data.sort((a:any,b:any) => a.league.id - b.league.id);
+
   // /** 축구경기 리그별로 데이터 묶기 */
-  const groupedByLeague = data?.reduce((acc: any, match: any) => {
+  const groupedByLeague = sortedData?.reduce((acc: any, match: any) => {
     // acc : 반환할 총 데이터 값 , match : 한가지 경기
+    const leagueId = match.league.id;
     const leagueName = match.league.name;
-    if (!acc[leagueName]) {
-      acc[leagueName] = {
+
+    if (!acc[leagueId]) {
+      acc[leagueId] = {
+        leagueName,
         matches: [],
       };
     }
-    acc[leagueName]?.matches?.push(match);
+    acc[leagueId]?.matches?.push(match);
     return acc;
   }, []);
 
@@ -466,9 +472,13 @@ export default function Fixtures() {
       <div className="w-full h-aut rounded-xl pb-4 dark:border-0 mt-4">
         <div>
           {leagueKeys.length > 0 ? (
-            leagueKeys.map((leagueName: string, leagueIndex: number) => {
+            leagueKeys.map((leagueID: string, leagueIndex: number) => {
+
+              // 리그 이름
+              const leagueName = groupedByLeague[leagueID].leagueName;
+
               // 변수[키값]을 통해 해당하는 리그의 경기 데이터를 모두 가져옴
-              const leagueMatch = groupedByLeague[leagueName].matches;
+              const leagueMatch = groupedByLeague[leagueID].matches;
 
               // 하이픈을 모두 삭제합니다.
               const noHyphens = leagueMatch[0].league.name.replace(/-/g, " ");
