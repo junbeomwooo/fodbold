@@ -1,6 +1,6 @@
 "use client";
 
-import { getFixtures } from "@/lib/features/fixtureSlice";
+import { getFixtures, getInjuries } from "@/lib/features/fixtureSlice";
 import { useAppDispatch, useAppSelector } from "@/lib/storeHooks";
 import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -18,57 +18,135 @@ export default function FixturesOverView({
 }) {
   /** 리덕스 초기화 */
   const dispatch = useAppDispatch();
-  const { fixture }: any = useAppSelector((state) => state.fixtureSlice);
+  const { fixture, injurie }: any = useAppSelector((state) => state.fixtureSlice);
 
-  const [tabPage, setTabPage] = useState("overview");
+  const [tabPage, setTabPage] = useState("factsPreview");
 
   console.log(fixture);
 
   /** 렌더링시  */
   useEffect(() => {
     dispatch(getFixtures({ id: id }));
+    dispatch(getInjuries({id: id}));
   }, [dispatch, id]);
 
-  const onClick = () => {
-    setTabPage("hello");
-  };
-
-  console.log(fixture);
-
-  /** 경기 별 상태  */
-
-  //시작안함
-  const scheduled = ["TBD", "NS"];
-
-  // 경기중 (하프타임 브레이킹타임 포함)
-  const live = ["1H", "2H", "ET", "P", "LIVE", "HT", "BT"];
-
-  //심판 자의로 경기중단
-  const stop = ["SUSP", "INT"];
-
-  //경기 끝
-  const finish = ["FT", "AET", "PEN"];
-
-  // 경기 취소 및 연기
-  const cancle = ["PST", "CANC", "ABD"];
-
-  // 부전승
-  const unearned = ["AWD", "WO"];
+  // getH2H 데이터를 받아와서 확인하고 원하는 데이트가 맞으면 사용하고 아닐 시 사용하지 않기 그 후에 나머지 렌더링 구현하기
 
   return (
-    <div className="w-full mt-6 max-xl:w-full border-slate-200 border border-solid bg-white p-7 rounded-xl dark:bg-custom-dark dark:border-0">
+    <div className="w-full mt-6 max-xl:w-full border-slate-200 border border-solid bg-white p-7 rounded-xl dark:bg-custom-dark dark:border-0 ">
       {/* 헤더 */}
       <FixtureHeader fixture={fixture} locale={locale} />
 
       {/* 카테고리 */}
-      <div className="flex text-base font-normal mt-6">
-        {fixture?.statistics.length > 0 && (
-          <h1 className="cursor-pointer">Facts</h1>
+      <div className="flex text-base font-normal mt-10 text-gray-800">
+        {/* Facts, Preview */}
+        {fixture?.statistics.length > 0 ? (
+          <div
+            className="flex flex-col cursor-pointer hover:text-gray-400"
+            onClick={() => setTabPage("factsPreview")}
+          >
+            <h1>Facts</h1>
+            {tabPage === "factsPreview" ? (
+              <div className="bg-green-600 w-auto h-1 mt-6 rounded-full"></div>
+            ) : (
+              <></>
+            )}
+          </div>
+        ) : (
+          <div
+            className="flex flex-col cursor-pointer hover:text-gray-400"
+            onClick={() => setTabPage("factsPreview")}
+          >
+            {" "}
+            <h1>Preview</h1>
+            {tabPage === "factsPreview" ? (
+              <div className="bg-green-600 w-auto h-1 mt-6 rounded-full"></div>
+            ) : (
+              <></>
+            )}
+          </div>
         )}
+
+        {/* Events */}
+        {fixture?.events.length > 0 && (
+          <div
+            className="flex flex-col cursor-pointer hover:text-gray-400 ml-10"
+            onClick={() => setTabPage("events")}
+          >
+            <h1>Events</h1>
+            {tabPage === "events" ? (
+              <div className="bg-green-600 w-auto h-1 mt-6 rounded-full"></div>
+            ) : (
+              <></>
+            )}
+          </div>
+        )}
+
+        {/* Lineups */}
         {fixture?.lineups.length > 0 && (
-          <h1 className="ml-5 cursor-pointer">Lineup</h1>
+          <div
+            className="flex flex-col cursor-pointer hover:text-gray-400 ml-10"
+            onClick={() => setTabPage("lineups")}
+          >
+            <h1>Lineup</h1>
+            {tabPage === "lineups" ? (
+              <div className="bg-green-600 w-auto h-1 mt-6 rounded-full"></div>
+            ) : (
+              <></>
+            )}
+          </div>
         )}
+
+        {/* Players */}
+        {fixture?.players.length > 0 && (
+          <div
+            className="flex flex-col cursor-pointer hover:text-gray-400 ml-10"
+            onClick={() => setTabPage("players")}
+          >
+            <h1>Players</h1>
+            {tabPage === "players" ? (
+              <div className="bg-green-600 w-auto h-1 mt-6 rounded-full"></div>
+            ) : (
+              <></>
+            )}
+          </div>
+        )}
+
+        {/* Stats */}
+        {fixture?.statistics.length > 0 && (
+          <div
+            className="flex flex-col cursor-pointer hover:text-gray-400 ml-10"
+            onClick={() => setTabPage("stats")}
+          >
+            <h1>Stats</h1>
+            {tabPage === "stats" ? (
+              <div className="bg-green-600 w-auto h-1 mt-6 rounded-full"></div>
+            ) : (
+              <></>
+            )}
+          </div>
+        )}
+
+        {/* Head to Head */}
+        <div
+          className="flex flex-col cursor-pointer hover:text-gray-400 ml-10"
+          onClick={() => setTabPage("hth")}
+        >
+          <h1>Head-to-Head</h1>
+          {tabPage === "hth" ? (
+            <div className="bg-green-600 w-auto h-1 mt-6 rounded-full"></div>
+          ) : (
+            <></>
+          )}
+        </div>
       </div>
+      
+      {/* Facts , Preview */}
+      {tabPage === "factsPreview" && (
+        <div>
+          
+        </div>
+      )}
     </div>
   );
 }

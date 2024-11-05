@@ -103,15 +103,14 @@ export default function LeagueStats({
         setSelectedYearChanged={setSelectedYearChanged}
       />
 
-      {/* 반응형 디자인, 새로고침시 데이터 수신 구현 후 경기 상세페이지 구현하기 */}
       {/* top score and assist and yellow and red */}
       <div className="w-full mt-6 max-xl:w-full max-xl:ml-0">
         <div className="w-full h-auto bg-white rounded-xl px-8 border-solid border border-slate-200 pb-6 dark:bg-custom-dark dark:border-0 pt-6 max-sm:px-4">
           <hr className="border-1 border-solid border-r-slate-200 dark:border-custom-gray3 mt-6 mb-10" />
-          <div className="flex max-lg:block">
+          <div className="flex max-xl:block">
 
             {/* top scorers*/}
-            <div className="w-full border border-solid border-slate-200 py-4 rounded-xl mt-6 text-base dark:border-custom-gray3 mr-4 max-lg:mr-0">
+            <div className="w-full border border-solid border-slate-200 py-4 rounded-xl mt-6 text-base dark:border-custom-gray3 mr-4 max-xl:mr-0">
               <div className="flex justify-between mb-4 px-8 items-center">
                 <h3>{l("topscorers")}</h3>
                 <h4 className="text-xsm mr-1 text-custom-gray">{l("goals")}</h4>
@@ -171,7 +170,7 @@ export default function LeagueStats({
             </div>
 
             {/* top assists */}
-            <div className="w-full border border-solid border-slate-200 py-4 rounded-xl mt-6 text-base dark:border-custom-gray3 mx-4 max-lg:mx-0">
+            <div className="w-full border border-solid border-slate-200 py-4 rounded-xl mt-6 text-base dark:border-custom-gray3 mx-4 max-xl:mx-0">
               <div className="flex justify-between mb-4 px-8 items-center">
                 <h3>{l("topassists")}</h3>
                 <h4 className="text-xsm mr-1 text-custom-gray">
@@ -236,7 +235,7 @@ export default function LeagueStats({
             </div>
 
             {/* red cards */}
-            <div className="w-full border border-solid border-slate-200 py-4 rounded-xl mt-6 text-base dark:border-custom-gray3 mx-4 max-lg:mx-0">
+            <div className="w-full border border-solid border-slate-200 py-4 rounded-xl mt-6 text-base dark:border-custom-gray3 mx-4 max-xl:mx-0">
               <div className="flex justify-between mb-4 px-8 items-center">
                 <h3>{l("redcards")}</h3>
               </div>
@@ -298,7 +297,7 @@ export default function LeagueStats({
             </div>
 
             {/* yellow cards */}
-            <div className="w-full border border-solid border-slate-200 py-4 rounded-xl mt-6 text-base dark:border-custom-gray3 ml-4 max-lg:ml-0 ">
+            <div className="w-full border border-solid border-slate-200 py-4 rounded-xl mt-6 text-base dark:border-custom-gray3 ml-4 max-xl:ml-0 ">
               <div className="flex justify-between mb-4 px-8 items-center">
                 <h3>{l("yellowcards")}</h3>
               </div>

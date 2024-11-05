@@ -314,7 +314,7 @@ export default function FixtureHeader({
                     <h4 className="text-xs">{v.player.name}</h4>
                     {/* score time */}
                     <h3 className="text-xs font-semibold ml-2">
-                      {v.time.elapsed} {v.time.extra}&apos;
+                      {v.time.elapsed}&apos;
                     </h3>
                   </div>
                 ) : (
@@ -322,7 +322,7 @@ export default function FixtureHeader({
                   <div key={i} className="flex">
                     <h4 className="text-xs">{v.player.name}</h4>
                     <h3 className="text-xs font-semibold ml-2">
-                      {v.time.elapsed} {v.time.extra}
+                      {v.time.elapsed}+{v.time.extra}&apos;
                     </h3>
                   </div>
                 );
@@ -347,7 +347,7 @@ export default function FixtureHeader({
                     <h4 className="text-xs">{v.player.name}</h4>
                     {/* score time */}
                     <h3 className="text-xs font-semibold ml-2">
-                      {v.time.elapsed} {v.time.extra}&apos;
+                      {v.time.elapsed}&apos;
                     </h3>
                   </div>
                 ) : (
