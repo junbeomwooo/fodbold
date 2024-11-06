@@ -6,7 +6,7 @@ const url = "https://v3.football.api-sports.io";
 
 // Head to Head 정보 가져오기
 export const getH2H = createAsyncThunk(
-  "fixtureSlice/getInjuries",
+  "fixtureSlice/getH2H",
   async ({ homeID,awayID }: { homeID: number, awayID: number}, { rejectWithValue }) => {
     let result = null;
 
@@ -21,13 +21,11 @@ export const getH2H = createAsyncThunk(
         }
       );
 
-      console.log(response);
-
       result = response.data.response;
       
     } catch (err) {
       const axiosErr = err as AxiosError;
-      console.group("getFixtures Error");
+      console.group("getH2H Error");
       result = rejectWithValue(axiosErr.response);
       console.groupEnd();
     }
@@ -58,7 +56,7 @@ export const getInjuries = createAsyncThunk(
       
     } catch (err) {
       const axiosErr = err as AxiosError;
-      console.group("getFixtures Error");
+      console.group("getInjuries Error");
       result = rejectWithValue(axiosErr.response);
       console.groupEnd();
     }
@@ -128,9 +126,10 @@ export const fixtureSlice = createSlice({
     builder.addCase(
       getH2H.fulfilled,
       (state, { payload }: { payload: any }) => {
-        state.h2h = payload;
+        console.log(payload);
       }
     );
+    
   },
 });
 
