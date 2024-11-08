@@ -2,9 +2,8 @@
 
 import { getFixtures, getH2H, getInjuries } from "@/lib/features/fixtureSlice";
 import { useAppDispatch, useAppSelector } from "@/lib/storeHooks";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-
 import FixtureHeader from "./header/fixtureHeader";
 
 // import { fixture } from "../../../public/example";
@@ -22,6 +21,7 @@ export default function FixturesOverView({
     (state) => state.fixtureSlice
   );
 
+  // 탭 페이지 상태 값
   const [tabPage, setTabPage] = useState("factsPreview");
 
   /** 렌더링시  */
@@ -37,10 +37,9 @@ export default function FixturesOverView({
     });
   }, [dispatch, id]);
 
-  const homeStats = fixture?.statistics[0].statistics
-  const awayStats = fixture?.statistics[1].statistics
-
-  console.log(homeStats);
+  // home , away match stats
+  const homeStats = fixture?.statistics[0]?.statistics;
+  const awayStats = fixture?.statistics[1]?.statistics;
 
   // getH2H 데이터를 받아와서 확인하고 원하는 데이트가 맞으면 사용하고 아닐 시 사용하지 않기 그 후에 나머지 렌더링 구현하기
 
@@ -161,16 +160,35 @@ export default function FixturesOverView({
         <div className="w-full bg-white mt-4 border border-solid border-slate-200 rounded-xl p-7">
           {/* 경기가 시작했거나 이미 끝난 경우 */}
           {fixture?.statistics.length > 0 ? (
-            <div>
+            <div className="flex">
+              <div className="w-full">
               {/* Match stats */}
               <div className="text-base w-full">
+                <div className="flex justify-center text-sm font-medium mb-8">
                 <h1>Match Stats</h1>
-                <h2 className="text-sm">Ball possession</h2>
-                <h1>{homeStats[9].value}</h1>
-                <h1>{awayStats[9].value}</h1>
+                </div>
+                <div className="flex justify-center">
+                <h2 className="text-xs mb-6">Ball possession</h2>
+                </div>
+                {/*Ball possession bar */}
+                <div className="flex w-full">
+                  <div style={{
+                    width: homeStats[9]?.value
+                  }}
+                  className="py-2 mr-2 rounded-l-xl text-sm flex items-center text-white bg-red-500"
+                  >
+                    <h1 className="ml-5">{homeStats[9].value}</h1>
+                  </div>
+                  <div style={{
+                    width: awayStats[9]?.value
+                  }}
+                  className="py-2 ml-2  rounded-r-xl  text-sm flex items-center text-white justify-end bg-blue-500"
+                  >
+                    <h1 className="mr-5">{awayStats[9].value}</h1>
+                  </div>
+                </div>
               </div>
-
-              
+              </div>
             </div>
           ) : (
             // 경기가 시작하지 않은 경우
