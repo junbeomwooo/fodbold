@@ -15,40 +15,17 @@ import { useTranslations } from "next-intl";
 export default function FixtureHeader({
   fixture,
   locale,
+  leagueNameURL,
 }: {
   fixture: any;
   locale: string;
+  leagueNameURL: any;
 }) {
   /** 번역 */
   const f = useTranslations("fixture");
 
   /** 라우터 */
   const router = useRouter();
-
-  /** 리그URL로 이동하기위해 url 포맷변경하는 함수 */
-  const formattedLeagueURL = (league: string) => {
-    if (league) {
-      // 하이픈을 모두 삭제합니다.
-      const noHyphens = league.replace(/-/g, " ");
-
-      // 두 번 이상의 연속 공백을 하나로 줄입니다.
-      const cleanedString = noHyphens.replace(/\s{2,}/g, " ");
-
-      // 1. 공백을 하이픈으로 변경
-      const hyphenated = cleanedString.replace(/\s+/g, "-");
-
-      // 2. 온점을 제거
-      const withoutDots = hyphenated.replace(/\./g, "");
-
-      // 3. 대문자 뒤에 하이픈 추가 (선택 사항)
-      const withHyphens = withoutDots.replace(/(?<=[A-Z])-(?=[a-z])/g, "-");
-
-      /** 최종 */
-      return withHyphens.toLowerCase();
-    } else {
-      return null;
-    }
-  };
 
   /** url을 로케일 형식에 맞게 변환 */
   const localeInfo =
@@ -59,9 +36,6 @@ export default function FixtureHeader({
       : locale === "da"
       ? "da-DK"
       : null;
-
-  /** 이동시킬 리그 URL */
-  const leagueNameURL = formattedLeagueURL(fixture?.league.name);
 
   /** 경기 시간을 특정 형태로 지정 */
   const MatchTimeDateForm = new Date(fixture?.fixture.date);
@@ -143,7 +117,7 @@ export default function FixtureHeader({
   return (
     <div>
       {/* 뒤로가기 및 리그정보 */}
-      <div className="flex items-center">
+      <div className="flex items-center max-lg:hidden">
         {/* 뒤로가기 버튼 */}
         <div className="flex items-center justify-start">
           <div className="w-7 h-7 rounded-full bg-slate-200 flex justify-center items-center hover:cursor-pointer hover:bg-slate-400 dark:bg-custom-gray3 dark:hover:bg-custom-gray">
@@ -162,7 +136,7 @@ export default function FixtureHeader({
           <h1 className="ml-3 text-base">{f("back")}</h1>
         </div>
         {/* 리그 이름 및 라운드 */}
-        <div className="flex justify-center items-center m-auto">
+        <div className="flex justify-center items-center m-auto ">
           <Image
             src={fixture?.league.logo}
             alt={fixture?.league.name || "no league name"}
@@ -182,9 +156,9 @@ export default function FixtureHeader({
         </div>
       </div>
 
-      <hr className="border-slate-200 my-5 dark:border-custom-gray3" />
+      <hr className="border-slate-200 my-5 dark:border-custom-gray3  max-lg:hidden" />
       {/* 날짜, 경기장, 심판 정보 */}
-      <div className="flex justify-center text-custom-gray">
+      <div className="flex justify-center text-custom-gray  max-lg:hidden">
         <div className="mx-2 flex items-center">
           <Image
             src={dateIcon}
@@ -225,12 +199,15 @@ export default function FixtureHeader({
           <></>
         )}
       </div>
-      <hr className="border-slate-200 my-5 dark:border-custom-gray2" />
+      <hr className="border-slate-200 my-5 dark:border-custom-gray2  max-lg:hidden" />
       {/* 경기 할 팀 로고, 경기 정보 */}
       <div className="flex items-center justify-center w-full">
         {/* 홈팀 */}
-        <div className="flex items-center w-5/12 justify-end">
-          <Link href={"/"} className="text-xl mr-8">
+        <div className="flex items-center w-5/12 justify-end max-lg:flex-col-reverse max-md:w-4/12">
+          <Link
+            href={"/"}
+            className="text-xl mr-8 max-lg:mr-0 max-lg:text-xs max-lg:mt-4 text-center"
+          >
             {fixture?.teams.home.name}
           </Link>
           <Image
@@ -241,7 +218,7 @@ export default function FixtureHeader({
           />
         </div>
         {/* 경기시간 || 스코어 */}
-        <div className="flex flex-col justify-center items-center w-2/12">
+        <div className="flex flex-col justify-center items-center w-2/12 max-md:w-4/12">
           {/* 경기의 상태에 따라 렌더링 구현 다르기 하기  */}
           {/* 경기가 시작하지않았다면 */}
           {scheduled.includes(fixture?.fixture.status.short) ? (
@@ -255,14 +232,14 @@ export default function FixtureHeader({
           finish.includes(fixture?.fixture.status.short) ||
             unearned.includes(fixture?.fixture.status.short) ? (
             <div className="flex flex-col items-center">
-              <h2 className="text-2xl font-medium">{score}</h2>
+              <h2 className="text-2xl font-medium max-lg:text-xl">{score}</h2>
               {/* 패널티 골이 있을경우 */}
               {fixture?.score.penalty.home || fixture?.score.penalty.away ? (
-                <h3 className="text-base font-medium text-custom-gray">
+                <h3 className="text-base font-medium text-custom-gray  max-lg:text-sm">
                   {penaltyScore}
                 </h3>
               ) : (
-                <h3 className="text-base font-medium text-custom-gray">
+                <h3 className="text-base font-medium text-custom-gray max-lg:text-xsm">
                   Full time
                 </h3>
               )}
@@ -288,14 +265,17 @@ export default function FixtureHeader({
           )}
         </div>
         {/* 원정팀 */}
-        <div className="flex items-center w-5/12 justify-start">
+        <div className="flex items-center w-5/12 justify-start  max-lg:flex-col max-md:w-4/12">
           <Image
             src={fixture?.teams.away.logo}
             alt={fixture?.teams.away.name}
             width={50}
             height={50}
           />
-          <Link href={"/"} className="text-xl ml-8">
+          <Link
+            href={"/"}
+            className="text-xl ml-8 max-lg:ml-0 max-lg:text-xs max-lg:mt-4 text-center"
+          >
             {fixture?.teams.away.name}
           </Link>
         </div>

@@ -292,7 +292,7 @@ export default function Fixtures() {
   };
 
   /**경기 상세 페이지로 이동 */
-  const formattedLeagueURL = (home: string, away: string, matchID: number) => {
+  const moveToFormattedMatchURL = (home: string, away: string, matchID: number) => {
     const matchVS = `${home}-vs-${away}`;
 
     // 하이픈을 모두 삭제합니다.
@@ -560,7 +560,7 @@ export default function Fixtures() {
                       <li
                         key={matchIndex}
                         className="flex px-4 py-5 text-sm cursor-pointer hover:bg-slate-200 dark:hover:bg-custom-gray3 dark:hover:rounded-b-xl"
-                        onClick={() => formattedLeagueURL(match.teams.home.name, match.teams.away.name, match.fixture.id)}
+                        onClick={() => moveToFormattedMatchURL(match.teams.home.name, match.teams.away.name, match.fixture.id)}
                       >
                         {/* 경기가 시작하지 않거나 취소 및 연기 */}
                         {scheduled.includes(match.fixture.status.short) ||
