@@ -1,27 +1,26 @@
+"use client";
+
 import Link from "next/link";
 import Image from "next/image";
 import HeaderSetting from "./headerSetting";
 import {useTranslations} from 'next-intl';
+import { useRouter } from "next/navigation";
 
 export default function Header() {
   const t = useTranslations("header");
+  const router = useRouter();
   return (
     <>
       <div className="h-20 flex flex-row items-center justify-between hover:no-underline px-14 max-md:px-12 bg-slate-100 dark:bg-black fixed w-full z-20">
-        <Link
-          className="font-extrabold text-xl text-emerald-400 hover:no-underline"
-          href="/"
-        >
           <Image
             src="/img/logo.png"
             alt="logo"
             width={100}
             height={50}
-            className="dark:invert object-contain"
+            className="dark:invert object-contain cursor-pointer"
             style={{ width: 100, height: 50 }}
-            priority 
+            onClick={()=>  router.push("/")}
           />
-        </Link>
         <div className="flex">
           <Link className="ml-12 max-md:hidden dark:text-white" href="/">
             {t('matches')}

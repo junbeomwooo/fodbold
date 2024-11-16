@@ -15,6 +15,7 @@ import Image from "next/image";
 import { PhoneForwarded } from "lucide-react";
 import { PiSoccerBallLight } from "react-icons/pi";
 import { CgArrowsExchange } from "react-icons/cg";
+import { useTranslations } from "next-intl";
 
 // import { fixture } from "../../../public/example";
 
@@ -25,6 +26,9 @@ export default function FixturesOverView({
   id: number;
   locale: string;
 }) {
+  // 번역
+  const f = useTranslations("fixture");
+
   /** 리덕스 초기화 */
   const dispatch = useAppDispatch();
   const { fixture, injurie, h2h, fixtureByRound }: any = useAppSelector(
@@ -62,6 +66,7 @@ export default function FixturesOverView({
 
   /** 사용할 데이터 */
   const finxturesByRound10 = fixtureByRound?.slice(0, 10);
+  const round = fixture?.league.round.split("-")[1]
   console.log(fixture);
 
   /** 리그URL로 이동하기위해 url 포맷변경하는 함수 */
@@ -149,11 +154,11 @@ export default function FixturesOverView({
                 <h1
                   className={
                     tabPage === "factsPreview"
-                      ? "text-black font-medium"
-                      : "text-gray-700"
+                      ? "text-black font-medium dark:text-white"
+                      : "text-gray-700 dark:text-gray-200"
                   }
                 >
-                  Facts
+                  {f("facts")}
                 </h1>
                 {tabPage === "factsPreview" ? (
                   <div className="bg-green-600 w-auto h-1 mt-6 rounded-full"></div>
@@ -174,7 +179,7 @@ export default function FixturesOverView({
                       : "text-gray-700"
                   }
                 >
-                  Preview
+                  {f("preview")}
                 </h1>
                 {tabPage === "factsPreview" ? (
                   <div className="bg-green-600 w-auto h-1 mt-6 rounded-full"></div>
@@ -197,7 +202,7 @@ export default function FixturesOverView({
                       : "text-gray-700"
                   }
                 >
-                  Events
+                  {f("events")}
                 </h1>
                 {tabPage === "events" ? (
                   <div className="bg-green-600 w-auto h-1 mt-6 rounded-full"></div>
@@ -220,7 +225,7 @@ export default function FixturesOverView({
                       : "text-gray-700"
                   }
                 >
-                  Lineup
+                  {f("lineup")}
                 </h1>
                 {tabPage === "lineups" ? (
                   <div className="bg-green-600 w-auto h-1 mt-6 rounded-full"></div>
@@ -243,7 +248,7 @@ export default function FixturesOverView({
                       : "text-gray-700"
                   }
                 >
-                  Players
+                  {f("players")}
                 </h1>
                 {tabPage === "players" ? (
                   <div className="bg-green-600 w-auto h-1 mt-6 rounded-full"></div>
@@ -266,7 +271,7 @@ export default function FixturesOverView({
                       : "text-gray-700"
                   }
                 >
-                  Stats
+                  {f("stats")}
                 </h1>
                 {tabPage === "stats" ? (
                   <div className="bg-green-600 w-auto h-1 mt-6 rounded-full"></div>
@@ -286,7 +291,7 @@ export default function FixturesOverView({
                   tabPage === "h2h" ? "text-black font-medium" : "text-gray-700"
                 }
               >
-                H2H
+                {f("h2h")}
               </h1>
               {tabPage === "h2h" ? (
                 <div className="bg-green-600 w-auto h-1 mt-6 rounded-full"></div>
@@ -309,10 +314,12 @@ export default function FixturesOverView({
                     <div className="w-full">
                       <div className="text-base w-full">
                         <div className="flex justify-center text-base font-medium mb-8 px-7">
-                          <h1>Match Stats</h1>
+                          <h1>{f("matchStats")}</h1>
                         </div>
                         <div className="flex justify-center px-7">
-                          <h2 className="text-xs mb-6">Ball possession</h2>
+                          <h2 className="text-xs mb-6">
+                            {f("ballPossession")}
+                          </h2>
                         </div>
                         {/*Ball possession bar */}
                         <div className="flex w-full px-7">
@@ -338,15 +345,19 @@ export default function FixturesOverView({
                         <div className="flex w-full justify-between mt-8 text-xs px-7">
                           <div className="ml-2">
                             <h1>
-                              {fixture?.statistics[0].statistics[16].value}
+                              {fixture.statistics[0].statistics[16].value
+                                ? fixture.statistics[0].statistics[16].value
+                                : 0}
                             </h1>
                           </div>
                           <div>
-                            <h1>Expected Goals</h1>
+                            <h1>{f("expectedGoals")}</h1>
                           </div>
                           <div className="mr-2">
                             <h1>
-                              {fixture?.statistics[1].statistics[16].value}
+                              {fixture.statistics[1].statistics[16].value
+                                ? fixture.statistics[1].statistics[16].value
+                                : 0}
                             </h1>
                           </div>
                         </div>
@@ -359,7 +370,7 @@ export default function FixturesOverView({
                             </h1>
                           </div>
                           <div>
-                            <h1>Total Shots</h1>
+                            <h1>{f("totalShots")}</h1>
                           </div>
                           <div className="mr-2">
                             <h1>
@@ -376,7 +387,7 @@ export default function FixturesOverView({
                             </h1>
                           </div>
                           <div>
-                            <h1>Fouls</h1>
+                            <h1>{f("fouls")}</h1>
                           </div>
                           <div className="mr-2">
                             <h1>
@@ -392,7 +403,9 @@ export default function FixturesOverView({
                           className="flex justify-center items-center p-3 cursor-pointer hover:opacity-50 hover:underline"
                           onClick={() => setTabPage("stats")}
                         >
-                          <h1 className="text-xsm font-medium">All Stats</h1>
+                          <h1 className="text-xsm font-medium">
+                            {f("allStats")}
+                          </h1>
                         </div>
                       </div>
                     </div>
@@ -403,7 +416,7 @@ export default function FixturesOverView({
                 {fixture?.events.length > 0 && (
                   <div className="w-full bg-white mt-4  border border-solid border-slate-200 rounded-xl p-7">
                     <div className="flex justify-center">
-                      <h1 className="text-base font-medium">Events</h1>
+                      <h1 className="text-base font-medium">{f("events")}</h1>
                     </div>
 
                     <div className="mt-10">
@@ -430,14 +443,14 @@ export default function FixturesOverView({
                                           <>
                                             {/* 어시스트가 있다면 */}
                                             <h2 className="text-gray-500 mt-1">
-                                              assist by {v.assist.name}
+                                              {f("assistBy")} {v.assist.name}
                                             </h2>
                                           </>
                                         ) : (
                                           <>
-                                            {/* 어시스트가 없다면 */}
+                                            {/* 자책골이라면 */}
                                             <h2 className="text-gray-500 mt-1">
-                                              Own goal
+                                              {f("ownGoal")}
                                             </h2>
                                           </>
                                         )}
@@ -510,14 +523,14 @@ export default function FixturesOverView({
                                           <>
                                             {/* 어시스트가 있다면 */}
                                             <h2 className="text-gray-500 mt-1">
-                                              assist by {v.assist.name}
+                                              {f("assistBy")} {v.assist.name}
                                             </h2>
                                           </>
                                         ) : (
                                           <>
-                                            {/* 어시스트가 없다면 */}
+                                            {/* 자책골이라면 */}
                                             <h2 className="text-gray-500">
-                                              Own goal
+                                              {f("ownGoal")}
                                             </h2>
                                           </>
                                         )}
@@ -565,7 +578,7 @@ export default function FixturesOverView({
 
                     <div className="flex justify-center">
                       <h1 className="text-xsm font-medium mt-3">
-                        {fixture?.fixture.status.extra} minutes added
+                        {fixture?.fixture.status.extra}{f("minutesAdded")}
                       </h1>
                     </div>
 
@@ -610,7 +623,7 @@ export default function FixturesOverView({
               <h1 className="text-base mb-1 font-medium">
                 {fixture?.league.name}
               </h1>
-              <h2 className="text-xsm">{fixture?.league.round}</h2>
+              <h2 className="text-xsm">{round} {f("round")}</h2>
             </div>
             {/* 리그 이미지 */}
             <div className="border-slate-200 border border-solid rounded-full p-2 ">

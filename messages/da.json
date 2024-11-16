@@ -197,6 +197,23 @@
     "yellowcards": "Gule kort"
   },
   "fixture": {
-    "back": "Tilbage"
+    "back": "Tilbage",
+    "facts": "Fakta",
+    "preview": "Visning",
+    "events": "Event",
+    "lineup": "Hold",
+    "players": "Spillere",
+    "stats": "Data",
+    "h2h": "H2H",
+    "matchStats": "Kampstatistik",
+    "ballPossession": "Boldbesiddelse",
+    "expectedGoals": "Forventede mål",
+    "totalShots": "Samlede skud",
+    "fouls": "Frispark",
+    "allStats": "Alle statistikker",
+    "ownGoal": "Selvmål",
+    "assistBy": "Assisteret af",
+    "minutesAdded": "minutters tillægstid",
+    "round": "Runde"
   }
 }

@@ -150,7 +150,7 @@ export default function FixtureHeader({
           >
             {fixture?.league.name}
           </Link>
-          <h3 className="text-xsm text-custom-gray3">
+          <h3 className="text-xsm text-custom-gray3 dark:text-custom-gray ">
             {fixture?.league.round}
           </h3>
         </div>
@@ -165,17 +165,17 @@ export default function FixtureHeader({
             alt={"date"}
             width={15}
             height={15}
-            className="opacity-60 mr-2"
+            className="opacity-60 mr-2 dark:invert"
           />
           <h3 className="text-sm">{formattedDateTime}</h3>
         </div>
-        <div className="mx-2 flex items-center">
+        <div className="mx-2 flex items-center ">
           <Image
             src={venueIcon}
             alt={"venue"}
             width={25}
             height={25}
-            className="opacity-60  mr-2"
+            className="opacity-60  mr-2 dark:invert"
           />
           <Link
             href={`https://www.google.com/maps/search/?api=1&query=${fixture?.fixture.venue.name}`}
@@ -191,7 +191,7 @@ export default function FixtureHeader({
               alt={"referee"}
               width={15}
               height={15}
-              className="opacity-60  mr-2"
+              className="opacity-60  mr-2 dark:invert"
             />
             <h3 className="text-sm">{fixture?.fixture.referee}</h3>
           </div>
@@ -285,7 +285,7 @@ export default function FixtureHeader({
         {fixture?.goals.home || fixture?.goals.away ? (
           <div className="flex justify-center mt-10">
             {/* 홈팀 득점자 */}
-            <div className="flex flex-col items-end text-sm text-gray-500 w-5/12">
+            <div className="flex flex-col items-end text-sm text-custom-gray  w-5/12">
               {homeScorer.map((v: any, i: number) => {
                 return !v.time.extra ? (
                   // 일반 시간에 득점
@@ -314,11 +314,11 @@ export default function FixtureHeader({
                 alt="score"
                 width={15}
                 height={15}
-                className="invert w-3 h-3 mx-16 opacity-70"
+                className="invert w-3 h-3 mx-16 opacity-70 dark:invert-0"
               />
             </div>
             {/* 원정팀 득점자 */}
-            <div className="flex flex-col items-start text-sm text-gray-500 w-5/12">
+            <div className="flex flex-col items-start text-sm text-custom-gray w-5/12">
               {awayScorer.map((v: any, i: number) => {
                 return !v.time.extra ? (
                   // 일반 시간에 득점

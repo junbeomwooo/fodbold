@@ -197,6 +197,24 @@
     "yellowcards": "Yellow Cards"
   },
   "fixture": {
-    "back": "Back"
+    "back": "Back",
+    "facts": "Facts",
+    "preview": "Preview",
+    "events": "Events",
+    "lineup": "Lineup",
+    "players": "Players",
+    "stats": "Stats",
+    "h2h": "H2H",
+    "matchStats": "Match Stats",
+    "ballPossession":"Ball possession",
+    "expectedGoals":"Expected Goals",
+    "totalShots":"Total Shots",
+    "fouls":"Fouls",
+    "allStats":"All Stats",
+    "ownGoal": "Own goal",
+    "assistBy":"Assist by",
+    "minutesAdded": "minutes added",
+    "round": "Round"
+
   }
 }

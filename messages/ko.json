@@ -197,6 +197,23 @@
     "yellowcards": "경고"
   },
   "fixture": {
-    "back": "뒤로가기"
+    "back": "뒤로가기",
+    "facts": "팩트",
+    "preview": "미리보기",
+    "events": "이벤트",
+    "lineup": "라인업",
+    "players": "선수",
+    "stats": "통계",
+    "h2h": "역대전적",
+    "matchStats": "경기 통계",
+    "ballPossession": "볼 점유율",
+    "expectedGoals": "기대 득점",
+    "totalShots": "총 슈팅 수",
+    "fouls": "파울",
+    "allStats": "전체 통계",
+    "ownGoal": "자책골",
+    "assistBy": "어시스트:",
+    "minutesAdded": "분의 추가시간",
+    "round": "라운드"
   }
 }

@@ -293,6 +293,7 @@ export default function Fixtures() {
 
   /**경기 상세 페이지로 이동 */
   const moveToFormattedMatchURL = (home: string, away: string, matchID: number) => {
+
     const matchVS = `${home}-vs-${away}`;
 
     // 하이픈을 모두 삭제합니다.
@@ -521,6 +522,7 @@ export default function Fixtures() {
                       height={16}
                       style={{ width: "16px", height: "16px" }}
                       className="mx-2"
+                      loading="lazy" 
                     />
                     <h1 className="text-sm font-medium ml-3 dark:text-white max-msm:text-xs">
                       {leagueName}
@@ -609,6 +611,7 @@ export default function Fixtures() {
                               height={15}
                               style={{ width: "18px", height: "18px" }}
                               className="ml-5 max-msm:ml-2"
+                              loading="lazy" 
                             />
                           </div>
                           {/* 경기가 시작하지않았다면 */}
@@ -655,6 +658,7 @@ export default function Fixtures() {
                               height={15}
                               className="mr-5 max-msm:mr-2"
                               style={{ width: "18px", height: "18px" }}
+                              loading="lazy" 
                             />
                             <h1 className="dark:text-white max-msm:text-xxs">
                               {match.teams.away.name}
