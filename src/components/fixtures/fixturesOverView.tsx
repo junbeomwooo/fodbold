@@ -10,12 +10,15 @@ import { useAppDispatch, useAppSelector } from "@/lib/storeHooks";
 import { useEffect, useState, useRef } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import FixtureHeader from "./header/fixtureHeader";
+import { useTheme } from "next-themes";
 
 import Image from "next/image";
 import { PhoneForwarded } from "lucide-react";
 import { PiSoccerBallLight } from "react-icons/pi";
 import { CgArrowsExchange } from "react-icons/cg";
 import { useTranslations } from "next-intl";
+import LightField from "@/../public/img/lightfield.png";
+import DarkField from "@/../public/img/darkfield.png";
 
 // import { fixture } from "../../../public/example";
 
@@ -29,6 +32,10 @@ export default function FixturesOverView({
   // 번역
   const f = useTranslations("fixture");
 
+  // 테마
+  const { theme } = useTheme();
+
+  console.log(theme);
   /** 리덕스 초기화 */
   const dispatch = useAppDispatch();
   const { fixture, injurie, h2h, fixtureByRound }: any = useAppSelector(
@@ -50,13 +57,13 @@ export default function FixturesOverView({
       //     awayID: payload?.teams.away.id,
       //   })
       // );
-      dispatch(
-        getFixtruesByRound({
-          leagueID: payload?.league.id,
-          season: payload?.league.season,
-          round: payload?.league.round,
-        })
-      );
+      // dispatch(
+      //   getFixtruesByRound({
+      //     leagueID: payload?.league.id,
+      //     season: payload?.league.season,
+      //     round: payload?.league.round,
+      //   })
+      // );
     });
   }, [dispatch, id]);
 
@@ -66,7 +73,9 @@ export default function FixturesOverView({
 
   /** 사용할 데이터 */
   const finxturesByRound10 = fixtureByRound?.slice(0, 10);
-  const round = fixture?.league.round.split("-")[1]
+  const round = fixture?.league.round.split("-")[1];
+  const hometeamFormation = fixture?.lineups[0].formation.split("-");
+  const awayteamFormation = fixture?.lineups[1].formation.split("-");
   console.log(fixture);
 
   /** 리그URL로 이동하기위해 url 포맷변경하는 함수 */
@@ -155,7 +164,7 @@ export default function FixturesOverView({
                   className={
                     tabPage === "factsPreview"
                       ? "text-black font-medium dark:text-white"
-                      : "text-gray-700 dark:text-gray-200"
+                      : "text-gray-700 dark:text-custom-gray"
                   }
                 >
                   {f("facts")}
@@ -175,8 +184,8 @@ export default function FixturesOverView({
                 <h1
                   className={
                     tabPage === "factsPreview"
-                      ? "text-black font-medium"
-                      : "text-gray-700"
+                      ? "text-black font-medium dark:text-white"
+                      : "text-gray-700 dark:text-custom-gray"
                   }
                 >
                   {f("preview")}
@@ -198,8 +207,8 @@ export default function FixturesOverView({
                 <h1
                   className={
                     tabPage === "events"
-                      ? "text-black font-medium"
-                      : "text-gray-700"
+                      ? "text-black font-medium dark:text-white"
+                      : "text-gray-700 dark:text-custom-gray"
                   }
                 >
                   {f("events")}
@@ -221,8 +230,8 @@ export default function FixturesOverView({
                 <h1
                   className={
                     tabPage === "lineups"
-                      ? "text-black font-medium"
-                      : "text-gray-700"
+                      ? "text-black font-medium dark:text-white"
+                      : "text-gray-700 dark:text-custom-gray"
                   }
                 >
                   {f("lineup")}
@@ -244,8 +253,8 @@ export default function FixturesOverView({
                 <h1
                   className={
                     tabPage === "players"
-                      ? "text-black font-medium"
-                      : "text-gray-700"
+                      ? "text-black font-medium dark:text-white"
+                      : "text-gray-700 dark:text-custom-gray"
                   }
                 >
                   {f("players")}
@@ -267,8 +276,8 @@ export default function FixturesOverView({
                 <h1
                   className={
                     tabPage === "stats"
-                      ? "text-black font-medium"
-                      : "text-gray-700"
+                      ? "text-black font-medium dark:text-white"
+                      : "text-gray-700 dark:text-custom-gray"
                   }
                 >
                   {f("stats")}
@@ -288,7 +297,9 @@ export default function FixturesOverView({
             >
               <h1
                 className={
-                  tabPage === "h2h" ? "text-black font-medium" : "text-gray-700"
+                  tabPage === "h2h"
+                    ? "text-black font-medium dark:text-white"
+                    : "text-gray-700 dark:text-custom-gray"
                 }
               >
                 {f("h2h")}
@@ -310,7 +321,7 @@ export default function FixturesOverView({
               <>
                 {/* Match stats */}
                 {fixture?.statistics.length > 0 && (
-                  <div className="w-full bg-white mt-4 border border-solid border-slate-200 rounded-xl pt-7">
+                  <div className="w-full bg-white mt-4 border border-solid border-slate-200 rounded-xl pt-7 dark:bg-custom-dark dark:border-none">
                     <div className="w-full">
                       <div className="text-base w-full">
                         <div className="flex justify-center text-base font-medium mb-8 px-7">
@@ -396,7 +407,7 @@ export default function FixturesOverView({
                           </div>
                         </div>
 
-                        <hr className="mt-10" />
+                        <hr className="mt-10 dark:border-custom-gray3" />
 
                         {/* move to all stats */}
                         <div
@@ -414,7 +425,7 @@ export default function FixturesOverView({
 
                 {/* Events */}
                 {fixture?.events.length > 0 && (
-                  <div className="w-full bg-white mt-4  border border-solid border-slate-200 rounded-xl p-7">
+                  <div className="w-full bg-white mt-4  border border-solid border-slate-200 rounded-xl p-7 dark:bg-custom-dark  dark:border-none">
                     <div className="flex justify-center">
                       <h1 className="text-base font-medium">{f("events")}</h1>
                     </div>
@@ -498,7 +509,7 @@ export default function FixturesOverView({
 
                             {/* 시간대 */}
                             <div
-                              className={`font-semibold border border-solid border-slate-200 bg-slate-200 w-9 h-9 rounded-full text-sm flex justify-center items-center ${
+                              className={`font-semibold border border-solid border-slate-200 bg-slate-200 w-9 h-9 rounded-full text-sm flex justify-center items-center dark:bg-custom-gray2 dark:border-none ${
                                 v?.team.name === fixture?.teams.home.name
                                   ? "max-md:mr-6"
                                   : "max-md:ml-6"
@@ -577,25 +588,97 @@ export default function FixturesOverView({
                     </div>
 
                     <div className="flex justify-center">
-                      <h1 className="text-xsm font-medium mt-3">
-                        {fixture?.fixture.status.extra}{f("minutesAdded")}
+                      <h1 className="text-xsm font-medium mt-3 dark:text-custom-gray">
+                        {fixture?.fixture.status.extra}
+                        {f("minutesAdded")}
                       </h1>
                     </div>
 
                     <div className="flex items-center mt-10">
-                      <hr className="border-1 border-solid border-slate-200 w-full" />
+                      <hr className="border-1 border-solid border-slate-200 w-full dark:border-custom-gray3" />
                       <h1 className="text-base font-semibold px-8">FT</h1>
-                      <hr className="border-1 border-solid border-slate-200 w-full" />
+                      <hr className="border-1 border-solid border-slate-200 w-full dark:border-custom-gray3" />
                     </div>
                   </div>
                 )}
 
                 {/* Lineups */}
-                {/* {fixture?.lineups.length > 0 && (
-                  // <Image src={FootBallField} alt="football lineups" className="w-100vh h-100vh rotate-90" 
-                   
-                  // ></Image>
-                )} */}
+                {fixture?.lineups.length > 0 && (
+                  <div className="w-full bg-[#0B9F67] mt-4 rounded-xl border border-solid border-slate-200">
+                    {/* lineup header */}
+                    <div className="flex justify-between p-5">
+                      {/* home team */}
+                      <div className="flex items-center text-base text-white">
+                        <Image
+                          src={fixture?.teams.home.logo}
+                          alt={fixture?.teams.home.name}
+                          width={35}
+                          height={35}
+                          className="rounded-full mr-2"
+                        />
+                        <h2 className="mr-6">{fixture?.teams.home.name}</h2>
+                        <h2 className="font-medium">
+                          {fixture?.lineups[0].formation}
+                        </h2>
+                      </div>
+                      {/* away team */}
+                      <div className="flex items-center text-base text-white">
+                        <h2 className="font-medium">
+                          {fixture?.lineups[1].formation}
+                        </h2>
+                        <h2 className="ml-6">{fixture?.teams.away.name}</h2>{" "}
+                        <Image
+                          src={fixture?.teams.away.logo}
+                          alt={fixture?.teams.away.name}
+                          width={35}
+                          height={35}
+                          className="rounded-full ml-2"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="relative">
+                      {/* background */}
+                      {theme === "light" ? (
+                        <Image src={LightField} alt="football lineups" />
+                      ) : (
+                        <Image src={DarkField} alt="football lineups" />
+                      )}
+
+                      <div className="absolute top-0 left-0 text-sm">
+                        {/* 홈팀 */}
+                        <div>
+                          {/* 골키퍼 */}
+                          <div className="flex">
+                            <h3>
+                              {fixture?.lineups[0].startXI[0].player.number}
+                            </h3>{" "}
+                            &nbsp;
+                            <h3>
+                              {fixture?.lineups[0].startXI[0].player.name}
+                            </h3>
+                          </div>
+                          {/* 나머지 포메이션 
+                            hometeamFormation은 [3,5,2] , [4,2,3,1] 과 같은 배열형태
+                            생각 중인건 각 v의 값별로 3개면 골키퍼를 제외한
+                            인덱스 1부터 3까지 반복을 돌려 보여주고 
+                            v값이 4개라면 인덱스 1부터 4까지를 반복돌려 보여줄 생각
+                            그 후에 flex를 통해 존재하는 라인업의 줄에 따라 각 포메이션 섹션별 공간을 다르게 주기위해
+                            justify between을 이용하여 적절한 공간 분배를 줄생각
+                          */}
+                          {hometeamFormation.map((v: any, i: number) => {
+                            console.log(v);
+                            return (
+                              <div key={i}>
+                                
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </>
             ) : (
               // 경기가 시작하지 않은 경우
@@ -609,7 +692,7 @@ export default function FixturesOverView({
 
       {/* 같은 라운드 경기 보여주기, pc사이즈가 아닐경우 렌더링 x*/}
       {finxturesByRound10?.length > 0 && (
-        <div className="w-[350px] h-full bg-white border-slate-200 border border-solid rounded-xl mt-6 py-5 ml-6 max-lg:hidden">
+        <div className="w-[350px] h-full bg-white border-slate-200 border border-solid rounded-xl mt-6 py-5 ml-6 max-lg:hidden dark:bg-custom-dark dark:border-none">
           {/* 리그 이름 및 라운드*/}
           <div
             className="flex items-center justify-between cursor-pointer hover:opacity-60 px-5"
@@ -623,10 +706,12 @@ export default function FixturesOverView({
               <h1 className="text-base mb-1 font-medium">
                 {fixture?.league.name}
               </h1>
-              <h2 className="text-xsm">{round} {f("round")}</h2>
+              <h2 className="text-xsm">
+                {round} {f("round")}
+              </h2>
             </div>
             {/* 리그 이미지 */}
-            <div className="border-slate-200 border border-solid rounded-full p-2 ">
+            <div className="border-slate-200 border border-solid rounded-full p-2 dark:border-custom-gray3">
               <Image
                 src={fixture?.league.logo}
                 alt={fixture?.league.name || "no league name"}
@@ -635,7 +720,7 @@ export default function FixturesOverView({
               />
             </div>
           </div>
-          <hr className="mt-5" />
+          <hr className="mt-5 dark:border-custom-gray3" />
           {/* 다른 라운드 경기 */}
           <div>
             {finxturesByRound10?.length > 0 &&
@@ -691,7 +776,7 @@ export default function FixturesOverView({
                       </div>
 
                       <div className="w-3/12 flex justify-center">
-                        <hr className="h-12 w-[1px] border-0 bg-slate-200" />
+                        <hr className="h-12 w-[1px] border-0 bg-slate-200 dark:bg-custom-gray3" />
                       </div>
 
                       {/* 경기 상태 */}
@@ -700,7 +785,9 @@ export default function FixturesOverView({
                       </div>
                     </div>
                     {/* 마지막이 아닐 경우에만 hr 렌더링 */}
-                    {i !== finxturesByRound10.length - 1 && <hr />}
+                    {i !== finxturesByRound10.length - 1 && (
+                      <hr className="dark:border-custom-gray3" />
+                    )}
                   </>
                 );
               })}
