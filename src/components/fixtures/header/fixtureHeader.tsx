@@ -5,6 +5,7 @@ import dateIcon from "@/../../public/img/date.png";
 import venueIcon from "@/../../public/img/venue.png";
 import refereeIcon from "@/../../public/img/whistle.png";
 import ball from "@/../../public/img/ball.png";
+import noimage from "@/../../public/img/noimage.png"
 
 import Image from "next/image";
 import Link from "next/link";
@@ -122,7 +123,7 @@ export default function FixtureHeader({
         <div className="flex items-center justify-start">
           <div className="w-7 h-7 rounded-full bg-slate-200 flex justify-center items-center hover:cursor-pointer hover:bg-slate-400 dark:bg-custom-gray3 dark:hover:bg-custom-gray">
             <Image
-              src={arrow}
+              src={arrow || noimage}
               alt="arrow"
               width={11}
               height={11}
@@ -138,7 +139,7 @@ export default function FixtureHeader({
         {/* 리그 이름 및 라운드 */}
         <div className="flex justify-center items-center m-auto ">
           <Image
-            src={fixture?.league.logo}
+            src={fixture?.league.logo || noimage}
             alt={fixture?.league.name || "no league name"}
             width={30}
             height={30}
@@ -161,7 +162,7 @@ export default function FixtureHeader({
       <div className="flex justify-center text-custom-gray  max-lg:hidden">
         <div className="mx-2 flex items-center">
           <Image
-            src={dateIcon}
+            src={dateIcon || noimage}
             alt={"date"}
             width={15}
             height={15}
@@ -171,7 +172,7 @@ export default function FixtureHeader({
         </div>
         <div className="mx-2 flex items-center ">
           <Image
-            src={venueIcon}
+            src={venueIcon || noimage}
             alt={"venue"}
             width={25}
             height={25}
@@ -187,7 +188,7 @@ export default function FixtureHeader({
         {fixture?.fixture.referee ? (
           <div className="mx-2 flex items-center">
             <Image
-              src={refereeIcon}
+              src={refereeIcon || noimage}
               alt={"referee"}
               width={15}
               height={15}
@@ -211,7 +212,7 @@ export default function FixtureHeader({
             {fixture?.teams.home.name}
           </Link>
           <Image
-            src={fixture?.teams.home.logo}
+            src={fixture?.teams.home.logo || noimage}
             alt={fixture?.teams.home.name}
             width={50}
             height={50}
@@ -267,7 +268,7 @@ export default function FixtureHeader({
         {/* 원정팀 */}
         <div className="flex items-center w-5/12 justify-start  max-lg:flex-col max-md:w-4/12">
           <Image
-            src={fixture?.teams.away.logo}
+            src={fixture?.teams.away.logo|| noimage}
             alt={fixture?.teams.away.name}
             width={50}
             height={50}
@@ -310,7 +311,7 @@ export default function FixtureHeader({
             </div>
             <div className="flex justify-center w-2/12">
               <Image
-                src={ball}
+                src={ball || noimage}
                 alt="score"
                 width={15}
                 height={15}

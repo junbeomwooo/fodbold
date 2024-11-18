@@ -138,8 +138,6 @@ export default function FixturesOverView({
     router.push(url);
   };
 
-  console.log(fixture);
-
   return (
     <div className="flex w-full justify-center">
       {/* 헤더 및 메인 컨텐츠 */}
@@ -611,7 +609,7 @@ export default function FixturesOverView({
                       <div className="flex items-center text-base text-white">
                         <Image
                           src={fixture?.teams.home.logo}
-                          alt={fixture?.teams.home.name}
+                          alt={fixture?.teams.home.name || "home team logo"}
                           width={35}
                           height={35}
                           className="rounded-full mr-2"
@@ -629,7 +627,7 @@ export default function FixturesOverView({
                         <h2 className="ml-6">{fixture?.teams.away.name}</h2>{" "}
                         <Image
                           src={fixture?.teams.away.logo}
-                          alt={fixture?.teams.away.name}
+                          alt={fixture?.teams.away.name || "away team logo"}
                           width={35}
                           height={35}
                           className="rounded-full ml-2"
@@ -645,9 +643,9 @@ export default function FixturesOverView({
                         <Image src={DarkField} alt="football lineups" />
                       )}
 
-                      <div className="absolute top-0 left-0 text-sm">
+                      <div className="absolute top-0 left-0 text-sm h-full w-full">
                         {/* 홈팀 */}
-                        <div>
+                        <div className="flex h-full w-1/2 justify-between px-10 items-center">
                           {/* 골키퍼 */}
                           <div className="flex">
                             <h3>
@@ -658,23 +656,79 @@ export default function FixturesOverView({
                               {fixture?.lineups[0].startXI[0].player.name}
                             </h3>
                           </div>
-                          {/* 나머지 포메이션 
-                            hometeamFormation은 [3,5,2] , [4,2,3,1] 과 같은 배열형태
-                            생각 중인건 각 v의 값별로 3개면 골키퍼를 제외한
-                            인덱스 1부터 3까지 반복을 돌려 보여주고 
-                            v값이 4개라면 인덱스 1부터 4까지를 반복돌려 보여줄 생각
-                            그 후에 flex를 통해 존재하는 라인업의 줄에 따라 각 포메이션 섹션별 공간을 다르게 주기위해
-                            justify between을 이용하여 적절한 공간 분배를 줄생각
+                          {/*
+                          reudce함수를 사용하여 시작 위치의 합계를 통해 이미 이전에 언급된 인덱스를 제외하여 새로운 시작 위치를 선정
+                          시작 인덱스 위치와 선수의 수가 들어있는 line 변수를 더하여 끝날 위치를 알아냄
+                          그렇게 구한 startIndex와 endIndex 위치를 사용하여 각 반복마다 필요한 선수를 추출
                           */}
-                          {hometeamFormation.map((v: any, i: number) => {
-                            console.log(v);
-                            return (
-                              <div key={i}>
-                                
-                              </div>
-                            );
-                          })}
+                          {hometeamFormation.map(
+                            (line: number, index: number) => {
+                              // 골키퍼를 제외한 선발 명단 선수들
+                              const players = fixture?.lineups[0].startXI.slice(
+                                1,
+                                12
+                              );
+
+                              // 시작 인덱스
+                              const startIndex = hometeamFormation
+                                .slice(0, index)
+                                .reduce(
+                                  (acc: number, players: string) =>
+                                    acc + parseInt(players),
+                                  0
+                                );
+
+                              // 엔드 인덱스
+                              const endIndex = startIndex + Number(line);
+
+                              // 각 포메이션 라인별 선수들
+                              const playersPerLine = players.slice(
+                                startIndex,
+                                endIndex
+                              );
+
+                              return (
+                                <div key={index}>
+                                  {playersPerLine.map(
+                                    (player: any, playerIndex: number) => {
+                                      const foundPlayer =
+                                        fixture?.players[0].players.find(
+                                          (v: any) =>
+                                            v.player.id === player?.player.id
+                                        );
+
+                                        /** foundIndex또는 find를 이용하여 해당선수의 이미지 경로를 찾기 */
+                                        console.log(foundPlayer);
+
+                                      return (
+                                        <div key={playerIndex}>
+                                          {/* <Image
+                                            src={
+                                              fixture?.players[0].players[
+                                                playerPictureIndex
+                                              ].player.photo
+                                            }
+                                            alt={player?.player.name}
+                                            width={50}
+                                            height={50}
+                                            className="rounded-full m-auto"
+                                          /> */}
+                                          <div className="flex">
+                                          <h3>{player?.player.number}</h3>{" "}
+                                          &nbsp;
+                                          <h3>{player?.player.name}</h3>
+                                          </div>
+                                        </div>
+                                      );
+                                    }
+                                  )}
+                                </div>
+                              );
+                            }
+                          )}
                         </div>
+                        {/* 어웨이팀 */}
+                        <div></div>
                       </div>
                     </div>
                   </div>
