@@ -645,16 +645,25 @@ export default function FixturesOverView({
 
                       <div className="absolute top-0 left-0 text-sm h-full w-full">
                         {/* 홈팀 */}
-                        <div className="flex h-full w-1/2 justify-between px-10 items-center">
+                        <div className="flex h-full w-1/2 justify-around px-4 items-center">
                           {/* 골키퍼 */}
-                          <div className="flex">
-                            <h3>
-                              {fixture?.lineups[0].startXI[0].player.number}
-                            </h3>{" "}
-                            &nbsp;
-                            <h3>
-                              {fixture?.lineups[0].startXI[0].player.name}
-                            </h3>
+                          <div className="flex-col justify-center">
+                            <Image
+                              src={`https://media.api-sports.io/football/players/${fixture?.lineups[0].startXI[0].player.id}.png`}
+                              alt={fixture?.lineups[0].startXI[0].player.name}
+                              width={43}
+                              height={43}
+                              className="rounded-full m-auto"
+                            />
+                            <div className="flex">
+                              <h3>
+                                {fixture?.lineups[0].startXI[0].player.number}
+                              </h3>{" "}
+                              &nbsp;
+                              <h3>
+                                {fixture?.lineups[0].startXI[0].player.name}
+                              </h3>
+                            </div>
                           </div>
                           {/*
                           reudce함수를 사용하여 시작 위치의 합계를 통해 이미 이전에 언급된 인덱스를 제외하여 새로운 시작 위치를 선정
@@ -688,35 +697,23 @@ export default function FixturesOverView({
                               );
 
                               return (
-                                <div key={index}>
+                                <div key={index} className="flex-col">
+                                  
                                   {playersPerLine.map(
                                     (player: any, playerIndex: number) => {
-                                      const foundPlayer =
-                                        fixture?.players[0].players.find(
-                                          (v: any) =>
-                                            v.player.id === player?.player.id
-                                        );
-
-                                        /** foundIndex또는 find를 이용하여 해당선수의 이미지 경로를 찾기 */
-                                        console.log(foundPlayer);
-
                                       return (
-                                        <div key={playerIndex}>
-                                          {/* <Image
-                                            src={
-                                              fixture?.players[0].players[
-                                                playerPictureIndex
-                                              ].player.photo
-                                            }
+                                        <div key={playerIndex} className={`flex-col`}>
+                                          <Image
+                                            src={`https://media.api-sports.io/football/players/${player?.player.id}.png`}
                                             alt={player?.player.name}
-                                            width={50}
-                                            height={50}
+                                            width={43}
+                                            height={43}
                                             className="rounded-full m-auto"
-                                          /> */}
-                                          <div className="flex">
-                                          <h3>{player?.player.number}</h3>{" "}
-                                          &nbsp;
-                                          <h3>{player?.player.name}</h3>
+                                          />
+                                          <div className="flex justify-center">
+                                            <h3>{player?.player.number}</h3>{" "}
+                                            &nbsp;
+                                            <h3>{player?.player.name}</h3>
                                           </div>
                                         </div>
                                       );
