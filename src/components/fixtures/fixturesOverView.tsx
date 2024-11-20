@@ -57,13 +57,13 @@ export default function FixturesOverView({
       //     awayID: payload?.teams.away.id,
       //   })
       // );
-      // dispatch(
-      //   getFixtruesByRound({
-      //     leagueID: payload?.league.id,
-      //     season: payload?.league.season,
-      //     round: payload?.league.round,
-      //   })
-      // );
+      dispatch(
+        getFixtruesByRound({
+          leagueID: payload?.league.id,
+          season: payload?.league.season,
+          round: payload?.league.round,
+        })
+      );
     });
   }, [dispatch, id]);
 
@@ -74,8 +74,8 @@ export default function FixturesOverView({
   /** 사용할 데이터 */
   const finxturesByRound10 = fixtureByRound?.slice(0, 10);
   const round = fixture?.league.round.split("-")[1];
-  const hometeamFormation = fixture?.lineups[0].formation.split("-");
-  const awayteamFormation = fixture?.lineups[1].formation.split("-");
+  const hometeamFormation = fixture?.lineups[0]?.formation.split("-");
+  const awayteamFormation = fixture?.lineups[1]?.formation.split("-");
   console.log(fixture);
 
   /** 리그URL로 이동하기위해 url 포맷변경하는 함수 */
@@ -315,7 +315,7 @@ export default function FixturesOverView({
         {tabPage === "factsPreview" && (
           <>
             {/* 경기가 시작했거나 끝난 경우 */}
-            {fixture?.statistics.length > 0 ? (
+            {fixture?.statistics.length > 0 || fixture?.fixture.status.short === "FT" ? (
               <>
                 {/* Match stats */}
                 {fixture?.statistics.length > 0 && (
@@ -647,15 +647,15 @@ export default function FixturesOverView({
                         {/* 홈팀 */}
                         <div className="flex h-full w-1/2 justify-around px-4 items-center">
                           {/* 골키퍼 */}
-                          <div className="flex-col justify-center">
+                          <div className="justify-center">
                             <Image
                               src={`https://media.api-sports.io/football/players/${fixture?.lineups[0].startXI[0].player.id}.png`}
                               alt={fixture?.lineups[0].startXI[0].player.name}
-                              width={43}
-                              height={43}
-                              className="rounded-full m-auto"
+                              width={45}
+                              height={45}
+                              className="rounded-full m-auto bg-white"
                             />
-                            <div className="flex">
+                            <div className="flex text-white">
                               <h3>
                                 {fixture?.lineups[0].startXI[0].player.number}
                               </h3>{" "}
@@ -695,22 +695,25 @@ export default function FixturesOverView({
                                 startIndex,
                                 endIndex
                               );
-
+    
                               return (
                                 <div key={index} className="flex-col">
                                   
                                   {playersPerLine.map(
                                     (player: any, playerIndex: number) => {
                                       return (
-                                        <div key={playerIndex} className={`flex-col`}>
+                                        // 선수 이미지, 번호, 이름
+                                        <div key={playerIndex} className="flex-col my-16">
+                                          {/* 선수 이미지 */}
                                           <Image
                                             src={`https://media.api-sports.io/football/players/${player?.player.id}.png`}
                                             alt={player?.player.name}
-                                            width={43}
-                                            height={43}
-                                            className="rounded-full m-auto"
+                                            width={45}
+                                            height={45}
+                                            className="rounded-full m-auto bg-white"
                                           />
-                                          <div className="flex justify-center">
+                                          {/* 선수 번호 및 이름 */}
+                                          <div className="flex justify-center text-white">
                                             <h3>{player?.player.number}</h3>{" "}
                                             &nbsp;
                                             <h3>{player?.player.name}</h3>
