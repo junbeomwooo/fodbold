@@ -18,7 +18,9 @@ import { PiSoccerBallLight } from "react-icons/pi";
 import { CgArrowsExchange } from "react-icons/cg";
 import { useTranslations } from "next-intl";
 import LightField from "@/../public/img/lightfield.png";
+import LightFieldMobile from "@/../public/img/lightfieldMobile.png";
 import DarkField from "@/../public/img/darkfield.png";
+import DarkFieldMobile from "@/../public/img/darkfieldMobile.png";
 
 // import { fixture } from "../../../public/example";
 
@@ -49,22 +51,22 @@ export default function FixturesOverView({
 
   /** 렌더링시  */
   useEffect(() => {
-    dispatch(getFixtures({ id: id })).then(({ payload }) => {
-      // dispatch(getInjuries({id: id}));
-      // dispatch(
-      //   getH2H({
-      //     homeID: payload?.teams.home.id,
-      //     awayID: payload?.teams.away.id,
-      //   })
-      // );
-      dispatch(
-        getFixtruesByRound({
-          leagueID: payload?.league.id,
-          season: payload?.league.season,
-          round: payload?.league.round,
-        })
-      );
-    });
+    // dispatch(getFixtures({ id: id })).then(({ payload }) => {
+    //   // dispatch(getInjuries({id: id}));
+    //   // dispatch(
+    //   //   getH2H({
+    //   //     homeID: payload?.teams.home.id,
+    //   //     awayID: payload?.teams.away.id,
+    //   //   })
+    //   // );
+    //   dispatch(
+    //     getFixtruesByRound({
+    //       leagueID: payload?.league.id,
+    //       season: payload?.league.season,
+    //       round: payload?.league.round,
+    //     })
+    //   );
+    // });
   }, [dispatch, id]);
 
   // home , away match stats
@@ -75,7 +77,7 @@ export default function FixturesOverView({
   const finxturesByRound10 = fixtureByRound?.slice(0, 10);
   const round = fixture?.league.round.split("-")[1];
   const hometeamFormation = fixture?.lineups[0]?.formation.split("-");
-  const awayteamFormation = fixture?.lineups[1]?.formation.split("-");
+  const awayteamFormation = fixture?.lineups[1]?.formation.split("-").reverse();
   console.log(fixture);
 
   /** 리그URL로 이동하기위해 url 포맷변경하는 함수 */
@@ -315,7 +317,8 @@ export default function FixturesOverView({
         {tabPage === "factsPreview" && (
           <>
             {/* 경기가 시작했거나 끝난 경우 */}
-            {fixture?.statistics.length > 0 || fixture?.fixture.status.short === "FT" ? (
+            {fixture?.statistics.length > 0 ||
+            fixture?.fixture.status.short === "FT" ? (
               <>
                 {/* Match stats */}
                 {fixture?.statistics.length > 0 && (
@@ -602,9 +605,9 @@ export default function FixturesOverView({
 
                 {/* Lineups */}
                 {fixture?.lineups.length > 0 && (
-                  <div className="w-full bg-[#0B9F67] mt-4 rounded-xl border border-solid border-slate-200">
+                  <>
                     {/* lineup header */}
-                    <div className="flex justify-between p-5">
+                    <div className="flex w-full justify-between p-5 bg-[#0B9F67]  rounded-t-xl">
                       {/* home team */}
                       <div className="flex items-center text-base text-white">
                         <Image
@@ -634,104 +637,197 @@ export default function FixturesOverView({
                         />
                       </div>
                     </div>
-
-                    <div className="relative">
-                      {/* background */}
-                      {theme === "light" ? (
-                        <Image src={LightField} alt="football lineups" />
-                      ) : (
-                        <Image src={DarkField} alt="football lineups" />
-                      )}
-
-                      <div className="absolute top-0 left-0 text-sm h-full w-full">
-                        {/* 홈팀 */}
-                        <div className="flex h-full w-1/2 justify-around px-4 items-center">
-                          {/* 골키퍼 */}
-                          <div className="justify-center">
+                    <div className="w-full relative">
+                      <div className="w-full">
+                        {/* background */}
+                        {theme === "light" ? (
+                          <>
                             <Image
-                              src={`https://media.api-sports.io/football/players/${fixture?.lineups[0].startXI[0].player.id}.png`}
-                              alt={fixture?.lineups[0].startXI[0].player.name}
-                              width={45}
-                              height={45}
-                              className="rounded-full m-auto bg-white"
+                              src={LightField}
+                              alt="football lineups"
+                              className="max-lg:hidden"
                             />
-                            <div className="flex text-white">
-                              <h3>
-                                {fixture?.lineups[0].startXI[0].player.number}
-                              </h3>{" "}
-                              &nbsp;
-                              <h3>
-                                {fixture?.lineups[0].startXI[0].player.name}
-                              </h3>
+                            <Image
+                              src={LightFieldMobile}
+                              alt="football lineups mobile"
+                              className="lg:hidden"
+                            />
+                          </>
+                        ) : (
+                          <Image src={DarkField} alt="football lineups" />
+                        )}
+
+                        <div className="absolute top-0 left-0 text-[12px] h-full w-full flex max-lg:flex-col">
+                          {/* 홈팀 */}
+                          <div className="flex h-full w-1/2 justify-around px-4 items-center max-lg:flex-col max-lg:w-full max-lg:h-1/2">
+                            {/* 골키퍼 */}
+                            <div className="justify-center">
+                              <Image
+                                src={`https://media.api-sports.io/football/players/${fixture?.lineups[0].startXI[0].player.id}.png`}
+                                alt={fixture?.lineups[0].startXI[0].player.name}
+                                width={45}
+                                height={45}
+                                className="rounded-full m-auto bg-white max-md:w-[40px]"
+                              />
+                              <div className="flex text-white">
+                                <h3>
+                                  {fixture?.lineups[0].startXI[0].player.number}
+                                </h3>{" "}
+                                &nbsp;
+                                <h3>
+                                  {fixture?.lineups[0].startXI[0].player.name}
+                                </h3>
+                              </div>
                             </div>
-                          </div>
-                          {/*
+                            {/*
                           reudce함수를 사용하여 시작 위치의 합계를 통해 이미 이전에 언급된 인덱스를 제외하여 새로운 시작 위치를 선정
                           시작 인덱스 위치와 선수의 수가 들어있는 line 변수를 더하여 끝날 위치를 알아냄
                           그렇게 구한 startIndex와 endIndex 위치를 사용하여 각 반복마다 필요한 선수를 추출
                           */}
-                          {hometeamFormation.map(
-                            (line: number, index: number) => {
-                              // 골키퍼를 제외한 선발 명단 선수들
-                              const players = fixture?.lineups[0].startXI.slice(
-                                1,
-                                12
-                              );
+                            {hometeamFormation.map(
+                              (line: number, index: number) => {
+                                // 골키퍼를 제외한 선발 명단 선수들
+                                const players =
+                                  fixture?.lineups[0].startXI.slice(1, 12);
 
-                              // 시작 인덱스
-                              const startIndex = hometeamFormation
-                                .slice(0, index)
-                                .reduce(
-                                  (acc: number, players: string) =>
-                                    acc + parseInt(players),
-                                  0
+                                // 시작 인덱스
+                                const startIndex = hometeamFormation
+                                  .slice(0, index)
+                                  .reduce(
+                                    (acc: number, players: string) =>
+                                      acc + parseInt(players),
+                                    0
+                                  );
+
+                                // 엔드 인덱스
+                                const endIndex = startIndex + Number(line);
+
+                                // 각 포메이션 라인별 선수들
+                                const playersPerLine = players.slice(
+                                  startIndex,
+                                  endIndex
                                 );
 
-                              // 엔드 인덱스
-                              const endIndex = startIndex + Number(line);
-
-                              // 각 포메이션 라인별 선수들
-                              const playersPerLine = players.slice(
-                                startIndex,
-                                endIndex
-                              );
-    
-                              return (
-                                <div key={index} className="flex-col">
-                                  
-                                  {playersPerLine.map(
-                                    (player: any, playerIndex: number) => {
-                                      return (
-                                        // 선수 이미지, 번호, 이름
-                                        <div key={playerIndex} className="flex-col my-16">
-                                          {/* 선수 이미지 */}
-                                          <Image
-                                            src={`https://media.api-sports.io/football/players/${player?.player.id}.png`}
-                                            alt={player?.player.name}
-                                            width={45}
-                                            height={45}
-                                            className="rounded-full m-auto bg-white"
-                                          />
-                                          {/* 선수 번호 및 이름 */}
-                                          <div className="flex justify-center text-white">
-                                            <h3>{player?.player.number}</h3>{" "}
-                                            &nbsp;
-                                            <h3>{player?.player.name}</h3>
+                                return (
+                                  <div key={index} className="flex lg:flex-col">
+                                    {playersPerLine.map(
+                                      (player: any, playerIndex: number) => {
+                                        return (
+                                          // 한 선수
+                                          <div
+                                            key={playerIndex}
+                                            className="flex-col sm:mx-4 md:mx-10 lg:mx-0 lg:my-1 xl:my-6 2xl:my-10"
+                                          >
+                                            {/* 선수 이미지 */}
+                                            <Image
+                                              src={`https://media.api-sports.io/football/players/${player?.player.id}.png`}
+                                              alt={player?.player.name}
+                                              width={45}
+                                              height={45}
+                                              className="rounded-full m-auto bg-white max-md:w-[40px]"
+                                            />
+                                            {/* 선수 번호 및 이름 */}
+                                            <div className="flex justify-center text-white items-center mt-2">
+                                              <h3>{player?.player.number}</h3>{" "}
+                                              &nbsp;
+                                              <h3>{player?.player.name}</h3>
+                                            </div>
                                           </div>
-                                        </div>
-                                      );
-                                    }
-                                  )}
-                                </div>
-                              );
-                            }
-                          )}
+                                        );
+                                      }
+                                    )}
+                                  </div>
+                                );
+                              }
+                            )}
+                          </div>
+                          {/* 어웨이팀 */}
+                          <div className="flex h-full w-1/2 justify-around px-4 items-center max-lg:flex-col max-lg:w-full max-lg:h-1/2">
+                            {/*
+                          reudce함수를 사용하여 시작 위치의 합계를 통해 이미 이전에 언급된 인덱스를 제외하여 새로운 시작 위치를 선정
+                          시작 인덱스 위치와 선수의 수가 들어있는 line 변수를 더하여 끝날 위치를 알아냄
+                          그렇게 구한 startIndex와 endIndex 위치를 사용하여 각 반복마다 필요한 선수를 추출
+                          */}
+                            {awayteamFormation.map(
+                              (line: number, index: number) => {
+                                // 골키퍼를 제외한 선발 명단 선수들
+                                const players =
+                                  fixture?.lineups[0].startXI.slice(1, 12);
+
+                                // 시작 인덱스
+                                const startIndex = awayteamFormation
+                                  .slice(0, index)
+                                  .reduce(
+                                    (acc: number, players: string) =>
+                                      acc + parseInt(players),
+                                    0
+                                  );
+
+                                // 엔드 인덱스
+                                const endIndex = startIndex + Number(line);
+
+                                // 각 포메이션 라인별 선수들
+                                const playersPerLine = players.slice(
+                                  startIndex,
+                                  endIndex
+                                );
+
+                                return (
+                                  <div key={index} className="flex lg:flex-col">
+                                    {playersPerLine.map(
+                                      (player: any, playerIndex: number) => {
+                                        return (
+                                          // 한 선수
+                                          <div
+                                            key={playerIndex}
+                                            className="flex-col sm:mx-4 md:mx-10 lg:mx-0 lg:my-1 xl:my-6 2xl:my-10"
+                                          >
+                                            {/* 선수 이미지 */}
+                                            <Image
+                                              src={`https://media.api-sports.io/football/players/${player?.player.id}.png`}
+                                              alt={player?.player.name}
+                                              width={45}
+                                              height={45}
+                                              className="rounded-full m-auto bg-white max-md:w-[40px]"
+                                            />
+                                            {/* 선수 번호 및 이름 */}
+                                            <div className="flex justify-center text-white items-center mt-2">
+                                              <h3>{player?.player.number}</h3>{" "}
+                                              &nbsp;
+                                              <h3>{player?.player.name}</h3>
+                                            </div>
+                                          </div>
+                                        );
+                                      }
+                                    )}
+                                  </div>
+                                );
+                              }
+                            )}
+                            {/* 골키퍼 */}
+                            <div className="justify-center">
+                              <Image
+                                src={`https://media.api-sports.io/football/players/${fixture?.lineups[1].startXI[0].player.id}.png`}
+                                alt={fixture?.lineups[1].startXI[0].player.name}
+                                width={45}
+                                height={45}
+                                className="rounded-full m-auto bg-white max-md:w-[40px]"
+                              />
+                              <div className="flex text-white">
+                                <h3>
+                                  {fixture?.lineups[1].startXI[0].player.number}
+                                </h3>{" "}
+                                &nbsp;
+                                <h3>
+                                  {fixture?.lineups[1].startXI[0].player.name}
+                                </h3>
+                              </div>
+                            </div>
+                          </div>
                         </div>
-                        {/* 어웨이팀 */}
-                        <div></div>
                       </div>
                     </div>
-                  </div>
+                  </>
                 )}
               </>
             ) : (
