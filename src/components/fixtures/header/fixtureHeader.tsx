@@ -200,7 +200,7 @@ export default function FixtureHeader({
           <></>
         )}
       </div>
-      <hr className="border-slate-200 my-5 dark:border-custom-gray2  max-lg:hidden" />
+      <hr className="border-slate-200 my-5 dark:border-custom-gray3  max-lg:hidden" />
       {/* 경기 할 팀 로고, 경기 정보 */}
       <div className="flex items-center justify-center w-full">
         {/* 홈팀 */}

@@ -21,6 +21,7 @@ import LightField from "@/../public/img/lightfield.png";
 import LightFieldMobile from "@/../public/img/lightfieldMobile.png";
 import DarkField from "@/../public/img/darkfield.png";
 import DarkFieldMobile from "@/../public/img/darkfieldMobile.png";
+import { FaArrowCircleLeft } from "react-icons/fa";
 
 // import { fixture } from "../../../public/example";
 
@@ -605,9 +606,9 @@ export default function FixturesOverView({
 
                 {/* Lineups */}
                 {fixture?.lineups.length > 0 && (
-                  <>
+                  <div className="mt-4">
                     {/* lineup header */}
-                    <div className="flex w-full justify-between p-5 bg-[#0B9F67]  rounded-t-xl">
+                    <div className="flex w-full justify-between p-5 bg-[#0B9F67]  dark:bg-custom-gray3 rounded-t-xl">
                       {/* home team */}
                       <div className="flex items-center text-base text-white">
                         <Image
@@ -615,16 +616,16 @@ export default function FixturesOverView({
                           alt={fixture?.teams.home.name || "home team logo"}
                           width={35}
                           height={35}
-                          className="rounded-full mr-2"
+                          className="rounded-full mr-4"
                         />
                         <h2 className="mr-6">{fixture?.teams.home.name}</h2>
-                        <h2 className="font-medium">
+                        <h2 className="font-medium max-sm:hidden">
                           {fixture?.lineups[0].formation}
                         </h2>
                       </div>
                       {/* away team */}
                       <div className="flex items-center text-base text-white">
-                        <h2 className="font-medium">
+                        <h2 className="font-medium max-sm:hidden">
                           {fixture?.lineups[1].formation}
                         </h2>
                         <h2 className="ml-6">{fixture?.teams.away.name}</h2>{" "}
@@ -633,10 +634,11 @@ export default function FixturesOverView({
                           alt={fixture?.teams.away.name || "away team logo"}
                           width={35}
                           height={35}
-                          className="rounded-full ml-2"
+                          className="rounded-full ml-4"
                         />
                       </div>
                     </div>
+                    {/* lineup */}
                     <div className="w-full relative">
                       <div className="w-full">
                         {/* background */}
@@ -654,7 +656,18 @@ export default function FixturesOverView({
                             />
                           </>
                         ) : (
-                          <Image src={DarkField} alt="football lineups" />
+                          <>
+                            <Image
+                              src={DarkField}
+                              alt="football lineups"
+                              className="max-lg:hidden"
+                            />
+                            <Image
+                              src={DarkFieldMobile}
+                              alt="football lineups mobile"
+                              className="lg:hidden"
+                            />
+                          </>
                         )}
 
                         <div className="absolute top-0 left-0 text-[12px] h-full w-full flex max-lg:flex-col">
@@ -709,14 +722,34 @@ export default function FixturesOverView({
                                 );
 
                                 return (
-                                  <div key={index} className="flex lg:flex-col">
+                                  <div
+                                    key={index}
+                                    className="flex lg:flex-col-reverse"
+                                  >
                                     {playersPerLine.map(
                                       (player: any, playerIndex: number) => {
+                                        // 성을 제외한 선수의 이름
+                                        const playerName =
+                                          player?.player.name.split(" ")[1];
+
+                                        // 플레이어의 스탯
+                                        const playerStats =
+                                          fixture?.players[0].players.find(
+                                            (v: any) => {
+                                              return (
+                                                v.player.id ===
+                                                player?.player.id
+                                              );
+                                            }
+                                          );
+
+                                        console.log(playerStats);
+
                                         return (
                                           // 한 선수
                                           <div
                                             key={playerIndex}
-                                            className="flex-col sm:mx-4 md:mx-10 lg:mx-0 lg:my-1 xl:my-6 2xl:my-10"
+                                            className="flex-col mx-[-8px] sm:mx-6 md:mx-8 lg:mx-0 lg:my-0 xl:my-6 2xl:my-10 w-[80px] relative"
                                           >
                                             {/* 선수 이미지 */}
                                             <Image
@@ -727,11 +760,82 @@ export default function FixturesOverView({
                                               className="rounded-full m-auto bg-white max-md:w-[40px]"
                                             />
                                             {/* 선수 번호 및 이름 */}
-                                            <div className="flex justify-center text-white items-center mt-2">
+                                            <div className="flex justify-center text-white mt-2">
                                               <h3>{player?.player.number}</h3>{" "}
                                               &nbsp;
-                                              <h3>{player?.player.name}</h3>
+                                              <h3>{playerName}</h3>
                                             </div>
+
+                                            {/* 선수 평점 */}
+                                            {playerStats?.statistics[0].games
+                                              .rating ? (
+                                              <div
+                                                className="absolute w-7 h-[18px] right-0 top-[-5px] rounded-full flex items-center justify-center text-white"
+                                                style={{
+                                                  backgroundColor:
+                                                    parseInt(
+                                                      playerStats?.statistics[0]
+                                                        .games.rating
+                                                    ) >= 9
+                                                      ? "#4389f9"
+                                                      : parseInt(
+                                                          playerStats
+                                                            ?.statistics[0]
+                                                            .games.rating
+                                                        ) >= 7
+                                                      ? "#22B268"
+                                                      : "#EF8022",
+                                                }}
+                                              >
+                                                <h3>
+                                                  {
+                                                    playerStats?.statistics[0]
+                                                      .games.rating
+                                                  }
+                                                </h3>
+                                              </div>
+                                            ) : (
+                                              <></>
+                                            )}
+
+                                            {/* 교체 */}
+                                            {playerStats?.statistics[0].games
+                                              .minutes < 90 ? (
+                                              <div className="absolute w-4 h-4 bg-white rounded-full left-3 top-[-5px] flex items-center justify-center">
+                                                <FaArrowCircleLeft className=" text-red-500 w-3 h-3" />
+                                              </div>
+                                            ) : (
+                                              <></>
+                                            )}
+
+                                            {/* 카드 */}
+                                            {playerStats?.statistics[0].cards
+                                              .red ||
+                                            playerStats?.statistics[0].cards
+                                              .yellow ? (
+                                              <div
+                                                className="absolute w-4 h-4 left-[5px] top-4 rounded-full"
+                                                style={{
+                                                  backgroundColor: playerStats
+                                                    ?.statistics[0].cards.red
+                                                    ? "#EF4444"
+                                                    : "#FDE046",
+                                                }}
+                                              ></div>
+                                            ) : (
+                                              <></>
+                                            )}
+
+                                            {/* 이부분 마저 완성하기 */}
+                                            {/* 골 */}
+                                            {playerStats?.statistics[0].goals
+                                              .total ? (
+                                              <div className="w-4 h-4 right-0 absolute bg-white rounded-full bottom-0">
+                                                <PiSoccerBallLight />
+                                              </div>
+                                            ) : (
+                                              <></>
+                                            )}
                                           </div>
                                         );
                                       }
@@ -751,8 +855,9 @@ export default function FixturesOverView({
                             {awayteamFormation.map(
                               (line: number, index: number) => {
                                 // 골키퍼를 제외한 선발 명단 선수들
-                                const players =
-                                  fixture?.lineups[0].startXI.slice(1, 12);
+                                const players = fixture?.lineups[1].startXI
+                                  .slice(1, 12)
+                                  .reverse();
 
                                 // 시작 인덱스
                                 const startIndex = awayteamFormation
@@ -773,14 +878,21 @@ export default function FixturesOverView({
                                 );
 
                                 return (
-                                  <div key={index} className="flex lg:flex-col">
+                                  <div
+                                    key={index}
+                                    className="flex lg:flex-col-reverse"
+                                  >
                                     {playersPerLine.map(
                                       (player: any, playerIndex: number) => {
+                                        // 성을 제외한 선수의 이름
+                                        const playerName =
+                                          player?.player.name.split(" ")[1];
+
                                         return (
                                           // 한 선수
                                           <div
                                             key={playerIndex}
-                                            className="flex-col sm:mx-4 md:mx-10 lg:mx-0 lg:my-1 xl:my-6 2xl:my-10"
+                                            className="flex-col mx-6 sm:mx-10 md:mx-12 lg:mx-0 lg:my-1 xl:my-6 2xl:my-10 w-[45px]"
                                           >
                                             {/* 선수 이미지 */}
                                             <Image
@@ -791,10 +903,10 @@ export default function FixturesOverView({
                                               className="rounded-full m-auto bg-white max-md:w-[40px]"
                                             />
                                             {/* 선수 번호 및 이름 */}
-                                            <div className="flex justify-center text-white items-center mt-2">
+                                            <div className="flex justify-center text-white mt-2">
                                               <h3>{player?.player.number}</h3>{" "}
                                               &nbsp;
-                                              <h3>{player?.player.name}</h3>
+                                              <h3>{playerName}</h3>
                                             </div>
                                           </div>
                                         );
@@ -827,7 +939,7 @@ export default function FixturesOverView({
                         </div>
                       </div>
                     </div>
-                  </>
+                  </div>
                 )}
               </>
             ) : (
@@ -876,9 +988,8 @@ export default function FixturesOverView({
             {finxturesByRound10?.length > 0 &&
               finxturesByRound10?.map((v: any, i: number) => {
                 return (
-                  <>
+                  <div key={i}>
                     <div
-                      key={i}
                       className="flex items-center py-3 px-6 text-xsm justify-between cursor-pointer hover:bg-slate-100"
                       onClick={() => {
                         moveToFormattedMatchURL(
@@ -938,7 +1049,7 @@ export default function FixturesOverView({
                     {i !== finxturesByRound10.length - 1 && (
                       <hr className="dark:border-custom-gray3" />
                     )}
-                  </>
+                  </div>
                 );
               })}
           </div>
