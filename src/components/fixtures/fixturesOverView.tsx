@@ -22,6 +22,9 @@ import LightFieldMobile from "@/../public/img/lightfieldMobile.png";
 import DarkField from "@/../public/img/darkfield.png";
 import DarkFieldMobile from "@/../public/img/darkfieldMobile.png";
 import { FaArrowCircleLeft } from "react-icons/fa";
+import Shoes from "@/../public/img/soccershoes.png";
+import MissedPenalty from "@/../public/img/missedPenalty.png";
+import Saved from "@/../public/img/saved.png";
 
 // import { fixture } from "../../../public/example";
 
@@ -52,22 +55,22 @@ export default function FixturesOverView({
 
   /** 렌더링시  */
   useEffect(() => {
-    // dispatch(getFixtures({ id: id })).then(({ payload }) => {
-    //   // dispatch(getInjuries({id: id}));
-    //   // dispatch(
-    //   //   getH2H({
-    //   //     homeID: payload?.teams.home.id,
-    //   //     awayID: payload?.teams.away.id,
-    //   //   })
-    //   // );
-    //   dispatch(
-    //     getFixtruesByRound({
-    //       leagueID: payload?.league.id,
-    //       season: payload?.league.season,
-    //       round: payload?.league.round,
-    //     })
-    //   );
-    // });
+    dispatch(getFixtures({ id: id })).then(({ payload }) => {
+      // dispatch(getInjuries({id: id}));
+      // dispatch(
+      //   getH2H({
+      //     homeID: payload?.teams.home.id,
+      //     awayID: payload?.teams.away.id,
+      //   })
+      // );
+      dispatch(
+        getFixtruesByRound({
+          leagueID: payload?.league.id,
+          season: payload?.league.season,
+          round: payload?.league.round,
+        })
+      );
+    });
   }, [dispatch, id]);
 
   // home , away match stats
@@ -339,16 +342,18 @@ export default function FixturesOverView({
                           <div
                             style={{
                               width: homeStats[9]?.value,
+                              backgroundColor: `#${fixture.lineups[0].team.colors.player.primary}`,
                             }}
-                            className="py-2 mr-1 rounded-l-full text-sm flex items-center text-white bg-red-500"
+                            className="py-2 mr-1 rounded-l-full text-sm flex items-center text-white"
                           >
                             <h1 className="ml-5">{homeStats[9].value}</h1>
                           </div>
                           <div
                             style={{
                               width: awayStats[9]?.value,
+                              backgroundColor: `#${fixture.lineups[1].team.colors.player.primary}`,
                             }}
-                            className="py-2 ml-1  rounded-r-full  text-sm flex items-center text-white justify-end bg-blue-500"
+                            className="py-2 ml-1  rounded-r-full  text-sm flex items-center text-white justify-end"
                           >
                             <h1 className="mr-5">{awayStats[9].value}</h1>
                           </div>
@@ -674,7 +679,7 @@ export default function FixturesOverView({
                           {/* 홈팀 */}
                           <div className="flex h-full w-1/2 justify-around px-4 items-center max-lg:flex-col max-lg:w-full max-lg:h-1/2">
                             {/* 골키퍼 */}
-                            <div className="justify-center">
+                            <div className="justify-center relative w-[80px]">
                               <Image
                                 src={`https://media.api-sports.io/football/players/${fixture?.lineups[0].startXI[0].player.id}.png`}
                                 alt={fixture?.lineups[0].startXI[0].player.name}
@@ -682,15 +687,139 @@ export default function FixturesOverView({
                                 height={45}
                                 className="rounded-full m-auto bg-white max-md:w-[40px]"
                               />
-                              <div className="flex text-white">
+                              {/* 이 주장마크가 제대로 작동하는지 확인후 원정팀에도 적용하기 */}
+                              <div className="flex text-white mt-2 justify-center">
+                                {fixture?.players[0].players[0].statistics[0]
+                                  .games.captain && (
+                                  <div className="w-3 h-3 bg-white rounded-full flex justify-center items-center mr-1">
+                                    <h3 className="text-[8px] font-bold text-black">
+                                      C
+                                    </h3>
+                                  </div>
+                                )}
                                 <h3>
                                   {fixture?.lineups[0].startXI[0].player.number}
                                 </h3>{" "}
                                 &nbsp;
                                 <h3>
-                                  {fixture?.lineups[0].startXI[0].player.name}
+                                  {
+                                    fixture?.lineups[0].startXI[0].player.name.split(
+                                      " "
+                                    )[1]
+                                  }
                                 </h3>
                               </div>
+
+                              {/* 골키퍼 스탯 */}
+                              <>
+                                {/* 골키퍼 평점 */}
+                                {fixture?.players[0].players[0].statistics[0]
+                                  .games.rating ? (
+                                  <div
+                                    className="absolute w-7 h-[18px] right-0 top-[-8px] rounded-full flex items-center justify-center text-white"
+                                    style={{
+                                      backgroundColor:
+                                        parseInt(
+                                          fixture?.players[0].players[0]
+                                            .statistics[0].games.rating
+                                        ) >= 9
+                                          ? "#4389f9"
+                                          : parseInt(
+                                              fixture?.players[0].players[0]
+                                                .statistics[0].games.rating
+                                            ) >= 7
+                                          ? "#22B268"
+                                          : "#EF8022",
+                                    }}
+                                  >
+                                    <h3>
+                                      {
+                                        fixture?.players[0].players[0]
+                                          .statistics[0].games.rating
+                                      }
+                                    </h3>
+                                  </div>
+                                ) : (
+                                  <></>
+                                )}
+
+                                {/* 골키퍼 교체 */}
+                                {fixture?.players[0].players[0].statistics[0]
+                                  .games.minutes < 90 ? (
+                                  <div className="absolute w-4 h-4 bg-white rounded-full left-3 top-[-5px] flex items-center justify-center">
+                                    <h1 className="absolute mb-7 text-white text-[10px] font-medium">
+                                      {
+                                        fixture?.players[0].players[0]
+                                          .statistics[0].games.minutes
+                                      }
+                                      &apos;
+                                    </h1>
+                                    <FaArrowCircleLeft className=" text-red-500 w-3 h-3" />
+                                  </div>
+                                ) : (
+                                  <></>
+                                )}
+
+                                {/* 골키퍼 카드 */}
+                                {fixture?.players[0].players[0].statistics[0]
+                                  .cards.red ||
+                                fixture?.players[0].players[0].statistics[0]
+                                  .cards.yellow ? (
+                                  <div
+                                    className="absolute w-4 h-4 left-[7px] top-3 rounded-full"
+                                    style={{
+                                      backgroundColor: fixture?.players[0]
+                                        .players[0].statistics[0].cards.red
+                                        ? "#EF4444"
+                                        : "#FDE046",
+                                    }}
+                                  ></div>
+                                ) : (
+                                  <></>
+                                )}
+
+                                {/* 골키퍼 골 */}
+                                {fixture?.players[0].players[0].statistics[0]
+                                  .goals.total ? (
+                                  <div className="w-4 h-4 right-3 absolute bg-white rounded-full bottom-4 flex items-center justify-center">
+                                    <PiSoccerBallLight className="w-3 h-3 dark:text-black" />
+                                  </div>
+                                ) : (
+                                  <></>
+                                )}
+
+                                {/* 골키퍼 선방 */}
+                                {fixture?.players[0].players[0].statistics[0]
+                                  .penalty.saved ? (
+                                  <div className="w-4 h-4 right-3 absolute bg-white rounded-full bottom-[35px] flex items-center justify-center">
+                                    <Image
+                                      src={Saved}
+                                      alt="penalty saved"
+                                      width={15}
+                                      height={15}
+                                      className="w-3 h-3"
+                                    />
+                                  </div>
+                                ) : (
+                                  <></>
+                                )}
+
+                                {/* 골키퍼 어시스트 */}
+                                {fixture?.players[0].players[0].statistics[0]
+                                  .goals.assists ? (
+                                  <div className="w-4 h-4 left-3 absolute bg-white rounded-full bottom-4 flex items-center justify-center">
+                                    <Image
+                                      src={Shoes}
+                                      alt="assist"
+                                      width={15}
+                                      height={15}
+                                      className="w-3 h-3 -rotate-12"
+                                    />
+                                  </div>
+                                ) : (
+                                  <></>
+                                )}
+                              </>
                             </div>
                             {/*
                           reudce함수를 사용하여 시작 위치의 합계를 통해 이미 이전에 언급된 인덱스를 제외하여 새로운 시작 위치를 선정
@@ -743,13 +872,11 @@ export default function FixturesOverView({
                                             }
                                           );
 
-                                        console.log(playerStats);
-
                                         return (
                                           // 한 선수
                                           <div
                                             key={playerIndex}
-                                            className="flex-col mx-[-8px] sm:mx-6 md:mx-8 lg:mx-0 lg:my-0 xl:my-6 2xl:my-10 w-[80px] relative"
+                                            className="flex-col mx-0 sm:mx-6 md:mx-8 lg:mx-0 lg:my-0 xl:my-6 2xl:my-10 w-[80px] relative"
                                           >
                                             {/* 선수 이미지 */}
                                             <Image
@@ -761,81 +888,131 @@ export default function FixturesOverView({
                                             />
                                             {/* 선수 번호 및 이름 */}
                                             <div className="flex justify-center text-white mt-2">
+                                              {playerStats?.statistics[0].games
+                                                .captain && (
+                                                <div className="w-3 h-3 bg-white rounded-full flex justify-center items-center mr-1">
+                                                  <h3 className="text-[8px] font-bold text-black">
+                                                    C
+                                                  </h3>
+                                                </div>
+                                              )}
                                               <h3>{player?.player.number}</h3>{" "}
                                               &nbsp;
                                               <h3>{playerName}</h3>
                                             </div>
 
-                                            {/* 선수 평점 */}
-                                            {playerStats?.statistics[0].games
-                                              .rating ? (
-                                              <div
-                                                className="absolute w-7 h-[18px] right-0 top-[-5px] rounded-full flex items-center justify-center text-white"
-                                                style={{
-                                                  backgroundColor:
-                                                    parseInt(
+                                            {/* 선수 스탯 */}
+                                            <>
+                                              {/* 선수 평점 */}
+                                              {playerStats?.statistics[0].games
+                                                .rating ? (
+                                                <div
+                                                  className="absolute w-7 h-[18px] right-0 top-[-8px] rounded-full flex items-center justify-center text-white"
+                                                  style={{
+                                                    backgroundColor:
+                                                      parseInt(
+                                                        playerStats
+                                                          ?.statistics[0].games
+                                                          .rating
+                                                      ) >= 9
+                                                        ? "#4389f9"
+                                                        : parseInt(
+                                                            playerStats
+                                                              ?.statistics[0]
+                                                              .games.rating
+                                                          ) >= 7
+                                                        ? "#22B268"
+                                                        : "#EF8022",
+                                                  }}
+                                                >
+                                                  <h3>
+                                                    {
                                                       playerStats?.statistics[0]
                                                         .games.rating
-                                                    ) >= 9
-                                                      ? "#4389f9"
-                                                      : parseInt(
-                                                          playerStats
-                                                            ?.statistics[0]
-                                                            .games.rating
-                                                        ) >= 7
-                                                      ? "#22B268"
-                                                      : "#EF8022",
-                                                }}
-                                              >
-                                                <h3>
-                                                  {
-                                                    playerStats?.statistics[0]
-                                                      .games.rating
-                                                  }
-                                                </h3>
-                                              </div>
-                                            ) : (
-                                              <></>
-                                            )}
+                                                    }
+                                                  </h3>
+                                                </div>
+                                              ) : (
+                                                <></>
+                                              )}
 
-                                            {/* 교체 */}
-                                            {playerStats?.statistics[0].games
-                                              .minutes < 90 ? (
-                                              <div className="absolute w-4 h-4 bg-white rounded-full left-3 top-[-5px] flex items-center justify-center">
-                                                <FaArrowCircleLeft className=" text-red-500 w-3 h-3" />
-                                              </div>
-                                            ) : (
-                                              <></>
-                                            )}
+                                              {/* 교체 */}
+                                              {playerStats?.statistics[0].games
+                                                .minutes < 90 ? (
+                                                <div className="absolute w-4 h-4 bg-white rounded-full left-3 top-[-5px] flex items-center justify-center">
+                                                  <h1 className="absolute mb-7 text-white text-[10px] font-medium">
+                                                    {
+                                                      playerStats?.statistics[0]
+                                                        .games.minutes
+                                                    }
+                                                    &apos;
+                                                  </h1>
+                                                  <FaArrowCircleLeft className=" text-red-500 w-3 h-3" />
+                                                </div>
+                                              ) : (
+                                                <></>
+                                              )}
 
-                                            {/* 카드 */}
-                                            {playerStats?.statistics[0].cards
-                                              .red ||
-                                            playerStats?.statistics[0].cards
-                                              .yellow ? (
-                                              <div
-                                                className="absolute w-4 h-4 left-[5px] top-4 rounded-full"
-                                                style={{
-                                                  backgroundColor: playerStats
-                                                    ?.statistics[0].cards.red
-                                                    ? "#EF4444"
-                                                    : "#FDE046",
-                                                }}
-                                              ></div>
-                                            ) : (
-                                              <></>
-                                            )}
+                                              {/* 카드 */}
+                                              {playerStats?.statistics[0].cards
+                                                .red ||
+                                              playerStats?.statistics[0].cards
+                                                .yellow ? (
+                                                <div
+                                                  className="absolute w-4 h-4 left-[7px] top-3 rounded-full"
+                                                  style={{
+                                                    backgroundColor: playerStats
+                                                      ?.statistics[0].cards.red
+                                                      ? "#EF4444"
+                                                      : "#FDE046",
+                                                  }}
+                                                ></div>
+                                              ) : (
+                                                <></>
+                                              )}
 
-                                            {/* 이부분 마저 완성하기 */}
-                                            {/* 골 */}
-                                            {playerStats?.statistics[0].goals
-                                              .total ? (
-                                              <div className="w-4 h-4 right-0 absolute bg-white rounded-full bottom-0">
-                                                <PiSoccerBallLight />
-                                              </div>
-                                            ) : (
-                                              <></>
-                                            )}
+                                              {/* 골 */}
+                                              {playerStats?.statistics[0].goals
+                                                .total ? (
+                                                <div className="w-4 h-4 right-3 absolute bg-white rounded-full bottom-4 flex items-center justify-center">
+                                                  <PiSoccerBallLight className="w-3 h-3 dark:text-black" />
+                                                </div>
+                                              ) : (
+                                                <></>
+                                              )}
+
+                                              {/* 패널티 실축 */}
+                                              {playerStats?.statistics[0]
+                                                .penalty.missed ? (
+                                                <div className="w-4 h-4 right-3 absolute bg-white rounded-full bottom-[35px] flex items-center justify-center">
+                                                  <Image
+                                                    src={MissedPenalty}
+                                                    alt="penalty missed"
+                                                    width={15}
+                                                    height={15}
+                                                    className="w-3 h-3"
+                                                  />
+                                                </div>
+                                              ) : (
+                                                <></>
+                                              )}
+
+                                              {/* 어시스트 */}
+                                              {playerStats?.statistics[0].goals
+                                                .assists ? (
+                                                <div className="w-4 h-4 left-3 absolute bg-white rounded-full bottom-4 flex items-center justify-center">
+                                                  <Image
+                                                    src={Shoes}
+                                                    alt="assist"
+                                                    width={15}
+                                                    height={15}
+                                                    className="w-3 h-3 -rotate-12"
+                                                  />
+                                                </div>
+                                              ) : (
+                                                <></>
+                                              )}
+                                            </>
                                           </div>
                                         );
                                       }
@@ -888,11 +1065,22 @@ export default function FixturesOverView({
                                         const playerName =
                                           player?.player.name.split(" ")[1];
 
+                                        // 플레이어의 스탯
+                                        const playerStats =
+                                          fixture?.players[1].players.find(
+                                            (v: any) => {
+                                              return (
+                                                v.player.id ===
+                                                player?.player.id
+                                              );
+                                            }
+                                          );
+
                                         return (
                                           // 한 선수
                                           <div
                                             key={playerIndex}
-                                            className="flex-col mx-6 sm:mx-10 md:mx-12 lg:mx-0 lg:my-1 xl:my-6 2xl:my-10 w-[45px]"
+                                            className="flex-col mx-6 sm:mx-10 md:mx-12 lg:mx-0 lg:my-1 xl:my-6 2xl:my-10 w-[80px] relative"
                                           >
                                             {/* 선수 이미지 */}
                                             <Image
@@ -908,6 +1096,119 @@ export default function FixturesOverView({
                                               &nbsp;
                                               <h3>{playerName}</h3>
                                             </div>
+
+                                            {/* 선수 스탯 */}
+                                            <>
+                                              {/* 선수 평점 */}
+                                              {playerStats?.statistics[0].games
+                                                .rating ? (
+                                                <div
+                                                  className="absolute w-7 h-[18px] right-0 top-[-8px] rounded-full flex items-center justify-center text-white"
+                                                  style={{
+                                                    backgroundColor:
+                                                      parseInt(
+                                                        playerStats
+                                                          ?.statistics[0].games
+                                                          .rating
+                                                      ) >= 9
+                                                        ? "#4389f9"
+                                                        : parseInt(
+                                                            playerStats
+                                                              ?.statistics[0]
+                                                              .games.rating
+                                                          ) >= 7
+                                                        ? "#22B268"
+                                                        : "#EF8022",
+                                                  }}
+                                                >
+                                                  <h3>
+                                                    {
+                                                      playerStats?.statistics[0]
+                                                        .games.rating
+                                                    }
+                                                  </h3>
+                                                </div>
+                                              ) : (
+                                                <></>
+                                              )}
+
+                                              {/* 교체 */}
+                                              {playerStats?.statistics[0].games
+                                                .minutes < 90 ? (
+                                                <div className="absolute w-4 h-4 bg-white rounded-full left-3 top-[-5px] flex items-center justify-center">
+                                                  <h1 className="absolute mb-7 text-white text-[10px] font-medium">
+                                                    {
+                                                      playerStats?.statistics[0]
+                                                        .games.minutes
+                                                    }
+                                                    &apos;
+                                                  </h1>
+                                                  <FaArrowCircleLeft className=" text-red-500 w-3 h-3" />
+                                                </div>
+                                              ) : (
+                                                <></>
+                                              )}
+
+                                              {/* 카드 */}
+                                              {playerStats?.statistics[0].cards
+                                                .red ||
+                                              playerStats?.statistics[0].cards
+                                                .yellow ? (
+                                                <div
+                                                  className="absolute w-4 h-4 left-[7px] top-3 rounded-full"
+                                                  style={{
+                                                    backgroundColor: playerStats
+                                                      ?.statistics[0].cards.red
+                                                      ? "#EF4444"
+                                                      : "#FDE046",
+                                                  }}
+                                                ></div>
+                                              ) : (
+                                                <></>
+                                              )}
+
+                                              {/* 골 */}
+                                              {playerStats?.statistics[0].goals
+                                                .total ? (
+                                                <div className="w-4 h-4 right-3 absolute bg-white rounded-full bottom-4 flex items-center justify-center">
+                                                  <PiSoccerBallLight className="w-3 h-3 dark:text-black" />
+                                                </div>
+                                              ) : (
+                                                <></>
+                                              )}
+
+                                              {/* 패널티 실축 */}
+                                              {playerStats?.statistics[0]
+                                                .penalty.missed ? (
+                                                <div className="w-4 h-4 right-3 absolute bg-white rounded-full bottom-[35px] flex items-center justify-center">
+                                                  <Image
+                                                    src={MissedPenalty}
+                                                    alt="penalty missed"
+                                                    width={15}
+                                                    height={15}
+                                                    className="w-3 h-3"
+                                                  />
+                                                </div>
+                                              ) : (
+                                                <></>
+                                              )}
+
+                                              {/* 어시스트 */}
+                                              {playerStats?.statistics[0].goals
+                                                .assists ? (
+                                                <div className="w-4 h-4 left-3 absolute bg-white rounded-full bottom-4 flex items-center justify-center">
+                                                  <Image
+                                                    src={Shoes}
+                                                    alt="assist"
+                                                    width={15}
+                                                    height={15}
+                                                    className="w-3 h-3 -rotate-12"
+                                                  />
+                                                </div>
+                                              ) : (
+                                                <></>
+                                              )}
+                                            </>
                                           </div>
                                         );
                                       }
@@ -917,22 +1218,136 @@ export default function FixturesOverView({
                               }
                             )}
                             {/* 골키퍼 */}
-                            <div className="justify-center">
+                            <div className="justify-center relative w-[80px]">
                               <Image
                                 src={`https://media.api-sports.io/football/players/${fixture?.lineups[1].startXI[0].player.id}.png`}
                                 alt={fixture?.lineups[1].startXI[0].player.name}
                                 width={45}
                                 height={45}
-                                className="rounded-full m-auto bg-white max-md:w-[40px]"
+                                className="rounded-full m-auto bg-white max-md:w-[40px] relative"
                               />
-                              <div className="flex text-white">
+                              <div className="flex text-white mt-2 justify-center">
                                 <h3>
                                   {fixture?.lineups[1].startXI[0].player.number}
                                 </h3>{" "}
                                 &nbsp;
                                 <h3>
-                                  {fixture?.lineups[1].startXI[0].player.name}
+                                  {
+                                    fixture?.lineups[1].startXI[0].player.name.split(
+                                      " "
+                                    )[1]
+                                  }
                                 </h3>
+                                {/* 골키퍼 스탯 */}
+                                <>
+                                  {/* 골키퍼 평점 */}
+                                  {fixture?.players[1].players[0].statistics[0]
+                                    .games.rating ? (
+                                    <div
+                                      className="absolute w-7 h-[18px] right-0 top-[-8px] rounded-full flex items-center justify-center text-white"
+                                      style={{
+                                        backgroundColor:
+                                          parseInt(
+                                            fixture?.players[0].players[0]
+                                              .statistics[0].games.rating
+                                          ) >= 9
+                                            ? "#4389f9"
+                                            : parseInt(
+                                                fixture?.players[0].players[0]
+                                                  .statistics[0].games.rating
+                                              ) >= 7
+                                            ? "#22B268"
+                                            : "#EF8022",
+                                      }}
+                                    >
+                                      <h3>
+                                        {
+                                          fixture?.players[0].players[0]
+                                            .statistics[0].games.rating
+                                        }
+                                      </h3>
+                                    </div>
+                                  ) : (
+                                    <></>
+                                  )}
+
+                                  {/* 골키퍼 교체 */}
+                                  {fixture?.players[1].players[0].statistics[0]
+                                    .games.minutes < 90 ? (
+                                    <div className="absolute w-4 h-4 bg-white rounded-full left-3 top-[-5px] flex items-center justify-center">
+                                      <h1 className="absolute mb-7 text-white text-[10px] font-medium">
+                                        {
+                                          fixture?.players[0].players[0]
+                                            .statistics[0].games.minutes
+                                        }
+                                        &apos;
+                                      </h1>
+                                      <FaArrowCircleLeft className=" text-red-500 w-3 h-3" />
+                                    </div>
+                                  ) : (
+                                    <></>
+                                  )}
+
+                                  {/* 골키퍼 카드 */}
+                                  {fixture?.players[1].players[0].statistics[0]
+                                    .cards.red ||
+                                  fixture?.players[0].players[0].statistics[0]
+                                    .cards.yellow ? (
+                                    <div
+                                      className="absolute w-4 h-4 left-[7px] top-3 rounded-full"
+                                      style={{
+                                        backgroundColor: fixture?.players[0]
+                                          .players[0].statistics[0].cards.red
+                                          ? "#EF4444"
+                                          : "#FDE046",
+                                      }}
+                                    ></div>
+                                  ) : (
+                                    <></>
+                                  )}
+
+                                  {/* 골키퍼 골 */}
+                                  {fixture?.players[1].players[0].statistics[0]
+                                    .goals.total ? (
+                                    <div className="w-4 h-4 right-3 absolute bg-white rounded-full bottom-4 flex items-center justify-center">
+                                      <PiSoccerBallLight className="w-3 h-3 dark:text-black" />
+                                    </div>
+                                  ) : (
+                                    <></>
+                                  )}
+
+                                  {/* 골키퍼 선방 */}
+                                  {fixture?.players[1].players[0].statistics[0]
+                                    .penalty.saved ? (
+                                    <div className="w-4 h-4 right-3 absolute bg-white rounded-full bottom-[35px] flex items-center justify-center">
+                                      <Image
+                                        src={Saved}
+                                        alt="penalty saved"
+                                        width={15}
+                                        height={15}
+                                        className="w-3 h-3"
+                                      />
+                                    </div>
+                                  ) : (
+                                    <></>
+                                  )}
+
+                                  {/* 골키퍼 어시스트 */}
+                                  {fixture?.players[1].players[0].statistics[0]
+                                    .goals.assists ? (
+                                    <div className="w-4 h-4 left-3 absolute bg-white rounded-full bottom-4 flex items-center justify-center">
+                                      <Image
+                                        src={Shoes}
+                                        alt="assist"
+                                        width={15}
+                                        height={15}
+                                        className="w-3 h-3 -rotate-12"
+                                      />
+                                    </div>
+                                  ) : (
+                                    <></>
+                                  )}
+                                </>
                               </div>
                             </div>
                           </div>
