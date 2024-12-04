@@ -55,34 +55,64 @@ export default function FixturesOverView({
 
   /** 렌더링시  */
   useEffect(() => {
-    dispatch(getFixtures({ id: id })).then(({ payload }) => {
-      // dispatch(getInjuries({id: id}));
-      // dispatch(
-      //   getH2H({
-      //     homeID: payload?.teams.home.id,
-      //     awayID: payload?.teams.away.id,
-      //   })
-      // );
-      dispatch(
-        getFixtruesByRound({
-          leagueID: payload?.league.id,
-          season: payload?.league.season,
-          round: payload?.league.round,
-        })
-      );
-    });
+    // dispatch(getFixtures({ id: id })).then(({ payload }) => {
+    //   // dispatch(getInjuries({id: id}));
+    //   // dispatch(
+    //   //   getH2H({
+    //   //     homeID: payload?.teams.home.id,
+    //   //     awayID: payload?.teams.away.id,
+    //   //   })
+    //   // );
+    //   dispatch(
+    //     getFixtruesByRound({
+    //       leagueID: payload?.league.id,
+    //       season: payload?.league.season,
+    //       round: payload?.league.round,
+    //     })
+    //   );
+    // });
   }, [dispatch, id]);
 
   // home , away match stats
   const homeStats = fixture?.statistics[0]?.statistics;
   const awayStats = fixture?.statistics[1]?.statistics;
 
-  /** 사용할 데이터 */
+  /** data for using */
   const finxturesByRound10 = fixtureByRound?.slice(0, 10);
   const round = fixture?.league.round.split("-")[1];
   const hometeamFormation = fixture?.lineups[0]?.formation.split("-");
   const awayteamFormation = fixture?.lineups[1]?.formation.split("-").reverse();
   console.log(fixture);
+
+  /** substitutes for home team */
+  const homeSubstitutes = fixture?.players[0].players.filter((v: any) => {
+    return v.statistics[0].games.substitute;
+  });
+
+  const [homePlayedPlayer, homeBenchPlayer] = homeSubstitutes?.reduce(
+    ([played, bench]: any[], player: any) => {
+      const hasMinutes = player?.statistics[0].games.minutes;
+      return hasMinutes
+        ? [[...played, player], bench]
+        : [played, [...bench, player]];
+    },
+    [[], []] // Initial value
+  ) || [[], []]; // basic value : when reduce value is undefined or null, it will automatically assign array value to this funtion
+
+  /** substitutes for away team */
+  const awaySubstitutes = fixture?.players[0].players.filter((v: any) => {
+    return v.statistics[0].games.substitute;
+  });
+
+  const [awayPlayedPlayer, awayBenchPlayer] = homeSubstitutes?.reduce(
+    ([played, bench]: any[], player: any) => {
+      const hasMinutes = player?.statistics[0].games.minutes;
+      return hasMinutes
+        ? [[...played, player], bench]
+        : [played, [...bench, player]];
+    },
+    [[], []] // Initial value
+  ) || [[], []]; // basic value : when reduce value is undefined or null, it will automatically assign array value to this funtion
 
   /** 리그URL로 이동하기위해 url 포맷변경하는 함수 */
   const formattedLeagueURL = (league: string) => {
@@ -670,7 +700,7 @@ export default function FixturesOverView({
                             <Image
                               src={DarkFieldMobile}
                               alt="football lineups mobile"
-                              className="lg:hidden"
+                              className="lg:hidden w-full"
                             />
                           </>
                         )}
@@ -687,7 +717,6 @@ export default function FixturesOverView({
                                 height={45}
                                 className="rounded-full m-auto bg-white max-md:w-[40px]"
                               />
-                              {/* 이 주장마크가 제대로 작동하는지 확인후 원정팀에도 적용하기 */}
                               <div className="flex text-white mt-2 justify-center">
                                 {fixture?.players[0].players[0].statistics[0]
                                   .games.captain && (
@@ -716,7 +745,7 @@ export default function FixturesOverView({
                                 {fixture?.players[0].players[0].statistics[0]
                                   .games.rating ? (
                                   <div
-                                    className="absolute w-7 h-[18px] right-0 top-[-8px] rounded-full flex items-center justify-center text-white"
+                                    className="absolute w-7 h-[18px] right-[4px] top-[-4px] rounded-full flex items-center justify-center text-white"
                                     style={{
                                       backgroundColor:
                                         parseInt(
@@ -907,7 +936,7 @@ export default function FixturesOverView({
                                               {playerStats?.statistics[0].games
                                                 .rating ? (
                                                 <div
-                                                  className="absolute w-7 h-[18px] right-0 top-[-8px] rounded-full flex items-center justify-center text-white"
+                                                  className="absolute w-7 h-[18px] right-[4px] top-[-4px] rounded-full flex items-center justify-center text-white"
                                                   style={{
                                                     backgroundColor:
                                                       parseInt(
@@ -1080,7 +1109,7 @@ export default function FixturesOverView({
                                           // 한 선수
                                           <div
                                             key={playerIndex}
-                                            className="flex-col mx-6 sm:mx-10 md:mx-12 lg:mx-0 lg:my-1 xl:my-6 2xl:my-10 w-[80px] relative"
+                                            className="flex-col mx-0 sm:mx-6 md:mx-8 lg:mx-0 lg:my-0 xl:my-6 2xl:my-10 w-[80px] relative"
                                           >
                                             {/* 선수 이미지 */}
                                             <Image
@@ -1092,6 +1121,14 @@ export default function FixturesOverView({
                                             />
                                             {/* 선수 번호 및 이름 */}
                                             <div className="flex justify-center text-white mt-2">
+                                              {playerStats?.statistics[0].games
+                                                .captain && (
+                                                <div className="w-3 h-3 bg-white rounded-full flex justify-center items-center mr-1">
+                                                  <h3 className="text-[8px] font-bold text-black">
+                                                    C
+                                                  </h3>
+                                                </div>
+                                              )}
                                               <h3>{player?.player.number}</h3>{" "}
                                               &nbsp;
                                               <h3>{playerName}</h3>
@@ -1103,7 +1140,7 @@ export default function FixturesOverView({
                                               {playerStats?.statistics[0].games
                                                 .rating ? (
                                                 <div
-                                                  className="absolute w-7 h-[18px] right-0 top-[-8px] rounded-full flex items-center justify-center text-white"
+                                                  className="absolute w-7 h-[18px] right-[4px] top-[-4px] rounded-full flex items-center justify-center text-white"
                                                   style={{
                                                     backgroundColor:
                                                       parseInt(
@@ -1244,7 +1281,7 @@ export default function FixturesOverView({
                                   {fixture?.players[1].players[0].statistics[0]
                                     .games.rating ? (
                                     <div
-                                      className="absolute w-7 h-[18px] right-0 top-[-8px] rounded-full flex items-center justify-center text-white"
+                                      className="absolute w-7 h-[18px] right-[4px] top-[-4px] rounded-full flex items-center justify-center text-white"
                                       style={{
                                         backgroundColor:
                                           parseInt(
@@ -1356,12 +1393,118 @@ export default function FixturesOverView({
                     </div>
                   </div>
                 )}
+
+                {/* Bench / Coach */}
+                {fixture?.lineups.length > 0 && (
+                  <div className=" border border-solid border-slate-200 bg-white rounded-b-xl px-4 py-10">
+                    {/* Coach */}
+                    {(fixture?.lineups[0]?.coach ||
+                      fixture?.lineups[1]?.coach) && (
+                      <div className="flex justify-between">
+                        {/* 홈팀 코치 */}
+                        <div className="flex items-center">
+                          <Image
+                            src={
+                              fixture?.lineups[0]?.coach.photo ||
+                              "./img/undefined.png"
+                            }
+                            alt={fixture?.lineups[0]?.coach.name || "undefined"}
+                            width={38}
+                            height={38}
+                            className="rounded-full bg-[#f4f4f4] mr-4"
+                          />
+                          <h2 className="text-sm">
+                            {fixture?.lineups[0]?.coach.name || "undefined"}
+                          </h2>
+                        </div>
+                        <div className="flex items-center">
+                          <h2 className="text-base font-medium mx-2">Coach</h2>
+                        </div>
+
+                        {/* 원정팀 코치 */}
+                        <div className="flex items-center">
+                          <h2 className="text-sm">
+                            {fixture?.lineups[1]?.coach.name || "undefined"}
+                          </h2>
+                          <Image
+                            src={
+                              fixture?.lineups[1]?.coach.photo ||
+                              "./img/undefined.png"
+                            }
+                            alt={fixture?.lineups[1]?.coach.name || "undefined"}
+                            width={38}
+                            height={38}
+                            className="rounded-full bg-[#f4f4f4] ml-4"
+                          />
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Substitutes */}
+                    {(fixture?.lineups[0]?.substitutes.length > 0 ||
+                      fixture?.lineups[1]?.substitutes.length > 0) && (
+                      <>
+                        {/* Substitutes Title */}
+                        <div className="w-full flex justify-center items-center">
+                          <h2 className="text-base font-medium mt-10">
+                            Substitutes
+                          </h2>
+                        </div>
+                        {/* Substitutes */}
+                        <div className="flex">
+                          {/* Home substitutes */}
+                          <ul>
+                            {homePlayedPlayer.map((v: any, i: number) => {
+                              console.log(v);
+                              return (
+                                <li key={i}>
+                                  {" "}
+                                  <Image
+                                    src={
+                                      v?.player.photo || "./img/undefined.png"
+                                    }
+                                    alt={v?.player.name || "undefined"}
+                                    width={38}
+                                    height={38}
+                                    className="rounded-full bg-[#f4f4f4] ml-4"
+                                  />
+                                  {v?.statistics[0].games.rating ? (
+                                    <div
+                                      className="absolute w-7 h-[18px] right-[4px] top-[-4px] rounded-full flex items-center justify-center text-white"
+                                      style={{
+                                        backgroundColor:
+                                          parseInt(
+                                            v?.statistics[0].games.rating
+                                          ) >= 9
+                                            ? "#4389f9"
+                                            : parseInt(
+                                                v?.statistics[0].games.rating
+                                              ) >= 7
+                                            ? "#22B268"
+                                            : "#EF8022",
+                                      }}
+                                    >
+                                      <h3>{v?.statistics[0].games.rating}</h3>
+                                    </div>
+                                  ) : (
+                                    <></>
+                                  )}
+                                </li>
+                              );
+                            })}
+                          </ul>
+
+                          {/* Away substitutes*/}
+                          <ul></ul>
+                        </div>
+                      </>
+                    )}
+                  </div>
+                )}
               </>
             ) : (
               // 경기가 시작하지 않은 경우
-              <div>
-                <h1>No</h1>
-              </div>
+              <div></div>
             )}
           </>
         )}
@@ -1369,7 +1512,7 @@ export default function FixturesOverView({
 
       {/* 같은 라운드 경기 보여주기, pc사이즈가 아닐경우 렌더링 x*/}
       {finxturesByRound10?.length > 0 && (
-        <div className="w-[350px] h-full bg-white border-slate-200 border border-solid rounded-xl mt-6 py-5 ml-6 max-lg:hidden dark:bg-custom-dark dark:border-none">
+        <div className="w-[350px] h-full bg-white border-slate-200 border border-solid rounded-xl mt-6 py-5 ml-6 max-xl:hidden dark:bg-custom-dark dark:border-none">
           {/* 리그 이름 및 라운드*/}
           <div
             className="flex items-center justify-between cursor-pointer hover:opacity-60 px-5"
@@ -1473,3 +1616,21 @@ export default function FixturesOverView({
     </div>
   );
 }
+
+// <div
+// className="absolute w-7 h-[18px] right-[4px] top-[-4px] rounded-full flex items-center justify-center text-white"
+// style={{
+//   backgroundColor:
+//     parseInt(
+//       fixture?.players[0].players[0]
+//         .statistics[0].games.rating
+//     ) >= 9
+//       ? "#4389f9"
+//       : parseInt(
+//           fixture?.players[0].players[0]
+//             .statistics[0].games.rating
+//         ) >= 7
+//       ? "#22B268"
+//       : "#EF8022",
+// }}
+// >
