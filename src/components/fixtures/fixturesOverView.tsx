@@ -100,11 +100,12 @@ export default function FixturesOverView({
   ) || [[], []]; // basic value : when reduce value is undefined or null, it will automatically assign array value to this funtion
 
   /** substitutes for away team */
-  const awaySubstitutes = fixture?.players[0].players.filter((v: any) => {
+  const awaySubstitutes = fixture?.players[1].players.filter((v: any) => {
+    console.log(v);
     return v.statistics[0].games.substitute;
   });
 
-  const [awayPlayedPlayer, awayBenchPlayer] = homeSubstitutes?.reduce(
+  const [awayPlayedPlayer, awayBenchPlayer] = awaySubstitutes?.reduce(
     ([played, bench]: any[], player: any) => {
       const hasMinutes = player?.statistics[0].games.minutes;
       return hasMinutes
@@ -372,20 +373,56 @@ export default function FixturesOverView({
                           <div
                             style={{
                               width: homeStats[9]?.value,
-                              backgroundColor: `#${fixture.lineups[0].team.colors.player.primary}`,
+                              backgroundColor: `#${
+                                fixture.lineups[0].team.colors.player
+                                  .primary === "ffffff"
+                                  ? "F1F5F9"
+                                  : fixture.lineups[0].team.colors.player
+                                      .primary
+                              }`,
                             }}
                             className="py-2 mr-1 rounded-l-full text-sm flex items-center text-white"
                           >
-                            <h1 className="ml-5">{homeStats[9].value}</h1>
+                            <h1
+                              className="mr-5"
+                              style={{
+                                color: `${
+                                  fixture.lineups[1].team.colors.player
+                                    .primary === "ffffff"
+                                    ? "black"
+                                    : "white"
+                                }`,
+                              }}
+                            >
+                              {homeStats[9].value}
+                            </h1>
                           </div>
                           <div
                             style={{
                               width: awayStats[9]?.value,
-                              backgroundColor: `#${fixture.lineups[1].team.colors.player.primary}`,
+                              backgroundColor: `#${
+                                fixture.lineups[1].team.colors.player
+                                  .primary === "ffffff"
+                                  ? "F1F5F9"
+                                  : fixture.lineups[1].team.colors.player
+                                      .primary
+                              }`,
                             }}
                             className="py-2 ml-1  rounded-r-full  text-sm flex items-center text-white justify-end"
                           >
-                            <h1 className="mr-5">{awayStats[9].value}</h1>
+                            <h1
+                              className="mr-5"
+                              style={{
+                                color: `${
+                                  fixture.lineups[1].team.colors.player
+                                    .primary === "ffffff"
+                                    ? "black"
+                                    : "white"
+                                }`,
+                              }}
+                            >
+                              {awayStats[9].value}
+                            </h1>
                           </div>
                         </div>
 
@@ -1455,9 +1492,9 @@ export default function FixturesOverView({
                           {/* Home substitutes */}
                           <ul>
                             {homePlayedPlayer.map((v: any, i: number) => {
-                              console.log(v);
+                              console.log(v?.statistics[0].games.rating);
                               return (
-                                <li key={i}>
+                                <li key={i} className="flex items-center ">
                                   {" "}
                                   <Image
                                     src={
@@ -1468,9 +1505,11 @@ export default function FixturesOverView({
                                     height={38}
                                     className="rounded-full bg-[#f4f4f4] ml-4"
                                   />
+
+                                  {/* player's rating */}
                                   {v?.statistics[0].games.rating ? (
                                     <div
-                                      className="absolute w-7 h-[18px] right-[4px] top-[-4px] rounded-full flex items-center justify-center text-white"
+                                      className=" w-7 h-[18px] rounded-full flex items-center justify-center text-white text-xs"
                                       style={{
                                         backgroundColor:
                                           parseInt(
@@ -1489,13 +1528,23 @@ export default function FixturesOverView({
                                   ) : (
                                     <></>
                                   )}
+
+                                  {/* player's backnumber */}
+                                  {v?.statistics[0].games.number ? (
+                                    <div className="w-[20px] h-auto text-sm flex justify-center items-center text-[#9F9F9F] ">
+                                      <h3>{v?.statistics[0].games.number}</h3>
+                                    </div>
+                                  ):(
+                                    <></>
+                                  )}
                                 </li>
                               );
                             })}
                           </ul>
+                          
 
                           {/* Away substitutes*/}
-                          <ul></ul>
+
                         </div>
                       </>
                     )}
