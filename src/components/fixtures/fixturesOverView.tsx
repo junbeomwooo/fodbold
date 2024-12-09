@@ -25,6 +25,7 @@ import { FaArrowCircleLeft } from "react-icons/fa";
 import Shoes from "@/../public/img/soccershoes.png";
 import MissedPenalty from "@/../public/img/missedPenalty.png";
 import Saved from "@/../public/img/saved.png";
+import { assist } from "../../../public/example";
 
 // import { fixture } from "../../../public/example";
 
@@ -101,7 +102,6 @@ export default function FixturesOverView({
 
   /** substitutes for away team */
   const awaySubstitutes = fixture?.players[1].players.filter((v: any) => {
-    console.log(v);
     return v.statistics[0].games.substitute;
   });
 
@@ -384,10 +384,10 @@ export default function FixturesOverView({
                             className="py-2 mr-1 rounded-l-full text-sm flex items-center text-white"
                           >
                             <h1
-                              className="mr-5"
+                              className="ml-5"
                               style={{
                                 color: `${
-                                  fixture.lineups[1].team.colors.player
+                                  fixture.lineups[0].team.colors.player
                                     .primary === "ffffff"
                                     ? "black"
                                     : "white"
@@ -661,12 +661,14 @@ export default function FixturesOverView({
                       })}
                     </div>
 
-                    <div className="flex justify-center">
-                      <h1 className="text-xsm font-medium mt-3 dark:text-custom-gray">
-                        {fixture?.fixture.status.extra}
-                        {f("minutesAdded")}
-                      </h1>
-                    </div>
+                    {/* extra time */}
+                    {fixture?.fixture.status.extra && (
+                      <div className="flex justify-center">
+                        <h1 className="text-xsm font-medium mt-3 dark:text-custom-gray">
+                          {fixture?.fixture.status.extra} {f("minutesAdded")}
+                        </h1>
+                      </div>
+                    )}
 
                     <div className="flex items-center mt-10">
                       <hr className="border-1 border-solid border-slate-200 w-full dark:border-custom-gray3" />
@@ -1431,15 +1433,15 @@ export default function FixturesOverView({
                   </div>
                 )}
 
-                {/* Bench / Coach */}
+                {/* Substitutes / Coach */}
                 {fixture?.lineups.length > 0 && (
                   <div className=" border border-solid border-slate-200 bg-white rounded-b-xl px-4 py-10">
                     {/* Coach */}
                     {(fixture?.lineups[0]?.coach ||
                       fixture?.lineups[1]?.coach) && (
                       <div className="flex justify-between">
-                        {/* 홈팀 코치 */}
-                        <div className="flex items-center">
+                        {/* home team coach */}
+                        <div className="flex items-center w-[200px]">
                           <Image
                             src={
                               fixture?.lineups[0]?.coach.photo ||
@@ -1459,7 +1461,7 @@ export default function FixturesOverView({
                         </div>
 
                         {/* 원정팀 코치 */}
-                        <div className="flex items-center">
+                        <div className="flex items-center justify-end  w-[200px]">
                           <h2 className="text-sm">
                             {fixture?.lineups[1]?.coach.name || "undefined"}
                           </h2>
@@ -1483,73 +1485,322 @@ export default function FixturesOverView({
                       <>
                         {/* Substitutes Title */}
                         <div className="w-full flex justify-center items-center">
-                          <h2 className="text-base font-medium mt-10">
+                          <h2 className="text-base font-medium mt-10 mb-6">
                             Substitutes
                           </h2>
                         </div>
                         {/* Substitutes */}
-                        <div className="flex">
-                          {/* Home substitutes */}
-                          <ul>
+                        <div className="flex w-full gap-14 max-xl:gap-0">
+                          {/* Home substitutes*/}
+                          <ul className="w-1/2  max-xl:w-full">
                             {homePlayedPlayer.map((v: any, i: number) => {
-                              console.log(v?.statistics[0].games.rating);
                               return (
-                                <li key={i} className="flex items-center ">
-                                  {" "}
-                                  <Image
-                                    src={
-                                      v?.player.photo || "./img/undefined.png"
-                                    }
-                                    alt={v?.player.name || "undefined"}
-                                    width={38}
-                                    height={38}
-                                    className="rounded-full bg-[#f4f4f4] ml-4"
-                                  />
-
-                                  {/* player's rating */}
-                                  {v?.statistics[0].games.rating ? (
-                                    <div
-                                      className=" w-7 h-[18px] rounded-full flex items-center justify-center text-white text-xs"
-                                      style={{
-                                        backgroundColor:
-                                          parseInt(
-                                            v?.statistics[0].games.rating
-                                          ) >= 9
-                                            ? "#4389f9"
-                                            : parseInt(
-                                                v?.statistics[0].games.rating
-                                              ) >= 7
-                                            ? "#22B268"
-                                            : "#EF8022",
-                                      }}
-                                    >
-                                      <h3>{v?.statistics[0].games.rating}</h3>
+                                <li
+                                  key={i}
+                                  className="flex items-center justify-between w-full my-6 max-xl:relative max-xl:w-[150px] max-xl:m-auto max-xl:my-10 max-xl:block "
+                                >
+                                  {/* player info */}
+                                  <div className="flex items-center max-xl:block ">
+                                    {" "}
+                                    <Image
+                                      src={
+                                        v?.player.photo || "./img/undefined.png"
+                                      }
+                                      alt={v?.player.name || "undefined"}
+                                      width={38}
+                                      height={38}
+                                      className="rounded-full bg-[#f4f4f4] mr-4 max-xl:m-auto"
+                                    />
+                                    {/* player's rating */}
+                                    {v?.statistics[0].games.rating && (
+                                      <div
+                                        className=" w-7 h-[18px] rounded-full flex items-center justify-center text-white text-xs max-xl:absolute max-xl:top-[-7px] max-xl:right-[36px] "
+                                        style={{
+                                          backgroundColor:
+                                            parseInt(
+                                              v?.statistics[0].games.rating
+                                            ) >= 9
+                                              ? "#4389f9"
+                                              : parseInt(
+                                                  v?.statistics[0].games.rating
+                                                ) >= 7
+                                              ? "#22B268"
+                                              : "#EF8022",
+                                        }}
+                                      >
+                                        <h3>{v?.statistics[0].games.rating}</h3>
+                                      </div>
+                                    )}
+                                    {/* player's backnumber */}
+                                    {v?.statistics[0].games.number && (
+                                      <div className="w-[50px] h-auto text-sm flex justify-center items-center text-[#9F9F9F] max-xl:hidden">
+                                        <h3>{v?.statistics[0].games.number}</h3>
+                                      </div>
+                                    )}
+                                    {/* player name and position*/}
+                                    <div className="w-[200px] h-auto text-sm flex-col justify-center items-center max-xl:text-center max-xl:w-auto max-xl:mt-3">
+                                      <h3>{v?.player.name}</h3>
+                                      <h4 className="text-[#9f9f9f]">
+                                        {v?.statistics[0].games.position === "F"
+                                          ? "Attacker"
+                                          : v?.statistics[0].games.position ===
+                                            "M"
+                                          ? "Midfielder"
+                                          : v?.statistics[0].games.position ===
+                                            "D"
+                                          ? "Defender"
+                                          : v?.statistics[0].games.position ===
+                                            "G"
+                                          ? "Keeper"
+                                          : ""}
+                                      </h4>
                                     </div>
-                                  ) : (
-                                    <></>
-                                  )}
+                                  </div>
 
-                                  {/* player's backnumber */}
-                                  {v?.statistics[0].games.number ? (
-                                    <div className="w-[20px] h-auto text-sm flex justify-center items-center text-[#9F9F9F] ">
-                                      <h3>{v?.statistics[0].games.number}</h3>
-                                    </div>
-                                  ):(
-                                    <></>
-                                  )}
+                                  {/* player stats */}
+                                  <div className="flex items-center">
+                                    {/* goals */}
+                                    {v?.statistics[0].goals.total && (
+                                      <div className="w-[30px] h-auto flex items-center justify-center max-xl:absolute max-xl:right-[45px] max-xl:bottom-[46px] max-xl:bg-white max-xl:w-[20px] max-xl:rounded-full">
+                                        <PiSoccerBallLight className="w-4 h-4 dark:text-black " />
+                                      </div>
+                                    )}
+
+                                    {/* assists */}
+                                    {v?.statistics[0].goals.assists && (
+                                      <div className="w-[30px] h-auto flex items-center justify-center max-xl:absolute max-xl:left-[45px] max-xl:bg-white max-xl:bottom-[48px] max-xl:rounded-full max-xl:w-[20px]">
+                                        <Image
+                                          src={Shoes}
+                                          alt="assist"
+                                          width={15}
+                                          height={15}
+                                          className="w-4 h-4 -rotate-12 max-xl:w-3 max-xl:h-3"
+                                        />
+                                      </div>
+                                    )}
+
+                                    {/* 패널티 실축혹은 세이브  */}
+                                    {v?.statistics[0].penalty.missed ||
+                                    v?.statistics[0].penalty.saved ? (
+                                      <div className="w-[30px] h-auto flex items-center justify-center max-xl:absolute max-xl:right-[40px] max-xl:top-[13px]">
+                                        {v?.statistics[0].penalty.missed > 0 ? (
+                                          <Image
+                                            src={MissedPenalty}
+                                            alt="penalty missed"
+                                            width={15}
+                                            height={15}
+                                            className="w-4 h-4"
+                                          />
+                                        ) : v?.statistics[0].penalty.saved >
+                                          0 ? (
+                                          <Image
+                                            src={Saved}
+                                            alt="penalty saved"
+                                            width={15}
+                                            height={15}
+                                            className="w-4 h-4"
+                                          />
+                                        ) : (
+                                          <></>
+                                        )}
+                                      </div>
+                                    ) : (
+                                      <></>
+                                    )}
+
+                                    {/* cards */}
+                                    {v?.statistics[0].cards.red ||
+                                    v?.statistics[0].cards.yellow ? (
+                                      <div
+                                        className="w-[15px] h-[15px] flex items-center justify-center rounded-full ml-2 max-xl:absolute max-xl:left-[40px] max-xl:top-[10px]"
+                                        style={{
+                                          backgroundColor: v?.statistics[0]
+                                            .cards.red
+                                            ? "#EF4444"
+                                            : "#FDE046",
+                                        }}
+                                      ></div>
+                                    ) : (
+                                      <></>
+                                    )}
+
+                                    {/* substitution */}
+                                    {v?.statistics[0].games.minutes && (
+                                      <div className="w-[45px] h-auto flex justify-between items-center ml-4 max-xl:absolute max-xl:block max-xl:top-[-20px] max-xl:left-[20px]">
+                                        <h1 className="text-green-500 text-xs font-medium max-xl:text-xs max-xl:text-center ">
+                                          {90 +
+                                            fixture?.fixture.status.extra -
+                                            v?.statistics[0].games.minutes}
+                                          &apos;
+                                        </h1>
+                                        <FaArrowCircleLeft className=" text-green-500 w-[16px] h-auto rotate-180 max-xl:w-3 max-xl:h-3 max-xl:m-auto" />
+                                      </div>
+                                    )}
+                                  </div>
                                 </li>
                               );
                             })}
                           </ul>
-                          
 
                           {/* Away substitutes*/}
+                          <ul className="w-1/2  max-xl:w-full">
+                            {awayPlayedPlayer.map((v: any, i: number) => {
+                              return (
+                                <li
+                                  key={i}
+                                  className="flex items-center justify-between w-full my-6 max-xl:relative max-xl:w-[150px] max-xl:m-auto max-xl:my-10 max-xl:block "
+                                >
+                                  {/* player info */}
+                                  <div className="flex items-center max-xl:block ">
+                                    {" "}
+                                    <Image
+                                      src={
+                                        v?.player.photo || "./img/undefined.png"
+                                      }
+                                      alt={v?.player.name || "undefined"}
+                                      width={38}
+                                      height={38}
+                                      className="rounded-full bg-[#f4f4f4] mr-4 max-xl:m-auto"
+                                    />
+                                    {/* player's rating */}
+                                    {v?.statistics[0].games.rating && (
+                                      <div
+                                        className=" w-7 h-[18px] rounded-full flex items-center justify-center text-white text-xs max-xl:absolute max-xl:top-[-7px] max-xl:right-[36px] "
+                                        style={{
+                                          backgroundColor:
+                                            parseInt(
+                                              v?.statistics[0].games.rating
+                                            ) >= 9
+                                              ? "#4389f9"
+                                              : parseInt(
+                                                  v?.statistics[0].games.rating
+                                                ) >= 7
+                                              ? "#22B268"
+                                              : "#EF8022",
+                                        }}
+                                      >
+                                        <h3>{v?.statistics[0].games.rating}</h3>
+                                      </div>
+                                    )}
+                                    {/* player's backnumber */}
+                                    {v?.statistics[0].games.number && (
+                                      <div className="w-[50px] h-auto text-sm flex justify-center items-center text-[#9F9F9F] max-xl:hidden">
+                                        <h3>{v?.statistics[0].games.number}</h3>
+                                      </div>
+                                    )}
+                                    {/* player name and position*/}
+                                    <div className="w-[200px] h-auto text-sm flex-col justify-center items-center max-xl:text-center max-xl:w-auto max-xl:mt-3">
+                                      <h3>{v?.player.name}</h3>
+                                      <h4 className="text-[#9f9f9f]">
+                                        {v?.statistics[0].games.position === "F"
+                                          ? "Attacker"
+                                          : v?.statistics[0].games.position ===
+                                            "M"
+                                          ? "Midfielder"
+                                          : v?.statistics[0].games.position ===
+                                            "D"
+                                          ? "Defender"
+                                          : v?.statistics[0].games.position ===
+                                            "G"
+                                          ? "Keeper"
+                                          : ""}
+                                      </h4>
+                                    </div>
+                                  </div>
 
+                                  {/* player stats */}
+                                  <div className="flex items-center">
+                                    {/* goals */}
+                                    {v?.statistics[0].goals.total && (
+                                      <div className="w-[30px] h-auto flex items-center justify-center max-xl:absolute max-xl:right-[45px] max-xl:bottom-[46px] max-xl:bg-white max-xl:w-[20px] max-xl:rounded-full">
+                                        <PiSoccerBallLight className="w-4 h-4 dark:text-black " />
+                                      </div>
+                                    )}
+
+                                    {/* assists */}
+                                    {v?.statistics[0].goals.assists && (
+                                      <div className="w-[30px] h-auto flex items-center justify-center max-xl:absolute max-xl:left-[45px] max-xl:bg-white max-xl:bottom-[48px] max-xl:rounded-full max-xl:w-[20px]">
+                                        <Image
+                                          src={Shoes}
+                                          alt="assist"
+                                          width={15}
+                                          height={15}
+                                          className="w-4 h-4 -rotate-12 max-xl:w-3 max-xl:h-3"
+                                        />
+                                      </div>
+                                    )}
+
+                                    {/* 패널티 실축혹은 세이브  */}
+                                    {v?.statistics[0].penalty.missed ||
+                                    v?.statistics[0].penalty.saved ? (
+                                      <div className="w-[30px] h-auto flex items-center justify-center max-xl:absolute max-xl:right-[40px] max-xl:top-[13px]">
+                                        {v?.statistics[0].penalty.missed > 0 ? (
+                                          <Image
+                                            src={MissedPenalty}
+                                            alt="penalty missed"
+                                            width={15}
+                                            height={15}
+                                            className="w-4 h-4"
+                                          />
+                                        ) : v?.statistics[0].penalty.saved >
+                                          0 ? (
+                                          <Image
+                                            src={Saved}
+                                            alt="penalty saved"
+                                            width={15}
+                                            height={15}
+                                            className="w-4 h-4"
+                                          />
+                                        ) : (
+                                          <></>
+                                        )}
+                                      </div>
+                                    ) : (
+                                      <></>
+                                    )}
+
+                                    {/* cards */}
+                                    {v?.statistics[0].cards.red ||
+                                    v?.statistics[0].cards.yellow ? (
+                                      <div
+                                        className="w-[15px] h-[15px] flex items-center justify-center rounded-full ml-2 max-xl:absolute max-xl:left-[40px] max-xl:top-[10px]"
+                                        style={{
+                                          backgroundColor: v?.statistics[0]
+                                            .cards.red
+                                            ? "#EF4444"
+                                            : "#FDE046",
+                                        }}
+                                      ></div>
+                                    ) : (
+                                      <></>
+                                    )}
+
+                                    {/* substitution */}
+                                    {v?.statistics[0].games.minutes && (
+                                      <div className="w-[45px] h-auto flex justify-between items-center ml-4 max-xl:absolute max-xl:block max-xl:top-[-20px] max-xl:left-[20px]">
+                                        <h1 className="text-green-500 text-xs font-medium max-xl:text-xs max-xl:text-center ">
+                                          {90 +
+                                            fixture?.fixture.status.extra -
+                                            v?.statistics[0].games.minutes}
+                                          &apos;
+                                        </h1>
+                                        <FaArrowCircleLeft className=" text-green-500 w-[16px] h-auto rotate-180 max-xl:w-3 max-xl:h-3 max-xl:m-auto" />
+                                      </div>
+                                    )}
+                                  </div>
+                                </li>
+                              );
+                            })}
+                          </ul>
                         </div>
                       </>
                     )}
                   </div>
                 )}
+
+                {/* Bench */}
+
+                {/* Injured and suspended player */}
               </>
             ) : (
               // 경기가 시작하지 않은 경우
