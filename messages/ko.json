@@ -214,6 +214,20 @@
     "ownGoal": "자책골",
     "assistBy": "어시스트:",
     "minutesAdded": "분의 추가시간",
-    "round": "라운드"
+    "round": "라운드",
+    "coach": "감독",
+    "substitutes": "교체 선수",
+    "bench": "벤치",
+    "injuredSuspendedPlayers": "부상 / 출장 정지 선수들",
+    "F": "공격수",
+    "M": "미드필더",
+    "D": "수비수",
+    "G": "골키퍼",
+    "Suspended": "출장 정지",
+    "Illness": "질병",
+    "Thigh Injury": "허벅지 부상",
+    "Muscle Injury": "근육 부상",
+    "Broken ankle": "발목 골절",
+    "fulltime": "경기종료"
   }
 }

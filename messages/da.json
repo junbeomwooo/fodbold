@@ -214,6 +214,20 @@
     "ownGoal": "Selvmål",
     "assistBy": "Assisteret af",
     "minutesAdded": "minutters tillægstid",
-    "round": "Runde"
+    "round": "Runde",
+    "coach": "Træner",
+    "substitutes": "Udskiftningsspillere",
+    "bench": "Bænk",
+    "injuredSuspendedPlayers": "Skadede / suspenderede spillere",
+    "F": "Angriber",
+    "M": "Midtbanespiller",
+    "D": "Forsvarsspiller",
+    "G": "Målmand",
+    "Suspended": "Suspenderet",
+    "Illness": "Sygdom",
+    "Thigh Injury": "Lårskade",
+    "Muscle Injury": "Muskelskade",
+    "Broken ankle": "Brækket ankel",
+        "fulltime": "Fuldtid"
   }
 }

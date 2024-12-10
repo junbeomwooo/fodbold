@@ -241,7 +241,7 @@ export default function FixtureHeader({
                 </h3>
               ) : (
                 <h3 className="text-base font-medium text-custom-gray max-lg:text-xsm">
-                  Full time
+                  {f("fulltime")}
                 </h3>
               )}
             </div>

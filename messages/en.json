@@ -214,7 +214,23 @@
     "ownGoal": "Own goal",
     "assistBy":"Assist by",
     "minutesAdded": "minutes added",
-    "round": "Round"
+    "round": "Round",
+    "coach": "Coach",
+    "substitutes": "Substitutes",
+    "bench": "Bench",
+    "injuredSuspendedPlayers": "Injured / suspended players",
+    "F":"Attacker",
+    "M":"Midfielder",
+    "D":"Defender",
+    "G":"Keeper",
+    "Suspended":"Suspended",
+    "Illness":"Illness",
+    "Thigh Injury": "Thigh Injury",
+    "Muscle Injury": "Muscle Injury",
+    "Broken ankle": "Broken ankle",
+    "fulltime": "Full time"
+
+
 
   }
 }
