@@ -228,6 +228,14 @@
     "Thigh Injury": "Lårskade",
     "Muscle Injury": "Muskelskade",
     "Broken ankle": "Brækket ankel",
-        "fulltime": "Fuldtid"
+    "fulltime": "Fuldtid",
+    "Ankle Injury": "Ankelskade",
+    "Knee Injury": "Knæskade",
+    "Hip Injury": "Hofteskade",
+    "Knock": "Stød",
+    "Red Card": "Rødt kort",
+    "Convalescence": "Rekonvalescens",
+    "Calf Injury": "Lægsmerter"
+    
   }
 }

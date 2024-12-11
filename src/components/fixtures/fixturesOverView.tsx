@@ -42,28 +42,28 @@ export default function FixturesOverView({
   // 테마
   const { theme } = useTheme();
 
-
   /** 리덕스 초기화 */
   const dispatch = useAppDispatch();
-  const { fixture, injurie, h2h, fixtureByRound }: any = useAppSelector(
+  const { fixture, injurie, fixtureByRound }: any = useAppSelector(
     (state) => state.fixtureSlice
   );
+
+  const { location }: any = useAppSelector((state) => state.locationSlice);
 
   const router = useRouter();
 
   // 탭 페이지 상태 값
   const [tabPage, setTabPage] = useState("factsPreview");
 
+  // dispatch시 timezone까지 함께 적용시켜보기, getH2H가 원하는 데이터를 가져오는지 확인하고 원하는 데이터를 가져오지않는다면 두 팀의 역대전적을 가져오는 api url 찾아보기
+
+  // if there is no location it will fixed Europe/Copenhagen as timezone
+  const locate = location || "Europe/Copenhagen";
+
   /** 렌더링시  */
   useEffect(() => {
     // dispatch(getFixtures({ id: id })).then(({ payload }) => {
-    //   dispatch(getInjuries({id: id}));
-    //   dispatch(
-    //     getH2H({
-    //       homeID: payload?.teams.home.id,
-    //       awayID: payload?.teams.away.id,
-    //     })
-    //   );
+    //   dispatch(getInjuries({ id: id }));
     //   dispatch(
     //     getFixtruesByRound({
     //       leagueID: payload?.league.id,
@@ -74,11 +74,12 @@ export default function FixturesOverView({
     // });
   }, [dispatch, id]);
 
+  /** data for using */
+
   // home , away match stats
   const homeStats = fixture?.statistics[0]?.statistics;
   const awayStats = fixture?.statistics[1]?.statistics;
 
-  /** data for using */
   const finxturesByRound10 = fixtureByRound?.slice(0, 10);
   const round = fixture?.league.round.split("-")[1];
   const hometeamFormation = fixture?.lineups[0]?.formation.split("-");
@@ -123,7 +124,10 @@ export default function FixturesOverView({
     return v?.team.id === fixture?.teams.away.id;
   });
 
-  console.log(injurie);
+  console.group("locate");
+  console.log(locate);
+  console.groupEnd();
+
   console.group("fixture");
   console.log(fixture);
   console.groupEnd();
@@ -744,7 +748,10 @@ export default function FixturesOverView({
                             <div className="justify-center relative w-[80px]">
                               <Image
                                 src={`https://media.api-sports.io/football/players/${fixture?.lineups[0].startXI[0].player.id}.png`}
-                                alt={fixture?.lineups[0].startXI[0].player.name}
+                                alt={
+                                  fixture?.lineups[0].startXI[0].player.name ||
+                                  "keeper image"
+                                }
                                 width={45}
                                 height={45}
                                 className="rounded-full m-auto bg-white max-md:w-[40px]"
@@ -920,7 +927,8 @@ export default function FixturesOverView({
                                       (player: any, playerIndex: number) => {
                                         // 성을 제외한 선수의 이름
                                         const playerName =
-                                          player?.player.name.split(" ")[1];
+                                          player?.player.name.split(" ")[1] ||
+                                          player?.player.name;
 
                                         // 플레이어의 스탯
                                         const playerStats =
@@ -942,7 +950,10 @@ export default function FixturesOverView({
                                             {/* 선수 이미지 */}
                                             <Image
                                               src={`https://media.api-sports.io/football/players/${player?.player.id}.png`}
-                                              alt={player?.player.name}
+                                              alt={
+                                                player?.player.name ||
+                                                "player image"
+                                              }
                                               width={45}
                                               height={45}
                                               className="rounded-full m-auto bg-white max-md:w-[40px]"
@@ -1124,7 +1135,8 @@ export default function FixturesOverView({
                                       (player: any, playerIndex: number) => {
                                         // 성을 제외한 선수의 이름
                                         const playerName =
-                                          player?.player.name.split(" ")[1];
+                                          player?.player.name.split(" ")[1] ||
+                                          player?.player.name;
 
                                         // 플레이어의 스탯
                                         const playerStats =
@@ -1146,7 +1158,10 @@ export default function FixturesOverView({
                                             {/* 선수 이미지 */}
                                             <Image
                                               src={`https://media.api-sports.io/football/players/${player?.player.id}.png`}
-                                              alt={player?.player.name}
+                                              alt={
+                                                player?.player.name ||
+                                                "player image"
+                                              }
                                               width={45}
                                               height={45}
                                               className="rounded-full m-auto bg-white max-md:w-[40px]"
@@ -1290,7 +1305,10 @@ export default function FixturesOverView({
                             <div className="justify-center relative w-[80px]">
                               <Image
                                 src={`https://media.api-sports.io/football/players/${fixture?.lineups[1].startXI[0].player.id}.png`}
-                                alt={fixture?.lineups[1].startXI[0].player.name}
+                                alt={
+                                  fixture?.lineups[1].startXI[0].player.name ||
+                                  "keeper image"
+                                }
                                 width={45}
                                 height={45}
                                 className="rounded-full m-auto bg-white max-md:w-[40px] relative"
@@ -1444,7 +1462,7 @@ export default function FixturesOverView({
                             <Image
                               src={
                                 fixture?.lineups[0]?.coach.photo ||
-                                "./img/undefined.png"
+                                "/img/undefined.png"
                               }
                               alt={
                                 fixture?.lineups[0]?.coach.name || "undefined"
@@ -1471,7 +1489,7 @@ export default function FixturesOverView({
                             <Image
                               src={
                                 fixture?.lineups[1]?.coach.photo ||
-                                "./img/undefined.png"
+                                "/img/undefined.png"
                               }
                               alt={
                                 fixture?.lineups[1]?.coach.name || "undefined"
@@ -1504,11 +1522,8 @@ export default function FixturesOverView({
                               const playerName =
                                 v?.player.name.split(" ")[1] || v?.player.name;
                               return (
-                                <>
-                                  <li
-                                    key={i}
-                                    className="flex items-center justify-between w-full my-6 max-xl:relative max-xl:w-[150px] max-xl:m-auto max-xl:my-10 max-xl:block "
-                                  >
+                                <div key={i}>
+                                  <li className="flex items-center justify-between w-full my-6 max-xl:relative max-xl:w-[150px] max-xl:m-auto max-xl:my-10 max-xl:block ">
                                     {/* player info */}
                                     <div className="flex items-center max-xl:block ">
                                       <Image
@@ -1655,7 +1670,7 @@ export default function FixturesOverView({
                                   {i < homePlayedPlayer.length - 1 && (
                                     <hr className="dark:border-[#333333] max-xl:hidden" />
                                   )}
-                                </>
+                                </div>
                               );
                             })}
                           </ul>
@@ -1668,11 +1683,8 @@ export default function FixturesOverView({
                                 v?.player.name.split(" ")[1] || v?.player.name;
 
                               return (
-                                <>
-                                  <li
-                                    key={i}
-                                    className="flex items-center justify-between w-full my-6 max-xl:relative max-xl:w-[150px] max-xl:m-auto max-xl:my-10 max-xl:block "
-                                  >
+                                <div key={i}>
+                                  <li className="flex items-center justify-between w-full my-6 max-xl:relative max-xl:w-[150px] max-xl:m-auto max-xl:my-10 max-xl:block ">
                                     {/* player info */}
                                     <div className="flex items-center max-xl:block ">
                                       {" "}
@@ -1819,7 +1831,7 @@ export default function FixturesOverView({
                                   {i < awayPlayedPlayer.length - 1 && (
                                     <hr className="dark:border-[#333333] max-xl:hidden" />
                                   )}
-                                </>
+                                </div>
                               );
                             })}
                           </ul>
@@ -1848,11 +1860,8 @@ export default function FixturesOverView({
                           const playerName =
                             v?.player.name.split(" ")[1] || v?.player.name;
                           return (
-                            <>
-                              <li
-                                key={i}
-                                className="flex items-center justify-between w-full my-6 max-xl:relative max-xl:w-[150px] max-xl:m-auto max-xl:my-10 max-xl:block "
-                              >
+                            <div key={i}>
+                              <li className="flex items-center justify-between w-full my-6 max-xl:relative max-xl:w-[150px] max-xl:m-auto max-xl:my-10 max-xl:block ">
                                 {/* player info */}
                                 <div className="flex items-center max-xl:block ">
                                   {" "}
@@ -1889,7 +1898,7 @@ export default function FixturesOverView({
                               {i < homeBenchPlayer.length - 1 && (
                                 <hr className="dark:border-[#333333] max-xl:hidden" />
                               )}
-                            </>
+                            </div>
                           );
                         })}
                       </ul>
@@ -1901,11 +1910,8 @@ export default function FixturesOverView({
                           const playerName =
                             v?.player.name.split(" ")[1] || v?.player.name;
                           return (
-                            <>
-                              <li
-                                key={i}
-                                className="flex items-center justify-between w-full my-6 max-xl:relative max-xl:w-[150px] max-xl:m-auto max-xl:my-10 max-xl:block "
-                              >
+                            <div key={i}>
+                              <li className="flex items-center justify-between w-full my-6 max-xl:relative max-xl:w-[150px] max-xl:m-auto max-xl:my-10 max-xl:block ">
                                 {/* player info */}
                                 <div className="flex items-center max-xl:block ">
                                   {" "}
@@ -1942,7 +1948,7 @@ export default function FixturesOverView({
                               {i < awayBenchPlayer.length - 1 && (
                                 <hr className="dark:border-[#333333] max-xl:hidden" />
                               )}
-                            </>
+                            </div>
                           );
                         })}
                       </ul>
@@ -1969,11 +1975,8 @@ export default function FixturesOverView({
                             v?.player.name.split(" ")[1] || v?.player.name;
 
                           return (
-                            <>
-                              <li
-                                key={i}
-                                className="flex items-center justify-between w-full my-6 max-xl:relative max-xl:w-[150px] max-xl:m-auto max-xl:my-10 max-xl:block "
-                              >
+                            <div key={i}>
+                              <li className="flex items-center justify-between w-full my-6 max-xl:relative max-xl:w-[150px] max-xl:m-auto max-xl:my-10 max-xl:block ">
                                 {/* player info */}
                                 <div className="flex items-center max-xl:block ">
                                   {" "}
@@ -2008,7 +2011,7 @@ export default function FixturesOverView({
                               {i < homeInjurie.length - 1 && (
                                 <hr className="dark:border-[#333333] max-xl:hidden" />
                               )}
-                            </>
+                            </div>
                           );
                         })}
                       </ul>
@@ -2020,11 +2023,8 @@ export default function FixturesOverView({
                             v?.player.name.split(" ")[1] || v?.player.name;
 
                           return (
-                            <>
-                              <li
-                                key={i}
-                                className="flex items-center justify-between w-full my-6 max-xl:relative max-xl:w-[150px] max-xl:m-auto max-xl:my-10 max-xl:block "
-                              >
+                            <div key={i}>
+                              <li className="flex items-center justify-between w-full my-6 max-xl:relative max-xl:w-[150px] max-xl:m-auto max-xl:my-10 max-xl:block ">
                                 {/* player info */}
                                 <div className="flex items-center max-xl:block ">
                                   {" "}
@@ -2059,7 +2059,7 @@ export default function FixturesOverView({
                               {i < awayInjurie.length - 1 && (
                                 <hr className="dark:border-[#333333] max-xl:hidden" />
                               )}
-                            </>
+                            </div>
                           );
                         })}
                       </ul>
@@ -2129,7 +2129,7 @@ export default function FixturesOverView({
                           <div className="flex items-center">
                             <Image
                               src={v?.teams.home.logo}
-                              alt={v?.teams.home.name}
+                              alt={v?.teams.home.name || "home team logo"}
                               width={20}
                               height={20}
                               className="mr-3"
@@ -2146,7 +2146,7 @@ export default function FixturesOverView({
                           <div className="flex">
                             <Image
                               src={v?.teams.away.logo}
-                              alt={v?.teams.away.name}
+                              alt={v?.teams.away.name || "away team logo"}
                               width={20}
                               height={20}
                               className="mr-3"

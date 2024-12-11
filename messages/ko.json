@@ -228,6 +228,13 @@
     "Thigh Injury": "허벅지 부상",
     "Muscle Injury": "근육 부상",
     "Broken ankle": "발목 골절",
-    "fulltime": "경기종료"
+    "fulltime": "경기종료",
+    "Ankle Injury": "발목 부상",
+    "Knee Injury": "무릎 부상",
+    "Hip Injury": "엉덩이 부상",
+    "Knock": "타박상",
+    "Red Card": "레드 카드",
+    "Convalescence": "회복",
+    "Calf Injury": "종아리 부상"
   }
 }

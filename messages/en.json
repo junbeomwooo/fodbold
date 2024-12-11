@@ -228,8 +228,15 @@
     "Thigh Injury": "Thigh Injury",
     "Muscle Injury": "Muscle Injury",
     "Broken ankle": "Broken ankle",
-    "fulltime": "Full time"
+    "fulltime": "Full time",
 
+    "Ankle Injury":"Ankle Injury",
+    "Knee Injury":"Knee Injury",
+    "Hip Injury": "Hip Injury",
+    "Knock": "Knock",
+    "Red Card":"Red Card",
+    "Convalescence":"Convalescence",
+    "Calf Injury":"Calf Injury"
 
 
   }

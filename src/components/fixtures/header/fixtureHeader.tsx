@@ -124,7 +124,7 @@ export default function FixtureHeader({
           <div className="w-7 h-7 rounded-full bg-slate-200 flex justify-center items-center hover:cursor-pointer hover:bg-slate-400 dark:bg-custom-gray3 dark:hover:bg-custom-gray">
             <Image
               src={arrow || noimage}
-              alt="arrow"
+              alt={"arrow"}
               width={11}
               height={11}
               style={{ width: "11px", height: "11px" }}
@@ -213,7 +213,7 @@ export default function FixtureHeader({
           </Link>
           <Image
             src={fixture?.teams.home.logo || noimage}
-            alt={fixture?.teams.home.name}
+            alt={fixture?.teams.home.name || "no home team"}
             width={50}
             height={50}
           />
@@ -269,7 +269,7 @@ export default function FixtureHeader({
         <div className="flex items-center w-5/12 justify-start  max-lg:flex-col max-md:w-4/12">
           <Image
             src={fixture?.teams.away.logo|| noimage}
-            alt={fixture?.teams.away.name}
+            alt={fixture?.teams.away.name || "no away team"}
             width={50}
             height={50}
           />
