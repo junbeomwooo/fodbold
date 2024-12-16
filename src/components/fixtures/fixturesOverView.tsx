@@ -44,7 +44,7 @@ export default function FixturesOverView({
 
   /** 리덕스 초기화 */
   const dispatch = useAppDispatch();
-  const { fixture, injurie, fixtureByRound }: any = useAppSelector(
+  const { fixture, injurie, fixtureByRound, h2h }: any = useAppSelector(
     (state) => state.fixtureSlice
   );
 
@@ -55,24 +55,43 @@ export default function FixturesOverView({
   // 탭 페이지 상태 값
   const [tabPage, setTabPage] = useState("factsPreview");
 
-  // dispatch시 timezone까지 함께 적용시켜보기, getH2H가 원하는 데이터를 가져오는지 확인하고 원하는 데이터를 가져오지않는다면 두 팀의 역대전적을 가져오는 api url 찾아보기
-
   // if there is no location it will fixed Europe/Copenhagen as timezone
   const locate = location || "Europe/Copenhagen";
 
-  /** 렌더링시  */
+  /** useEffect  */
+
+  // 의존성배열에 locate값만 넣으면 수많은 렌더링이 발생하는데 이를 해결하기 위한 방법 구하기. H2H 부분의 모바일 버전의 px값이 적절한지 확인하고 나머지 구현하기
+  
   useEffect(() => {
-    // dispatch(getFixtures({ id: id })).then(({ payload }) => {
-    //   dispatch(getInjuries({ id: id }));
-    //   dispatch(
-    //     getFixtruesByRound({
-    //       leagueID: payload?.league.id,
-    //       season: payload?.league.season,
-    //       round: payload?.league.round,
-    //     })
-    //   );
-    // });
-  }, [dispatch, id]);
+    const fetchData = async () => {
+      try {
+        const { payload } = await dispatch(getFixtures({ id: id, timezone: locate }));
+
+        await Promise.all([
+          dispatch(getInjuries({ id: id })),
+          dispatch(
+            getFixtruesByRound({
+              leagueID: payload?.league.id,
+              season: payload?.league.season,
+              round: payload?.league.round,
+            })
+          ),
+          dispatch(
+            getH2H({
+              homeID: payload?.teams.home.id,
+              awayID: payload?.teams.away.id,
+              timezone: locate,
+            })
+          ),
+        ]);
+        
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+  
+    fetchData();
+  }, [dispatch, id]); 
 
   /** data for using */
 
@@ -124,6 +143,25 @@ export default function FixturesOverView({
     return v?.team.id === fixture?.teams.away.id;
   });
 
+  /** A function to calculate the number of wins for each team.  */
+
+  const winnerCounts = h2h?.reduce((acc: any, match: any) => {
+    const teamB = match.teams.away;
+    const teamA = match.teams.home;
+
+    if (teamA.winner) {
+      acc[teamA.id] = (acc[teamA.id] || 0) + 1;
+    } else if (teamB.winner) {
+      acc[teamB.id] = (acc[teamB.id] || 0) + 1;
+    } else {
+      acc["draw"] = (acc["draw"] || 0) + 1;
+    }
+
+    return acc;
+  }, {});
+
+  console.log(winnerCounts);
+
   console.group("locate");
   console.log(locate);
   console.groupEnd();
@@ -131,8 +169,13 @@ export default function FixturesOverView({
   console.group("fixture");
   console.log(fixture);
   console.groupEnd();
+
   console.group("homeInjurie");
   console.log(homeInjurie);
+  console.groupEnd();
+
+  console.group("h2h");
+  console.log(h2h);
   console.groupEnd();
 
   /** 리그URL로 이동하기위해 url 포맷변경하는 함수 */
@@ -2066,6 +2109,121 @@ export default function FixturesOverView({
                     </div>
                   </div>
                 )}
+
+                {/* h2h */}
+                {h2h?.length > 0 && (
+                  <div className=" border border-solid border-slate-200 bg-white dark:bg-[#1D1D1D] rounded-xl px-7 py-7 dark:border-0 max-xl:px-4 mt-4">
+                    {/* h2h Title */}
+                    <div className="w-full flex justify-center items-center">
+                      <h2 className="text-base font-medium mb-6">
+                        {f("secondH2H")}
+                      </h2>
+                    </div>
+
+                    {/* home team and away team */}
+                    <div className="flex justify-between mx-20 max-lg:mx-4">
+                      {/* home team and wins */}
+                      <div>
+                        <div className="flex items-center">
+                          <Image
+                            src={
+                              fixture?.teams.home.logo || "/img/undefined.png"
+                            }
+                            alt={fixture?.teams.home.logo || "home team logo"}
+                            width={100}
+                            height={100}
+                            className="w-[48px] h-auto mr-4 max-lg:w-[32px] "
+                          />
+                          <div>
+                            <div
+                              className="w-[72px] h-[45px] flex items-center justify-center rounded-3xl max-lg:w-[48px] max-lg:h-[30px]"
+                              style={{
+                                backgroundColor: `#${
+                                  fixture.lineups[0].team.colors.player
+                                    .primary === "ffffff"
+                                    ? "F1F5F9"
+                                    : fixture.lineups[0].team.colors.player
+                                        .primary
+                                }`,
+                              }}
+                            >
+                              <h3
+                                className="text-[21px]"
+                                style={{
+                                  color: `${
+                                    fixture.lineups[0].team.colors.player
+                                      .primary === "ffffff"
+                                      ? "black"
+                                      : "white"
+                                  }`,
+                                }}
+                              >
+                                {winnerCounts[fixture?.teams.home.id]}
+                              </h3>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="flex justify-end">
+                          <h2 className="w-[72px] text-center mt-4 text-[16px]  font-medium max-lg:w-[48px] max-lg:text-[14px]">{f("wins")}</h2>
+                        </div>
+                      </div>
+                      {/* draw */}
+                      <div>
+                        <div className="w-[72px] h-[45px] flex items-center justify-center border border-solid border-[#e4e6e8] rounded-3xl max-lg:w-[48px] max-lg:h-[30px]">
+                          {winnerCounts["draw"]}
+                        </div>
+                        <div className="flex justify-end">
+                          <h2 className="w-[72px] text-center mt-4 text-[16px] font-medium max-lg:w-[48px] max-lg:text-[14px]">{f("draws")}</h2>
+                        </div>
+                      </div>
+                      {/* away team and wins */}
+                      <div>
+                        <div className="flex items-center">
+                          <div>
+                            <div
+                              className="w-[72px] h-[45px] flex items-center justify-center rounded-3xl max-lg:w-[48px] max-lg:h-[30px]"
+                              style={{
+                                backgroundColor: `#${
+                                  fixture.lineups[1].team.colors.player
+                                    .primary === "ffffff"
+                                    ? "F1F5F9"
+                                    : fixture.lineups[1].team.colors.player
+                                        .primary
+                                }`,
+                              }}
+                            >
+                              <h3
+                                className="text-[21px]"
+                                style={{
+                                  color: `${
+                                    fixture.lineups[1].team.colors.player
+                                      .primary === "ffffff"
+                                      ? "black"
+                                      : "white"
+                                  }`,
+                                }}
+                              >
+                                {winnerCounts[fixture?.teams.home.id]}
+                              </h3>
+                            </div>
+                          </div>
+                          <Image
+                            src={
+                              fixture?.teams.away.logo || "/img/undefined.png"
+                            }
+                            alt={fixture?.teams.away.logo || "away team logo"}
+                            width={100}
+                            height={100}
+                            className="w-[48px] h-auto ml-4 max-lg:w-[32px]"
+                          />
+                        </div>
+                        <div className="flex justify-start">
+                          <h2 className="w-[72px] text-center mt-4 text-[16px]  font-medium max-lg:w-[48px] max-lg:text-[14px]">{f("wins")}</h2>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </>
             ) : (
               // 경기가 시작하지 않은 경우
@@ -2181,21 +2339,3 @@ export default function FixturesOverView({
     </div>
   );
 }
-
-// <div
-// className="absolute w-7 h-[18px] right-[4px] top-[-4px] rounded-full flex items-center justify-center text-white"
-// style={{
-//   backgroundColor:
-//     parseInt(
-//       fixture?.players[0].players[0]
-//         .statistics[0].games.rating
-//     ) >= 9
-//       ? "#4389f9"
-//       : parseInt(
-//           fixture?.players[0].players[0]
-//             .statistics[0].games.rating
-//         ) >= 7
-//       ? "#22B268"
-//       : "#EF8022",
-// }}
-// >

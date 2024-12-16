@@ -236,7 +236,17 @@
     "Knock": "Knock",
     "Red Card":"Red Card",
     "Convalescence":"Convalescence",
-    "Calf Injury":"Calf Injury"
+    "Calf Injury":"Calf Injury",
+    "Groin Injury" : "Groin Injury",
+    "Achilles Tendon Injury":"Achilles Tendon Injury",
+    "Inactive": "Inactive",
+    "Injury": "Injury",
+    "Finger Injury": "Finger Injury",
+    "Yellow Cards":"Yellow Cards",
+    "secondH2H": "Head to Head",
+    "wins": "Wins",
+    "draws": "Draws"
+    
 
 
   }

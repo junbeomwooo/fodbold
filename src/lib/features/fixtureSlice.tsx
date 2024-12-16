@@ -43,14 +43,14 @@ export const getFixtruesByRound = createAsyncThunk(
 export const getH2H = createAsyncThunk(
   "fixtureSlice/getH2H",
   async (
-    { homeID, awayID }: { homeID: number; awayID: number },
+    { homeID, awayID, timezone }: { homeID: number; awayID: number, timezone:string },
     { rejectWithValue }
   ) => {
     let result = null;
 
     try {
       const response = await axios.get(
-        `${url}/fixtures/headtohead?h2h=${homeID}-${awayID}`,
+        `${url}/fixtures/headtohead?h2h=${homeID}-${awayID}&timezone=${timezone}`,
         {
           headers: {
             "x-rapidapi-host": "v3.football.api-sports.io",
@@ -100,11 +100,11 @@ export const getInjuries = createAsyncThunk(
 // 해당되는 경기 정보 가져오기
 export const getFixtures = createAsyncThunk(
   "fixtureSlice/getFixtures",
-  async ({ id }: { id: number }, { rejectWithValue }) => {
+  async ({ id, timezone }: { id: number, timezone: string }, { rejectWithValue }) => {
     let result = null;
 
     try {
-      const response = await axios.get(`${url}/fixtures?id=${id}`, {
+      const response = await axios.get(`${url}/fixtures?id=${id}&timezone=${timezone}`, {
         headers: {
           "x-rapidapi-host": "v3.football.api-sports.io",
           "x-rapidapi-key": `${process.env.NEXT_PUBLIC_FOOTBALL_API_KEY}`,

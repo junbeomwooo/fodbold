@@ -235,7 +235,15 @@
     "Knock": "Stød",
     "Red Card": "Rødt kort",
     "Convalescence": "Rekonvalescens",
-    "Calf Injury": "Lægsmerter"
-    
+    "Calf Injury": "Lægsmerter",
+    "Groin Injury": "Lyskeskade",
+    "Achilles Tendon Injury": "Achillessene skade",
+    "Inactive": "Inaktiv",
+    "Injury": "Skade",
+    "Finger Injury": "Fingerskade",
+    "Yellow Cards": "Gule Kort",
+    "secondH2H": "Indbyrdes opgør",
+    "wins": "Sejre",
+    "draws": "Uafgjorte"
   }
 }

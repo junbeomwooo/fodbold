@@ -235,6 +235,15 @@
     "Knock": "타박상",
     "Red Card": "레드 카드",
     "Convalescence": "회복",
-    "Calf Injury": "종아리 부상"
+    "Calf Injury": "종아리 부상",
+    "Groin Injury": "사타구니 부상",
+    "Achilles Tendon Injury": "아킬레스건 부상",
+    "Inactive": "비활성",
+    "Injury": "부상",
+    "Finger Injury": "손가락 부상",
+    "Yellow Cards": "옐로 카드",
+    "secondH2H": "역대전적",
+       "wins": "승리",
+    "draws": "무승부"
   }
 }
