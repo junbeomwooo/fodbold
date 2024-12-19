@@ -7,8 +7,8 @@ import {
   getFixtruesByRound,
 } from "@/lib/features/fixtureSlice";
 import { useAppDispatch, useAppSelector } from "@/lib/storeHooks";
-import { useEffect, useState, useRef } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import React, { useEffect, useState, useRef, useMemo } from "react";
+import { useRouter } from "next/navigation";
 import FixtureHeader from "./header/fixtureHeader";
 import { useTheme } from "next-themes";
 
@@ -29,13 +29,7 @@ import { ImCross } from "react-icons/im";
 
 // import { fixture } from "../../../public/example";
 
-export default function FixturesOverView({
-  id,
-  locale,
-}: {
-  id: number;
-  locale: string;
-}) {
+const FixturesOverView = ({ id, locale }: { id: number; locale: string }) => {
   // 번역
   const f = useTranslations("fixture");
 
@@ -56,42 +50,39 @@ export default function FixturesOverView({
   const [tabPage, setTabPage] = useState("factsPreview");
 
   // if there is no location it will fixed Europe/Copenhagen as timezone
-  const locate = location || "Europe/Copenhagen";
+  const locate = useMemo(() => location || "Europe/Copenhagen", [location]);
 
   /** useEffect  */
 
-  // 의존성배열에 locate값만 넣으면 수많은 렌더링이 발생하는데 이를 해결하기 위한 방법 구하기. H2H 부분의 모바일 버전의 px값이 적절한지 확인하고 나머지 구현하기
-  
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const { payload } = await dispatch(getFixtures({ id: id, timezone: locate }));
+  // 각 로케일 별로 포맷한 데이터값을 구했으니 다른 것들 마저 구현하기 , 컴포넌트의 불필요한 재렌더링으로 인해 수많은 console.log가 찍힘
 
-        await Promise.all([
-          dispatch(getInjuries({ id: id })),
-          dispatch(
-            getFixtruesByRound({
-              leagueID: payload?.league.id,
-              season: payload?.league.season,
-              round: payload?.league.round,
-            })
-          ),
-          dispatch(
-            getH2H({
-              homeID: payload?.teams.home.id,
-              awayID: payload?.teams.away.id,
-              timezone: locate,
-            })
-          ),
-        ]);
-        
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
-    };
-  
-    fetchData();
-  }, [dispatch, id]); 
+  useEffect(() => {
+    // const fetchData = async () => {
+    //   try {
+    //     const { payload } = await dispatch(getFixtures({ id: id, timezone: locate }));
+    //     await Promise.all([
+    //       dispatch(getInjuries({ id: id })),
+    //       dispatch(
+    //         getFixtruesByRound({
+    //           leagueID: payload?.league.id,
+    //           season: payload?.league.season,
+    //           round: payload?.league.round,
+    //         })
+    //       ),
+    //       dispatch(
+    //         getH2H({
+    //           homeID: payload?.teams.home.id,
+    //           awayID: payload?.teams.away.id,
+    //           timezone: locate,
+    //         })
+    //       ),
+    //     ]);
+    //   } catch (error) {
+    //     console.error("Error fetching data:", error);
+    //   }
+    // };
+    // fetchData();
+  }, [dispatch, id, locate]);
 
   /** data for using */
 
@@ -2114,14 +2105,14 @@ export default function FixturesOverView({
                 {h2h?.length > 0 && (
                   <div className=" border border-solid border-slate-200 bg-white dark:bg-[#1D1D1D] rounded-xl px-7 py-7 dark:border-0 max-xl:px-4 mt-4">
                     {/* h2h Title */}
-                    <div className="w-full flex justify-center items-center">
+                    <div className="w-full flex justify-center items-center mb-10">
                       <h2 className="text-base font-medium mb-6">
                         {f("secondH2H")}
                       </h2>
                     </div>
 
                     {/* home team and away team */}
-                    <div className="flex justify-between mx-20 max-lg:mx-4">
+                    <div className="flex justify-between mx-32 max-lg:mx-4">
                       {/* home team and wins */}
                       <div>
                         <div className="flex items-center">
@@ -2134,7 +2125,7 @@ export default function FixturesOverView({
                             height={100}
                             className="w-[48px] h-auto mr-4 max-lg:w-[32px] "
                           />
-                          <div>
+                          <div className="ml-10 max-sm:ml-0">
                             <div
                               className="w-[72px] h-[45px] flex items-center justify-center rounded-3xl max-lg:w-[48px] max-lg:h-[30px]"
                               style={{
@@ -2148,7 +2139,7 @@ export default function FixturesOverView({
                               }}
                             >
                               <h3
-                                className="text-[21px]"
+                                className="text-[21px]  max-lg:text-[14px] max-lg:font-bold"
                                 style={{
                                   color: `${
                                     fixture.lineups[0].team.colors.player
@@ -2164,22 +2155,29 @@ export default function FixturesOverView({
                           </div>
                         </div>
                         <div className="flex justify-end">
-                          <h2 className="w-[72px] text-center mt-4 text-[16px]  font-medium max-lg:w-[48px] max-lg:text-[14px]">{f("wins")}</h2>
+                          <h2 className="w-[72px] text-center mt-4 text-[16px]  font-medium max-lg:w-[48px] max-lg:text-[14px]">
+                            {f("wins")}
+                          </h2>
                         </div>
                       </div>
                       {/* draw */}
                       <div>
                         <div className="w-[72px] h-[45px] flex items-center justify-center border border-solid border-[#e4e6e8] rounded-3xl max-lg:w-[48px] max-lg:h-[30px]">
-                          {winnerCounts["draw"]}
+                          <h3 className="text-[21px] max-lg:text-[14px] max-lg:font-bold">
+                            {" "}
+                            {winnerCounts["draw"]}
+                          </h3>
                         </div>
-                        <div className="flex justify-end">
-                          <h2 className="w-[72px] text-center mt-4 text-[16px] font-medium max-lg:w-[48px] max-lg:text-[14px]">{f("draws")}</h2>
+                        <div className="flex">
+                          <h2 className="w-[72px] text-center mt-4 pt-[2px] text-[16px] font-medium max-lg:w-[48px] max-lg:text-[14px]">
+                            {f("draws")}
+                          </h2>
                         </div>
                       </div>
                       {/* away team and wins */}
                       <div>
                         <div className="flex items-center">
-                          <div>
+                          <div className="mr-10 max-sm:mr-0">
                             <div
                               className="w-[72px] h-[45px] flex items-center justify-center rounded-3xl max-lg:w-[48px] max-lg:h-[30px]"
                               style={{
@@ -2193,7 +2191,7 @@ export default function FixturesOverView({
                               }}
                             >
                               <h3
-                                className="text-[21px]"
+                                className="text-[21px]  max-lg:text-[14px] max-lg:font-bold"
                                 style={{
                                   color: `${
                                     fixture.lineups[1].team.colors.player
@@ -2218,10 +2216,51 @@ export default function FixturesOverView({
                           />
                         </div>
                         <div className="flex justify-start">
-                          <h2 className="w-[72px] text-center mt-4 text-[16px]  font-medium max-lg:w-[48px] max-lg:text-[14px]">{f("wins")}</h2>
+                          <h2 className="w-[72px] text-center mt-4 text-[16px]  font-medium max-lg:w-[48px] max-lg:text-[14px]">
+                            {f("wins")}
+                          </h2>
                         </div>
                       </div>
                     </div>
+
+                    {/* h2h data */}
+                    <ul>
+                      {h2h.map((v: any, i: number) => {
+                        console.log(v);
+
+                        const formatDate = (dateString: string) => {
+                          const date = new Date(dateString);
+                          console.log(date);
+
+                          const options: Intl.DateTimeFormatOptions = {
+                            day: "2-digit",
+                            month: "long",
+                            year: "numeric",
+                          };
+
+                          const localeInfo =
+                            locale === "en"
+                              ? "en-GB"
+                              : locale === "ko"
+                              ? "ko-KR"
+                              : locale === "da"
+                              ? "da-DK"
+                              : "";
+
+                          return Intl.DateTimeFormat(
+                            localeInfo,
+                            options
+                          ).format(date);
+                        };
+
+                        const formattedDate = formatDate(
+                          v?.fixture.date.substring(0, 10)
+                        );
+                        console.log(formattedDate);
+
+                        return <li key={i}></li>;
+                      })}
+                    </ul>
                   </div>
                 )}
               </>
@@ -2338,4 +2377,6 @@ export default function FixturesOverView({
       )}
     </div>
   );
-}
+};
+
+export default React.memo(FixturesOverView);
