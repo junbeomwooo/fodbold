@@ -57,32 +57,32 @@ const FixturesOverView = ({ id, locale }: { id: number; locale: string }) => {
   // 각 로케일 별로 포맷한 데이터값을 구했으니 다른 것들 마저 구현하기 , 컴포넌트의 불필요한 재렌더링으로 인해 수많은 console.log가 찍힘
 
   useEffect(() => {
-    // const fetchData = async () => {
-    //   try {
-    //     const { payload } = await dispatch(getFixtures({ id: id, timezone: locate }));
-    //     await Promise.all([
-    //       dispatch(getInjuries({ id: id })),
-    //       dispatch(
-    //         getFixtruesByRound({
-    //           leagueID: payload?.league.id,
-    //           season: payload?.league.season,
-    //           round: payload?.league.round,
-    //         })
-    //       ),
-    //       dispatch(
-    //         getH2H({
-    //           homeID: payload?.teams.home.id,
-    //           awayID: payload?.teams.away.id,
-    //           timezone: locate,
-    //         })
-    //       ),
-    //     ]);
-    //   } catch (error) {
-    //     console.error("Error fetching data:", error);
-    //   }
-    // };
-    // fetchData();
-  }, [dispatch, id, locate]);
+    const fetchData = async () => {
+      try {
+        const { payload } = await dispatch(getFixtures({ id: id, timezone: locate }));
+        await Promise.all([
+          dispatch(getInjuries({ id: id })),
+          dispatch(
+            getFixtruesByRound({
+              leagueID: payload?.league.id,
+              season: payload?.league.season,
+              round: payload?.league.round,
+            })
+          ),
+          dispatch(
+            getH2H({
+              homeID: payload?.teams.home.id,
+              awayID: payload?.teams.away.id,
+              timezone: locate,
+            })
+          ),
+        ]);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+    fetchData();
+  }, [dispatch, id]);
 
   /** data for using */
 
@@ -151,7 +151,12 @@ const FixturesOverView = ({ id, locale }: { id: number; locale: string }) => {
     return acc;
   }, {});
 
-  console.log(winnerCounts);
+  const sortedH2H = [...(h2h || [])].sort(
+    (a: any, b: any) =>
+      new Date(b?.fixture.date).getTime() - new Date(a?.fixture.date).getTime()
+  );
+
+  console.log(sortedH2H);
 
   console.group("locate");
   console.log(locate);
@@ -2102,7 +2107,7 @@ const FixturesOverView = ({ id, locale }: { id: number; locale: string }) => {
                 )}
 
                 {/* h2h */}
-                {h2h?.length > 0 && (
+                {h2h?.length && sortedH2H?.length > 0 && (
                   <div className=" border border-solid border-slate-200 bg-white dark:bg-[#1D1D1D] rounded-xl px-7 py-7 dark:border-0 max-xl:px-4 mt-4">
                     {/* h2h Title */}
                     <div className="w-full flex justify-center items-center mb-10">
@@ -2162,7 +2167,7 @@ const FixturesOverView = ({ id, locale }: { id: number; locale: string }) => {
                       </div>
                       {/* draw */}
                       <div>
-                        <div className="w-[72px] h-[45px] flex items-center justify-center border border-solid border-[#e4e6e8] rounded-3xl max-lg:w-[48px] max-lg:h-[30px]">
+                        <div className="w-[72px] h-[45px] flex items-center justify-center border border-solid border-[#e4e6e8] rounded-3xl max-lg:w-[48px] max-lg:h-[30px] dark:border-0 dark:bg-[#333333]">
                           <h3 className="text-[21px] max-lg:text-[14px] max-lg:font-bold">
                             {" "}
                             {winnerCounts["draw"]}
@@ -2216,7 +2221,7 @@ const FixturesOverView = ({ id, locale }: { id: number; locale: string }) => {
                           />
                         </div>
                         <div className="flex justify-start">
-                          <h2 className="w-[72px] text-center mt-4 text-[16px]  font-medium max-lg:w-[48px] max-lg:text-[14px]">
+                          <h2 className="w-[72px] text-center mt-4 text-[16px]  font-medium max-lg:w-[48px] max-lg:text-[14px] mb-10">
                             {f("wins")}
                           </h2>
                         </div>
@@ -2225,40 +2230,109 @@ const FixturesOverView = ({ id, locale }: { id: number; locale: string }) => {
 
                     {/* h2h data */}
                     <ul>
-                      {h2h.map((v: any, i: number) => {
-                        console.log(v);
+                      {sortedH2H.map((v: any, i: number) => {
+                        /** For Formatted date */
+                        const date = new Date(v?.fixture.date);
 
-                        const formatDate = (dateString: string) => {
-                          const date = new Date(dateString);
-                          console.log(date);
-
-                          const options: Intl.DateTimeFormatOptions = {
-                            day: "2-digit",
-                            month: "long",
-                            year: "numeric",
-                          };
-
-                          const localeInfo =
-                            locale === "en"
-                              ? "en-GB"
-                              : locale === "ko"
-                              ? "ko-KR"
-                              : locale === "da"
-                              ? "da-DK"
-                              : "";
-
-                          return Intl.DateTimeFormat(
-                            localeInfo,
-                            options
-                          ).format(date);
+                        const options: Intl.DateTimeFormatOptions = {
+                          day: "2-digit",
+                          month: "long",
+                          year: "numeric",
                         };
 
-                        const formattedDate = formatDate(
-                          v?.fixture.date.substring(0, 10)
-                        );
-                        console.log(formattedDate);
+                        const localeInfo =
+                          locale === "en"
+                            ? "en-GB"
+                            : locale === "ko"
+                            ? "ko-KR"
+                            : locale === "da"
+                            ? "da-DK"
+                            : "";
 
-                        return <li key={i}></li>;
+                        const formattedDate = Intl.DateTimeFormat(
+                          localeInfo,
+                          options
+                        ).format(date);
+
+                        const formattedTime = date
+                          .toLocaleTimeString(localeInfo)
+                          .slice(0, 5);
+
+                        return (
+                          <>
+                            <li
+                              key={i}
+                              className="mx-2 w-full flex-col items-center justify-center py-3 hover:cursor-pointer hover:opacity-60"
+                            >
+                              {/* match date and league name */}
+                              <div className="flex justify-between text-[12px] text-[#9f9f9f] mb-4">
+                                <h3>{formattedDate}</h3>
+                                <div className="flex items-center">
+                                  <h3 className="mr-1">{v?.league.name}</h3>
+                                  <div className="w-[18px] h-[18px] border border-solid border-[#9f9f9f] rounded-full flex items-center justify-center">
+                                    <Image
+                                      src={
+                                        v?.league.logo || "/img/undefined.png"
+                                      }
+                                      alt={v?.league.name || "league name"}
+                                      width={10}
+                                      height={10}
+                                      className="rounded-full"
+                                    />
+                                  </div>
+                                </div>
+                              </div>
+                              {/* home team and away team's head to head */}
+                              <div className="flex justify-between ">
+                                {/* home team */}
+                                <div className="flex justify-end w-2/5">
+                                  <h3 className="text-[14px]">
+                                    {v?.teams.home.name}
+                                  </h3>
+                                  <Image
+                                    src={
+                                      v?.teams.home.logo || "/img/undefined.png"
+                                    }
+                                    alt={v?.teams.home.name || "hoem team name"}
+                                    width={20}
+                                    height={20}
+                                    className="rounded-full ml-2 w-[20px] h-[20px]"
+                                  />
+                                </div>
+                                {/* score */}
+                                <div className="w-1/5 flex justify-center items-center">
+                                  {/* show match time if the match didn't start yet */}
+                                  {v?.goals.home === null ||
+                                  v?.goals.away === null ? (
+                                    <h3 className="text-[12px] text-[#9f9f9f]">
+                                      {formattedTime}
+                                    </h3>
+                                  ) : (
+                                    <h3 className="text-[12px]">
+                                      {`${v?.goals.home}-${v?.goals.away}`}
+                                    </h3>
+                                  )}
+                                </div>
+                                {/* away teams */}
+                                <div className="flex  w-2/5 justify-start">
+                                  <Image
+                                    src={
+                                      v?.teams.away.logo || "/img/undefined.png"
+                                    }
+                                    alt={v?.teams.away.name || "away team name"}
+                                    width={20}
+                                    height={20}
+                                    className="rounded-full mr-2 w-[20px] h-[20px]"
+                                  />
+                                  <h3 className="text-[14px]">
+                                    {v?.teams.away.name}
+                                  </h3>
+                                </div>
+                              </div>
+                            </li>
+                            <hr className="dark:border-[#333333]" />
+                          </>
+                        );
                       })}
                     </ul>
                   </div>
