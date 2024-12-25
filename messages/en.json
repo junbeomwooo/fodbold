@@ -207,6 +207,25 @@
     "h2h": "H2H",
     "matchStats": "Match Stats",
     "ballPossession":"Ball possession",
+
+    "shotsOnGoal":"Shots on Goal",
+    "shotsOffGoal":"Shots off Goal",
+    "blockedShots":"Blocked Shots",
+    "shotsInsidebox":"Shots insidebox",
+    "shotsOutsidebox": "Shots outsidebox",
+    "cornerKicks": "Corner Kicks",
+    "offsides":"Offsides",
+    "yellowCards":"Yellow Cards",
+    "redCards":"Red Cards",
+    "goalkeeperSaves":"Goalkeeper Saves",
+    "totalPasses":"Total passes",
+    "passesAccurate":"Passes accurate",
+    "passes%":"Passes %",
+    "goalsPrevented": "goals_prevented",
+
+
+
+
     "expectedGoals":"Expected Goals",
     "totalShots":"Total Shots",
     "fouls":"Fouls",
@@ -229,6 +248,7 @@
     "Muscle Injury": "Muscle Injury",
     "Broken ankle": "Broken ankle",
     "fulltime": "Full time",
+    "topscorers": "Top scorers",
 
     "Ankle Injury":"Ankle Injury",
     "Knee Injury":"Knee Injury",

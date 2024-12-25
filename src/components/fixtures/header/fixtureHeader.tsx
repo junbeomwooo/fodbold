@@ -288,8 +288,9 @@ export default function FixtureHeader({
             {/* 홈팀 득점자 */}
             <div className="flex flex-col items-end text-sm text-custom-gray  w-5/12">
               {homeScorer.map((v: any, i: number) => {
-                const playerName =
-                  v?.player.name.split(" ")[1] || v?.player.name;
+                const playerName = v?.player?.name
+                  ? v?.player?.name?.split(" ")[1] || v?.player.name
+                  : "null";
                 return !v.time.extra ? (
                   // 일반 시간에 득점
                   <div key={i} className="flex">
@@ -323,8 +324,9 @@ export default function FixtureHeader({
             {/* 원정팀 득점자 */}
             <div className="flex flex-col items-start text-sm text-custom-gray w-5/12">
               {awayScorer.map((v: any, i: number) => {
-                const playerName =
-                  v?.player.name.split(" ")[1] || v?.player.name;
+                const playerName = v?.player?.name
+                  ? v?.player?.name?.split(" ")[1] || v?.player.name
+                  : "null";
                 return !v.time.extra ? (
                   // 일반 시간에 득점
                   <div key={i} className="flex">
