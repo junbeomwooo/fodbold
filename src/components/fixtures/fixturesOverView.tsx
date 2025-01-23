@@ -55,6 +55,7 @@ const FixturesOverView = ({ id, locale }: { id: number; locale: string }) => {
   /** useEffect  */
 
   // 각 로케일 별로 포맷한 데이터값을 구했으니 다른 것들 마저 구현하기 , 컴포넌트의 불필요한 재렌더링으로 인해 수많은 console.log가 찍힘
+  // h2h 부분 마지막 hr은 없애기 (이걸먼저)
 
   useEffect(() => {
     const fetchData = async () => {
@@ -63,14 +64,14 @@ const FixturesOverView = ({ id, locale }: { id: number; locale: string }) => {
           getFixtures({ id: id, timezone: locate })
         );
         await Promise.all([
-          dispatch(getInjuries({ id: id })),
-          dispatch(
-            getFixtruesByRound({
-              leagueID: payload?.league.id,
-              season: payload?.league.season,
-              round: payload?.league.round,
-            })
-          ),
+          // dispatch(getInjuries({ id: id })),
+          // dispatch(
+          //   getFixtruesByRound({
+          //     leagueID: payload?.league.id,
+          //     season: payload?.league.season,
+          //     round: payload?.league.round,
+          //   })
+          // ),
           dispatch(
             getH2H({
               homeID: payload?.teams.home.id,
@@ -84,7 +85,7 @@ const FixturesOverView = ({ id, locale }: { id: number; locale: string }) => {
       }
     };
     fetchData();
-  }, [dispatch, id]);
+  }, [dispatch, id, locate]);
 
   /** data for using */
 
@@ -158,21 +159,21 @@ const FixturesOverView = ({ id, locale }: { id: number; locale: string }) => {
       new Date(b?.fixture.date).getTime() - new Date(a?.fixture.date).getTime()
   );
 
-  // console.group("locate");
-  // console.log(locate);
-  // console.groupEnd();
+  console.group("locate");
+  console.log(locate);
+  console.groupEnd();
 
-  // console.group("fixture");
-  // console.log(fixture);
-  // console.groupEnd();
+  console.group("fixture");
+  console.log(fixture);
+  console.groupEnd();
 
-  // console.group("injurie");
-  // console.log(injurie);
-  // console.groupEnd();
+  console.group("injurie");
+  console.log(injurie);
+  console.groupEnd();
 
-  // console.group("h2h");
-  // console.log(h2h);
-  // console.groupEnd();
+  console.group("h2h");
+  console.log(h2h);
+  console.groupEnd();
 
   /** 리그URL로 이동하기위해 url 포맷변경하는 함수 */
   const formattedLeagueURL = (league: string) => {
@@ -2123,7 +2124,7 @@ const FixturesOverView = ({ id, locale }: { id: number; locale: string }) => {
                     <div className="w-[72px] h-[45px] flex items-center justify-center border border-solid border-[#e4e6e8] rounded-3xl max-lg:w-[48px] max-lg:h-[30px] dark:border-0 dark:bg-[#333333]">
                       <h3 className="text-[21px] max-lg:text-[14px] max-lg:font-bold">
                         {" "}
-                        {winnerCounts["draw"]}
+                        {winnerCounts["draw"] || 0}
                       </h3>
                     </div>
                     <div className="flex">
@@ -2211,11 +2212,8 @@ const FixturesOverView = ({ id, locale }: { id: number; locale: string }) => {
                       .slice(0, 5);
 
                     return (
-                      <>
-                        <li
-                          key={i}
-                          className="mx-2 w-full flex-col items-center justify-center py-3 hover:cursor-pointer hover:opacity-60"
-                        >
+                      <div key={i}>
+                        <li className="mx-2 w-full flex-col items-center justify-center py-3 hover:cursor-pointer hover:opacity-60">
                           {/* match date and league name */}
                           <div className="flex justify-between text-[12px] text-[#9f9f9f] mb-4">
                             <h3>{formattedDate}</h3>
@@ -2277,7 +2275,7 @@ const FixturesOverView = ({ id, locale }: { id: number; locale: string }) => {
                           </div>
                         </li>
                         <hr className="dark:border-[#333333]" />
-                      </>
+                      </div>
                     );
                   })}
                 </ul>
@@ -4399,9 +4397,8 @@ const FixturesOverView = ({ id, locale }: { id: number; locale: string }) => {
                       .slice(0, 5);
 
                     return (
-                      <>
+                      <div key={i}>
                         <li
-                          key={i}
                           className="mx-2 w-full flex-col items-center justify-center py-3 hover:cursor-pointer hover:opacity-60"
                         >
                           {/* match date and league name */}
@@ -4465,7 +4462,7 @@ const FixturesOverView = ({ id, locale }: { id: number; locale: string }) => {
                           </div>
                         </li>
                         <hr className="dark:border-[#333333]" />
-                      </>
+                      </div>
                     );
                   })}
                 </ul>
