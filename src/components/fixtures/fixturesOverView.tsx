@@ -57,33 +57,33 @@ const FixturesOverView = ({ id, locale }: { id: number; locale: string }) => {
   // 각 로케일 별로 포맷한 데이터값을 구했으니 다른 것들 마저 구현하기 , 컴포넌트의 불필요한 재렌더링으로 인해 수많은 console.log가 찍힘
 
   useEffect(() => {
-    // const fetchData = async () => {
-    //   try {
-    //     const { payload } = await dispatch(
-    //       getFixtures({ id: id, timezone: locate })
-    //     );
-    //     await Promise.all([
-    //       dispatch(getInjuries({ id: id })),
-    //       dispatch(
-    //         getFixtruesByRound({
-    //           leagueID: payload?.league.id,
-    //           season: payload?.league.season,
-    //           round: payload?.league.round,
-    //         })
-    //       ),
-    //       dispatch(
-    //         getH2H({
-    //           homeID: payload?.teams.home.id,
-    //           awayID: payload?.teams.away.id,
-    //           timezone: locate,
-    //         })
-    //       ),
-    //     ]);
-    //   } catch (error) {
-    //     console.error("Error fetching data:", error);
-    //   }
-    // };
-    // fetchData();
+    const fetchData = async () => {
+      try {
+        const { payload } = await dispatch(
+          getFixtures({ id: id, timezone: locate })
+        );
+        await Promise.all([
+          dispatch(getInjuries({ id: id })),
+          dispatch(
+            getFixtruesByRound({
+              leagueID: payload?.league.id,
+              season: payload?.league.season,
+              round: payload?.league.round,
+            })
+          ),
+          dispatch(
+            getH2H({
+              homeID: payload?.teams.home.id,
+              awayID: payload?.teams.away.id,
+              timezone: locate,
+            })
+          ),
+        ]);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+    fetchData();
   }, [dispatch, id]);
 
   /** data for using */
