@@ -1,4 +1,4 @@
-# Junbeom Woo - Fullstack Developer
+# Fotbold: Live Football Scores & Comprehensive Football Info
 
 ![WEBSITE](./public/fotbold_mockup.jpg)
 
