@@ -1,6 +1,7 @@
 # Fotbold: Live Football Scores & Comprehensive Football Info
 
 ![WEBSITE](./public/fotbold_mockup.jpg)
+![WEBSITE](./public/fotbold_mockup_dark.jpg)
 
 <!-- • [Visit the website here](https://junbeomwoo.vercel.app/en) -->
 
