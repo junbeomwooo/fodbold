@@ -11,6 +11,8 @@ This website uses the API-Football platform to provide real-time football scores
 
 It supports English, Danish,and Korean, with both dark and light themes for an optimized user experience. 
 
+This website uses the free version of the API, allowing a total of 100 API requests per day.
+
 Inspired by FotMob, it offers comprehensive and accessible football data.
 
 <br /> <br />
