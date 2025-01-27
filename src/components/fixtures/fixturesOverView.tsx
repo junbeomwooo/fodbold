@@ -54,8 +54,7 @@ const FixturesOverView = ({ id, locale }: { id: number; locale: string }) => {
 
   /** useEffect  */
 
-  // 각 로케일 별로 포맷한 데이터값을 구했으니 다른 것들 마저 구현하기 , 컴포넌트의 불필요한 재렌더링으로 인해 수많은 console.log가 찍힘
-  // h2h 부분 마지막 hr은 없애기 (이걸먼저)
+  // 선수 페이지 구성중인데 fixtureHeader 이동시 링크 경로중 플레이어의 이름이 풀네임이 아닌 축약식으로 나오므로 그거 고친뒤에 나머지 선수 이름도 링크 모두 연결하기 (FixtureHeader 컴포넌트 참고 27 Jan)
 
   useEffect(() => {
     const fetchData = async () => {
@@ -72,13 +71,13 @@ const FixturesOverView = ({ id, locale }: { id: number; locale: string }) => {
           //     round: payload?.league.round,
           //   })
           // ),
-          dispatch(
-            getH2H({
-              homeID: payload?.teams.home.id,
-              awayID: payload?.teams.away.id,
-              timezone: locate,
-            })
-          ),
+          // dispatch(
+          //   getH2H({
+          //     homeID: payload?.teams.home.id,
+          //     awayID: payload?.teams.away.id,
+          //     timezone: locate,
+          //   })
+          // ),
         ]);
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -772,7 +771,7 @@ const FixturesOverView = ({ id, locale }: { id: number; locale: string }) => {
                       {/* 홈팀 */}
                       <div className="flex h-full w-1/2 justify-around px-4 items-center max-lg:flex-col max-lg:w-full max-lg:h-1/2">
                         {/* 골키퍼 */}
-                        <div className="justify-center relative w-[80px]">
+                        <div className="justify-center relative w-[80px] hover:opacity-70 cursor-pointer" onClick={() => router.push(`/${locale}/players/${fixture?.lineups[0].startXI[0].player.id}/${(fixture?.lineups[0].startXI[0].player.name).replace(/ /g, "-")}`)}>
                           <Image
                             src={`https://media.api-sports.io/football/players/${fixture?.lineups[0].startXI[0].player.id}.png`}
                             alt={
@@ -973,7 +972,8 @@ const FixturesOverView = ({ id, locale }: { id: number; locale: string }) => {
                                       // 한 선수
                                       <div
                                         key={playerIndex}
-                                        className="flex-col mx-0 sm:mx-6 md:mx-8 lg:mx-0 lg:my-0 xl:my-6 2xl:my-10 w-[80px] relative"
+                                        className="flex-col mx-0 sm:mx-6 md:mx-8 lg:mx-0 lg:my-0 xl:my-6 2xl:my-10 w-[80px] relative hover:opacity-70 cursor-pointer" 
+                                        onClick={() => router.push(`/${locale}/players/${player?.player.id}/${(player?.player.name).replace(/ /g, "-")}`)}
                                       >
                                         {/* 선수 이미지 */}
                                         <Image
@@ -1179,7 +1179,8 @@ const FixturesOverView = ({ id, locale }: { id: number; locale: string }) => {
                                       // 한 선수
                                       <div
                                         key={playerIndex}
-                                        className="flex-col mx-0 sm:mx-6 md:mx-8 lg:mx-0 lg:my-0 xl:my-6 2xl:my-10 w-[80px] relative"
+                                        className="flex-col mx-0 sm:mx-6 md:mx-8 lg:mx-0 lg:my-0 xl:my-6 2xl:my-10 w-[80px] relative hover:opacity-70 cursor-pointer"
+                                        onClick={() => router.push(`/${locale}/players/${player?.player.id}/${(player?.player.name).replace(/ /g, "-")}`)}
                                       >
                                         {/* 선수 이미지 */}
                                         <Image
@@ -1327,7 +1328,7 @@ const FixturesOverView = ({ id, locale }: { id: number; locale: string }) => {
                           }
                         )}
                         {/* 골키퍼 */}
-                        <div className="justify-center relative w-[80px]">
+                        <div className="justify-center relative w-[80px] hover:opacity-70 cursor-pointer" onClick={() => router.push(`/${locale}/players/${fixture?.lineups[1].startXI[0].player.id}/${(fixture?.lineups[1].startXI[0].player.name).replace(/ /g, "-")}`)}>
                           <Image
                             src={`https://media.api-sports.io/football/players/${fixture?.lineups[1].startXI[0].player.id}.png`}
                             alt={
@@ -2274,7 +2275,10 @@ const FixturesOverView = ({ id, locale }: { id: number; locale: string }) => {
                             </div>
                           </div>
                         </li>
-                        <hr className="dark:border-[#333333]" />
+
+                        {i < sortedH2H.length - 1 && (
+                          <hr className="dark:border-[#333333]" />
+                        )}
                       </div>
                     );
                   })}
@@ -4398,9 +4402,7 @@ const FixturesOverView = ({ id, locale }: { id: number; locale: string }) => {
 
                     return (
                       <div key={i}>
-                        <li
-                          className="mx-2 w-full flex-col items-center justify-center py-3 hover:cursor-pointer hover:opacity-60"
-                        >
+                        <li className="mx-2 w-full flex-col items-center justify-center py-3 hover:cursor-pointer hover:opacity-60">
                           {/* match date and league name */}
                           <div className="flex justify-between text-[12px] text-[#9f9f9f] mb-4">
                             <h3>{formattedDate}</h3>
@@ -4461,7 +4463,9 @@ const FixturesOverView = ({ id, locale }: { id: number; locale: string }) => {
                             </div>
                           </div>
                         </li>
-                        <hr className="dark:border-[#333333]" />
+                        {i < sortedH2H.length - 1 && (
+                          <hr className="dark:border-[#333333]" />
+                        )}
                       </div>
                     );
                   })}

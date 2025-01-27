@@ -24,6 +24,7 @@ export default function FixtureHeader({
 }) {
   /** 번역 */
   const f = useTranslations("fixture");
+  
 
   /** 라우터 */
   const router = useRouter();
@@ -110,6 +111,13 @@ export default function FixtureHeader({
   const homeScorer = matchScore?.filter((v: any) => {
     return v.team.id === fixture.teams.home.id;
   });
+
+  // const homeScorerFullName = fixture?.players[0].players?.filter((v:any) => {
+  //   return v?.player.id === homeScorer.player.id
+  // })
+
+  // console.log(homeScorerFullName); 
+
   // 어웨이팀 득점자
   const awayScorer = matchScore?.filter((v: any) => {
     return v.team.id === fixture.teams.away.id;
@@ -293,7 +301,17 @@ export default function FixtureHeader({
                   : "null";
                 return !v.time.extra ? (
                   // 일반 시간에 득점
-                  <div key={i} className="flex">
+                  <div
+                    key={i}
+                    className="flex hover:opacity-70 cursor-pointer"
+                    onClick={() =>
+                      router.push(
+                        `/${locale}/players/${
+                          v?.player.id
+                        }/${(v?.player.name).replace(/ /g, "-")}`
+                      )
+                    }
+                  >
                     {/* player name */}
                     <h4 className="text-xs">{playerName}</h4>
                     {/* score time */}
@@ -303,7 +321,17 @@ export default function FixtureHeader({
                   </div>
                 ) : (
                   // 추가시간에 득점
-                  <div key={i} className="flex">
+                  <div
+                    key={i}
+                    className="flex hover:opacity-70 cursor-pointer"
+                    onClick={() =>
+                      router.push(
+                        `/${locale}/players/${
+                          v?.player.id
+                        }/${(v?.player.name).replace(/ /g, "-")}`
+                      )
+                    }
+                  >
                     <h4 className="text-xs">{playerName}</h4>
                     <h3 className="text-xs font-semibold ml-2">
                       {v.time.elapsed}+{v.time.extra}&apos;
@@ -329,7 +357,17 @@ export default function FixtureHeader({
                   : "null";
                 return !v.time.extra ? (
                   // 일반 시간에 득점
-                  <div key={i} className="flex">
+                  <div
+                    key={i}
+                    className="flex hover:opacity-70 cursor-pointer"
+                    onClick={() =>
+                      router.push(
+                        `/${locale}/players/${
+                          v?.player.id
+                        }/${(v?.player.name).replace(/ /g, "-")}`
+                      )
+                    }
+                  >
                     {/* player name */}
                     <h4 className="text-xs">{playerName}</h4>
                     {/* score time */}
@@ -339,7 +377,17 @@ export default function FixtureHeader({
                   </div>
                 ) : (
                   // 추가시간에 득점
-                  <div key={i} className="flex">
+                  <div
+                    key={i}
+                    className="flex hover:opacity-70 cursor-pointer"
+                    onClick={() =>
+                      router.push(
+                        `/${locale}/players/${
+                          v?.player.id
+                        }/${(v?.player.name).replace(/ /g, "-")}`
+                      )
+                    }
+                  >
                     <h4 className="text-xs">{playerName}</h4>
                     <h3 className="text-xs font-semibold ml-2">
                       {v.time.elapsed}+{v.time.extra}&apos;
