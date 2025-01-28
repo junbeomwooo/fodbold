@@ -112,12 +112,6 @@ export default function FixtureHeader({
     return v.team.id === fixture.teams.home.id;
   });
 
-  // const homeScorerFullName = fixture?.players[0].players?.filter((v:any) => {
-  //   return v?.player.id === homeScorer.player.id
-  // })
-
-  // console.log(homeScorerFullName); 
-
   // 어웨이팀 득점자
   const awayScorer = matchScore?.filter((v: any) => {
     return v.team.id === fixture.teams.away.id;
@@ -214,7 +208,7 @@ export default function FixtureHeader({
         {/* 홈팀 */}
         <div className="flex items-center w-5/12 justify-end max-lg:flex-col-reverse max-md:w-4/12">
           <Link
-            href={"/"}
+            href={`/${locale}/teams/${fixture?.teams?.home?.id}/${fixture?.teams?.home?.name}`}
             className="text-xl mr-8 max-lg:mr-0 max-lg:text-xs max-lg:mt-4 text-center"
           >
             {fixture?.teams.home.name}
@@ -282,7 +276,7 @@ export default function FixtureHeader({
             height={50}
           />
           <Link
-            href={"/"}
+            href={`/${locale}/teams/${fixture?.teams?.away?.id}/${fixture?.teams?.away?.name}`}
             className="text-xl ml-8 max-lg:ml-0 max-lg:text-xs max-lg:mt-4 text-center"
           >
             {fixture?.teams.away.name}

@@ -54,7 +54,7 @@ const FixturesOverView = ({ id, locale }: { id: number; locale: string }) => {
 
   /** useEffect  */
 
-  // 선수 페이지 구성중인데 fixtureHeader 이동시 링크 경로중 플레이어의 이름이 풀네임이 아닌 축약식으로 나오므로 그거 고친뒤에 나머지 선수 이름도 링크 모두 연결하기 (FixtureHeader 컴포넌트 참고 27 Jan)
+  // 토트넘 레스터 시티 경기에서 h2h데이터 중 가장 오래된 데이터로 경기를 옮기면 오류가 발생하는데 그거 고치기, 이 페이제의 탭눌를 경우 렌더링되는거 업데이트하기 (호버및 클릭효과가 적용안되어있음 현재) , 팀 및 선수페이지 구현하기
 
   useEffect(() => {
     const fetchData = async () => {
@@ -94,8 +94,8 @@ const FixturesOverView = ({ id, locale }: { id: number; locale: string }) => {
 
   const finxturesByRound10 = fixtureByRound?.slice(0, 10);
   const round = fixture?.league.round.split("-")[1];
-  const hometeamFormation = fixture?.lineups[0]?.formation.split("-");
-  const awayteamFormation = fixture?.lineups[1]?.formation.split("-").reverse();
+  const hometeamFormation = fixture?.lineups[0]?.formation?.split("-");
+  const awayteamFormation = fixture?.lineups[1]?.formation?.split("-").reverse();
 
   /** substitutes for home team */
   const homeSubstitutes = fixture?.players[0]?.players?.filter((v: any) => {
@@ -458,8 +458,8 @@ const FixturesOverView = ({ id, locale }: { id: number; locale: string }) => {
                     <div className="flex w-full justify-between mt-8 text-xs px-7">
                       <div className="ml-2">
                         <h1>
-                          {fixture.statistics[0].statistics[16].value
-                            ? fixture.statistics[0].statistics[16].value
+                          {fixture?.statistics[0]?.statistics[16]?.value
+                            ? fixture?.statistics[0]?.statistics[16]?.value
                             : 0}
                         </h1>
                       </div>
@@ -468,8 +468,8 @@ const FixturesOverView = ({ id, locale }: { id: number; locale: string }) => {
                       </div>
                       <div className="mr-2">
                         <h1>
-                          {fixture.statistics[1].statistics[16].value
-                            ? fixture.statistics[1].statistics[16].value
+                          {fixture?.statistics[1]?.statistics[16]?.value
+                            ? fixture?.statistics[1]?.statistics[16]?.value
                             : 0}
                         </h1>
                       </div>
@@ -546,18 +546,56 @@ const FixturesOverView = ({ id, locale }: { id: number; locale: string }) => {
                               {v.type === "Goal" && (
                                 <>
                                   <div className="text-xsm">
-                                    <h1>{v.player.name}</h1>
+                                    <h1
+                                      className="hover:opacity-70 hover:underline cursor-pointer"
+                                      onClick={() =>
+                                        router.push(
+                                          `/${locale}/players/${
+                                            v?.player.id
+                                          }/${(v?.player.name).replace(
+                                            / /g,
+                                            "-"
+                                          )}`
+                                        )
+                                      }
+                                    >
+                                      {v.player.name}
+                                    </h1>
                                     {v.assist.name ? (
                                       <>
                                         {/* 어시스트가 있다면 */}
-                                        <h2 className="text-gray-500 mt-1">
+                                        <h2
+                                          className="text-gray-500 mt-1 hover:opacity-70 hover:underline cursor-pointer"
+                                          onClick={() =>
+                                            router.push(
+                                              `/${locale}/players/${
+                                                v?.assist.id
+                                              }/${(v?.assist.name).replace(
+                                                / /g,
+                                                "-"
+                                              )}`
+                                            )
+                                          }
+                                        >
                                           {f("assistBy")} {v.assist.name}
                                         </h2>
                                       </>
                                     ) : (
                                       <>
                                         {/* 자책골이라면 */}
-                                        <h2 className="text-gray-500 mt-1">
+                                        <h2
+                                          className="text-gray-500 mt-1 hover:opacity-70 hover:underline cursor-pointer"
+                                          onClick={() =>
+                                            router.push(
+                                              `/${locale}/players/${
+                                                v?.player.id
+                                              }/${(v?.player.name).replace(
+                                                / /g,
+                                                "-"
+                                              )}`
+                                            )
+                                          }
+                                        >
                                           {f("ownGoal")}
                                         </h2>
                                       </>
@@ -574,7 +612,21 @@ const FixturesOverView = ({ id, locale }: { id: number; locale: string }) => {
                               {v.type === "Card" && (
                                 <>
                                   <div className="text-xsm">
-                                    <h1>{v.player.name}</h1>
+                                    <h1
+                                      className="hover:opacity-70 hover:underline cursor-pointer"
+                                      onClick={() =>
+                                        router.push(
+                                          `/${locale}/players/${
+                                            v?.player.id
+                                          }/${(v?.player.name).replace(
+                                            / /g,
+                                            "-"
+                                          )}`
+                                        )
+                                      }
+                                    >
+                                      {v.player.name}
+                                    </h1>
                                   </div>
                                   {v.detail === "Yellow Card" ? (
                                     <div className="w-6 h-6 bg-yellow-300 ml-6 rounded-full" />
@@ -588,10 +640,34 @@ const FixturesOverView = ({ id, locale }: { id: number; locale: string }) => {
                               {v.type === "subst" && (
                                 <>
                                   <div className="text-xsm">
-                                    <h1 className="text-green-600">
+                                    <h1
+                                      className="text-green-600 hover:opacity-70 hover:underline cursor-pointer"
+                                      onClick={() =>
+                                        router.push(
+                                          `/${locale}/players/${
+                                            v?.assist.id
+                                          }/${(v?.assist.name).replace(
+                                            / /g,
+                                            "-"
+                                          )}`
+                                        )
+                                      }
+                                    >
                                       {v.assist.name}
                                     </h1>
-                                    <h1 className="text-red-500 mt-1">
+                                    <h1
+                                      className="text-red-500 mt-1 hover:underline cursor-pointer"
+                                      onClick={() =>
+                                        router.push(
+                                          `/${locale}/players/${
+                                            v?.player.id
+                                          }/${(v?.player.name).replace(
+                                            / /g,
+                                            "-"
+                                          )}`
+                                        )
+                                      }
+                                    >
                                       {v.player.name}
                                     </h1>
                                   </div>
@@ -626,18 +702,56 @@ const FixturesOverView = ({ id, locale }: { id: number; locale: string }) => {
                                     <PiSoccerBallLight className="w-7 h-7 border-2 border-solid border-slate-300 rounded-full mr-6 " />
                                   </div>
                                   <div className="text-xsm">
-                                    <h1>{v.player.name}</h1>
+                                    <h1
+                                      className="hover:underline hover:opacity-70 cursor-pointer"
+                                      onClick={() =>
+                                        router.push(
+                                          `/${locale}/players/${
+                                            v?.player.id
+                                          }/${(v?.player.name).replace(
+                                            / /g,
+                                            "-"
+                                          )}`
+                                        )
+                                      }
+                                    >
+                                      {v.player.name}
+                                    </h1>
                                     {v.assist.name ? (
                                       <>
                                         {/* 어시스트가 있다면 */}
-                                        <h2 className="text-gray-500 mt-1">
+                                        <h2
+                                          className="text-gray-500 mt-1 hover:underline hover:opacity-70 cursor-pointer"
+                                          onClick={() =>
+                                            router.push(
+                                              `/${locale}/players/${
+                                                v?.assist.id
+                                              }/${(v?.assist.name).replace(
+                                                / /g,
+                                                "-"
+                                              )}`
+                                            )
+                                          }
+                                        >
                                           {f("assistBy")} {v.assist.name}
                                         </h2>
                                       </>
                                     ) : (
                                       <>
                                         {/* 자책골이라면 */}
-                                        <h2 className="text-gray-500">
+                                        <h2
+                                          className="text-gray-500 hover:underline hover:opacity-70 cursor-pointer"
+                                          onClick={() =>
+                                            router.push(
+                                              `/${locale}/players/${
+                                                v?.player.id
+                                              }/${(v?.player.name).replace(
+                                                / /g,
+                                                "-"
+                                              )}`
+                                            )
+                                          }
+                                        >
                                           {f("ownGoal")}
                                         </h2>
                                       </>
@@ -655,7 +769,21 @@ const FixturesOverView = ({ id, locale }: { id: number; locale: string }) => {
                                     <div className="w-6 h-6 bg-red-500 mr-6 rounded-full" />
                                   )}
                                   <div className="text-xsm">
-                                    <h1>{v.player.name}</h1>
+                                    <h1
+                                      className="hover:underline hover:opacity-70 cursor-pointer"
+                                      onClick={() =>
+                                        router.push(
+                                          `/${locale}/players/${
+                                            v?.player.id
+                                          }/${(v?.player.name).replace(
+                                            / /g,
+                                            "-"
+                                          )}`
+                                        )
+                                      }
+                                    >
+                                      {v.player.name}
+                                    </h1>
                                   </div>
                                 </>
                               )}
@@ -667,10 +795,34 @@ const FixturesOverView = ({ id, locale }: { id: number; locale: string }) => {
                                     <CgArrowsExchange className="w-7 h-7 border-2 border-solid border-slate-300 rounded-full mr-6" />
                                   </div>
                                   <div className="text-xsm">
-                                    <h1 className="text-green-600">
+                                    <h1
+                                      className="text-green-600 hover:underline hover:opacity-70 cursor-pointer"
+                                      onClick={() =>
+                                        router.push(
+                                          `/${locale}/players/${
+                                            v?.assist.id
+                                          }/${(v?.assist.name).replace(
+                                            / /g,
+                                            "-"
+                                          )}`
+                                        )
+                                      }
+                                    >
                                       {v.assist.name}
                                     </h1>
-                                    <h1 className="text-red-500 mt-1">
+                                    <h1
+                                      className="text-red-500 mt-1 hover:underline hover:opacity-70 cursor-pointer"
+                                      onClick={() =>
+                                        router.push(
+                                          `/${locale}/players/${
+                                            v?.player.id
+                                          }/${(v?.player.name).replace(
+                                            / /g,
+                                            "-"
+                                          )}`
+                                        )
+                                      }
+                                    >
                                       {v.player.name}
                                     </h1>
                                   </div>
@@ -771,7 +923,19 @@ const FixturesOverView = ({ id, locale }: { id: number; locale: string }) => {
                       {/* 홈팀 */}
                       <div className="flex h-full w-1/2 justify-around px-4 items-center max-lg:flex-col max-lg:w-full max-lg:h-1/2">
                         {/* 골키퍼 */}
-                        <div className="justify-center relative w-[80px] hover:opacity-70 cursor-pointer" onClick={() => router.push(`/${locale}/players/${fixture?.lineups[0].startXI[0].player.id}/${(fixture?.lineups[0].startXI[0].player.name).replace(/ /g, "-")}`)}>
+                        <div
+                          className="justify-center relative w-[80px] hover:opacity-70 cursor-pointer"
+                          onClick={() =>
+                            router.push(
+                              `/${locale}/players/${
+                                fixture?.lineups[0].startXI[0].player.id
+                              }/${(fixture?.lineups[0].startXI[0].player.name).replace(
+                                / /g,
+                                "-"
+                              )}`
+                            )
+                          }
+                        >
                           <Image
                             src={`https://media.api-sports.io/football/players/${fixture?.lineups[0].startXI[0].player.id}.png`}
                             alt={
@@ -972,8 +1136,17 @@ const FixturesOverView = ({ id, locale }: { id: number; locale: string }) => {
                                       // 한 선수
                                       <div
                                         key={playerIndex}
-                                        className="flex-col mx-0 sm:mx-6 md:mx-8 lg:mx-0 lg:my-0 xl:my-6 2xl:my-10 w-[80px] relative hover:opacity-70 cursor-pointer" 
-                                        onClick={() => router.push(`/${locale}/players/${player?.player.id}/${(player?.player.name).replace(/ /g, "-")}`)}
+                                        className="flex-col mx-0 sm:mx-6 md:mx-8 lg:mx-0 lg:my-0 xl:my-6 2xl:my-10 w-[80px] relative hover:opacity-70 cursor-pointer"
+                                        onClick={() =>
+                                          router.push(
+                                            `/${locale}/players/${
+                                              player?.player.id
+                                            }/${(player?.player.name).replace(
+                                              / /g,
+                                              "-"
+                                            )}`
+                                          )
+                                        }
                                       >
                                         {/* 선수 이미지 */}
                                         <Image
@@ -1180,7 +1353,16 @@ const FixturesOverView = ({ id, locale }: { id: number; locale: string }) => {
                                       <div
                                         key={playerIndex}
                                         className="flex-col mx-0 sm:mx-6 md:mx-8 lg:mx-0 lg:my-0 xl:my-6 2xl:my-10 w-[80px] relative hover:opacity-70 cursor-pointer"
-                                        onClick={() => router.push(`/${locale}/players/${player?.player.id}/${(player?.player.name).replace(/ /g, "-")}`)}
+                                        onClick={() =>
+                                          router.push(
+                                            `/${locale}/players/${
+                                              player?.player.id
+                                            }/${(player?.player.name).replace(
+                                              / /g,
+                                              "-"
+                                            )}`
+                                          )
+                                        }
                                       >
                                         {/* 선수 이미지 */}
                                         <Image
@@ -1328,7 +1510,19 @@ const FixturesOverView = ({ id, locale }: { id: number; locale: string }) => {
                           }
                         )}
                         {/* 골키퍼 */}
-                        <div className="justify-center relative w-[80px] hover:opacity-70 cursor-pointer" onClick={() => router.push(`/${locale}/players/${fixture?.lineups[1].startXI[0].player.id}/${(fixture?.lineups[1].startXI[0].player.name).replace(/ /g, "-")}`)}>
+                        <div
+                          className="justify-center relative w-[80px] hover:opacity-70 cursor-pointer"
+                          onClick={() =>
+                            router.push(
+                              `/${locale}/players/${
+                                fixture?.lineups[1].startXI[0].player.id
+                              }/${(fixture?.lineups[1].startXI[0].player.name).replace(
+                                / /g,
+                                "-"
+                              )}`
+                            )
+                          }
+                        >
                           <Image
                             src={`https://media.api-sports.io/football/players/${fixture?.lineups[1].startXI[0].player.id}.png`}
                             alt={
@@ -1483,7 +1677,19 @@ const FixturesOverView = ({ id, locale }: { id: number; locale: string }) => {
                     </div>
                     <div className="flex justify-between">
                       {/* home team coach */}
-                      <div className="flex items-center w-[200px]">
+                      <div
+                        className="flex items-center w-[200px] hover:opacity-70 cursor-pointer"
+                        onClick={() =>
+                          router.push(
+                            `/${locale}/players/${
+                              fixture?.lineups[0]?.coach?.id
+                            }/${(fixture?.lineups[0]?.coach?.name).replace(
+                              / /g,
+                              "-"
+                            )}`
+                          )
+                        }
+                      >
                         <Image
                           src={
                             fixture?.lineups[0]?.coach.photo ||
@@ -1505,7 +1711,19 @@ const FixturesOverView = ({ id, locale }: { id: number; locale: string }) => {
                       </div>
 
                       {/* 원정팀 코치 */}
-                      <div className="flex items-center justify-end  w-[200px]">
+                      <div
+                        className="flex items-center justify-end  w-[200px]  hover:opacity-70 cursor-pointer"
+                        onClick={() =>
+                          router.push(
+                            `/${locale}/players/${
+                              fixture?.lineups[1]?.coach?.id
+                            }/${(fixture?.lineups[1]?.coach?.name).replace(
+                              / /g,
+                              "-"
+                            )}`
+                          )
+                        }
+                      >
                         <h2 className="text-sm">
                           {fixture?.lineups[1]?.coach.name || "undefined"}
                         </h2>
@@ -1544,9 +1762,18 @@ const FixturesOverView = ({ id, locale }: { id: number; locale: string }) => {
                             v?.player.name.split(" ")[1] || v?.player.name;
                           return (
                             <div key={i}>
-                              <li className="flex items-center justify-between w-full my-6 max-xl:relative max-xl:w-[150px] max-xl:m-auto max-xl:my-10 max-xl:block ">
+                              <li
+                                className="flex items-center justify-between w-full my-6 max-xl:relative max-xl:w-[150px] max-xl:m-auto max-xl:my-10 max-xl:block hover:opacity-70 cursor-pointer"
+                                onClick={() =>
+                                  router.push(
+                                    `/${locale}/players/${
+                                      v?.player.id
+                                    }/${(v?.player.name).replace(/ /g, "-")}`
+                                  )
+                                }
+                              >
                                 {/* player info */}
-                                <div className="flex items-center max-xl:block ">
+                                <div className="flex items-center max-xl:block">
                                   <Image
                                     src={
                                       v?.player.photo || "./img/undefined.png"
@@ -1697,7 +1924,16 @@ const FixturesOverView = ({ id, locale }: { id: number; locale: string }) => {
 
                           return (
                             <div key={i}>
-                              <li className="flex items-center justify-between w-full my-6 max-xl:relative max-xl:w-[150px] max-xl:m-auto max-xl:my-10 max-xl:block ">
+                              <li
+                                className="flex items-center justify-between w-full my-6 max-xl:relative max-xl:w-[150px] max-xl:m-auto max-xl:my-10 max-xl:block hover:opacity-70 cursor-pointer"
+                                onClick={() =>
+                                  router.push(
+                                    `/${locale}/players/${
+                                      v?.player.id
+                                    }/${(v?.player.name).replace(/ /g, "-")}`
+                                  )
+                                }
+                              >
                                 {/* player info */}
                                 <div className="flex items-center max-xl:block ">
                                   {" "}
@@ -1864,7 +2100,16 @@ const FixturesOverView = ({ id, locale }: { id: number; locale: string }) => {
                         v?.player.name.split(" ")[1] || v?.player.name;
                       return (
                         <div key={i}>
-                          <li className="flex items-center justify-between w-full my-6 max-xl:relative max-xl:w-[150px] max-xl:m-auto max-xl:my-10 max-xl:block ">
+                          <li
+                            className="flex items-center justify-between w-full my-6 max-xl:relative max-xl:w-[150px] max-xl:m-auto max-xl:my-10 max-xl:block hover:opacity-70 cursor-pointer"
+                            onClick={() =>
+                              router.push(
+                                `/${locale}/players/${
+                                  v?.player.id
+                                }/${(v?.player.name).replace(/ /g, "-")}`
+                              )
+                            }
+                          >
                             {/* player info */}
                             <div className="flex items-center max-xl:block ">
                               {" "}
@@ -1912,7 +2157,16 @@ const FixturesOverView = ({ id, locale }: { id: number; locale: string }) => {
                         v?.player.name.split(" ")[1] || v?.player.name;
                       return (
                         <div key={i}>
-                          <li className="flex items-center justify-between w-full my-6 max-xl:relative max-xl:w-[150px] max-xl:m-auto max-xl:my-10 max-xl:block ">
+                          <li
+                            className="flex items-center justify-between w-full my-6 max-xl:relative max-xl:w-[150px] max-xl:m-auto max-xl:my-10 max-xl:block hover:opacity-70 cursor-pointer"
+                            onClick={() =>
+                              router.push(
+                                `/${locale}/players/${
+                                  v?.player.id
+                                }/${(v?.player.name).replace(/ /g, "-")}`
+                              )
+                            }
+                          >
                             {/* player info */}
                             <div className="flex items-center max-xl:block ">
                               {" "}
@@ -1975,7 +2229,16 @@ const FixturesOverView = ({ id, locale }: { id: number; locale: string }) => {
 
                       return (
                         <div key={i}>
-                          <li className="flex items-center justify-between w-full my-6 max-xl:relative max-xl:w-[150px] max-xl:m-auto max-xl:my-10 max-xl:block ">
+                          <li
+                            className="flex items-center justify-between w-full my-6 max-xl:relative max-xl:w-[150px] max-xl:m-auto max-xl:my-10 max-xl:block hover:opacity-70 cursor-pointer"
+                            onClick={() =>
+                              router.push(
+                                `/${locale}/players/${
+                                  v?.player.id
+                                }/${(v?.player.name).replace(/ /g, "-")}`
+                              )
+                            }
+                          >
                             {/* player info */}
                             <div className="flex items-center max-xl:block ">
                               {" "}
@@ -2021,7 +2284,16 @@ const FixturesOverView = ({ id, locale }: { id: number; locale: string }) => {
 
                       return (
                         <div key={i}>
-                          <li className="flex items-center justify-between w-full my-6 max-xl:relative max-xl:w-[150px] max-xl:m-auto max-xl:my-10 max-xl:block ">
+                          <li
+                            className="flex items-center justify-between w-full my-6 max-xl:relative max-xl:w-[150px] max-xl:m-auto max-xl:my-10 max-xl:block hover:opacity-70 cursor-pointer"
+                            onClick={() =>
+                              router.push(
+                                `/${locale}/players/${
+                                  v?.player.id
+                                }/${(v?.player.name).replace(/ /g, "-")}`
+                              )
+                            }
+                          >
                             {/* player info */}
                             <div className="flex items-center max-xl:block ">
                               {" "}
@@ -2214,7 +2486,16 @@ const FixturesOverView = ({ id, locale }: { id: number; locale: string }) => {
 
                     return (
                       <div key={i}>
-                        <li className="mx-2 w-full flex-col items-center justify-center py-3 hover:cursor-pointer hover:opacity-60">
+                        <li
+                          className="mx-2 w-full flex-col items-center justify-center py-3 hover:cursor-pointer hover:opacity-70"
+                          onClick={() =>
+                            moveToFormattedMatchURL(
+                              v?.teams?.home?.name,
+                              v?.teams?.away?.name,
+                              v?.fixture?.id
+                            )
+                          }
+                        >
                           {/* match date and league name */}
                           <div className="flex justify-between text-[12px] text-[#9f9f9f] mb-4">
                             <h3>{formattedDate}</h3>
@@ -4402,7 +4683,7 @@ const FixturesOverView = ({ id, locale }: { id: number; locale: string }) => {
 
                     return (
                       <div key={i}>
-                        <li className="mx-2 w-full flex-col items-center justify-center py-3 hover:cursor-pointer hover:opacity-60">
+                        <li className="mx-2 w-full flex-col items-center justify-center py-3 hover:cursor-pointer hover:opacity-70">
                           {/* match date and league name */}
                           <div className="flex justify-between text-[12px] text-[#9f9f9f] mb-4">
                             <h3>{formattedDate}</h3>

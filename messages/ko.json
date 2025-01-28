@@ -263,10 +263,11 @@
     "Shoulder Injury": "어깨 부상",
     "Foot Injury": "발 부상",
     "Coach's decision": "감독의 결정",
+    "Broken Leg": "골절된 다리",
 
     "Yellow Cards": "옐로 카드",
     "secondH2H": "역대전적",
-       "wins": "승리",
+    "wins": "승리",
     "draws": "무승부"
   }
 }
