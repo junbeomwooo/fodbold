@@ -84,7 +84,7 @@ export const getTopScoreAssist = createAsyncThunk(
 );
 
 
-/** 경기 정보 가져오기 */
+/** 리그의 경기 정보 가져오기 */
 export const getMatches = createAsyncThunk(
   "leagueSlice/getMatches",
   async (
@@ -181,6 +181,36 @@ export const getStanding = createAsyncThunk(
   }
 );
 
+// 하나의 팀 ID를 통한 모든 리그 정보 가져오기
+export const getAllLeaguesByTeam = createAsyncThunk(
+  "leagueSlice/getAllLeaguesByTeam",
+  async ({ team }: { team:number }, { rejectWithValue }) => {
+    let result = null;
+
+    try {
+      const response = await axios.get(
+        `${url}/leagues?team=${team}`,
+        {
+          headers: {
+            "x-rapidapi-host": "v3.football.api-sports.io",
+            "x-rapidapi-key": `${process.env.NEXT_PUBLIC_FOOTBALL_API_KEY}`,
+          },
+        }
+      );
+
+      console.log(response);
+      result = response.data.response;
+    } catch (err) {
+      const axiosErr = err as AxiosError;
+      console.group("getStanding Error");
+      result = rejectWithValue(axiosErr.response);
+      console.groupEnd();
+    }
+
+    return result;
+  }
+);
+
 export const leagueSlice = createSlice({
   name: "leagueSlice",
   initialState: {
@@ -191,6 +221,7 @@ export const leagueSlice = createSlice({
     error: null,
     topScoreAssist: null,
     topYellowRed: null,
+    leagues:null
   },
   reducers: {
     // 현재 상태값 불러오기
@@ -235,6 +266,13 @@ export const leagueSlice = createSlice({
       getTopYellowRed.fulfilled,
       (state, { payload }: { payload: any }) => {
         state.topYellowRed = payload;
+      }
+    );
+
+    builder.addCase(
+      getAllLeaguesByTeam.fulfilled,
+      (state, { payload }: { payload: any }) => {
+        state.leagues = payload;
       }
     );
   },

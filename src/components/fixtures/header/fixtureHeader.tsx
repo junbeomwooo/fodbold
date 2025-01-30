@@ -206,13 +206,12 @@ export default function FixtureHeader({
       {/* 경기 할 팀 로고, 경기 정보 */}
       <div className="flex items-center justify-center w-full">
         {/* 홈팀 */}
-        <div className="flex items-center w-5/12 justify-end max-lg:flex-col-reverse max-md:w-4/12">
-          <Link
-            href={`/${locale}/teams/${fixture?.teams?.home?.id}/${fixture?.teams?.home?.name}`}
+        <div className="flex items-center w-5/12 justify-end max-lg:flex-col-reverse max-md:w-4/12 cursor-pointer hover:opacity-70" onClick={()=> router.push(`/${locale}/teams/${fixture?.teams?.home?.id}/${fixture?.teams?.home?.name}`)}>
+          <h1
             className="text-xl mr-8 max-lg:mr-0 max-lg:text-xs max-lg:mt-4 text-center"
           >
             {fixture?.teams.home.name}
-          </Link>
+          </h1>
           <Image
             src={fixture?.teams.home.logo || noimage}
             alt={fixture?.teams.home.name || "no home team"}
@@ -268,19 +267,18 @@ export default function FixtureHeader({
           )}
         </div>
         {/* 원정팀 */}
-        <div className="flex items-center w-5/12 justify-start  max-lg:flex-col max-md:w-4/12">
+        <div className="flex items-center w-5/12 justify-start  max-lg:flex-col max-md:w-4/12 cursor-pointer hover:opacity-70" onClick={() => {router.push(`/${locale}/teams/${fixture?.teams?.away?.id}/${fixture?.teams?.away?.name}`)}}>
           <Image
             src={fixture?.teams.away.logo || noimage}
             alt={fixture?.teams.away.name || "no away team"}
             width={50}
             height={50}
           />
-          <Link
-            href={`/${locale}/teams/${fixture?.teams?.away?.id}/${fixture?.teams?.away?.name}`}
+          <h1
             className="text-xl ml-8 max-lg:ml-0 max-lg:text-xs max-lg:mt-4 text-center"
           >
             {fixture?.teams.away.name}
-          </Link>
+          </h1>
         </div>
       </div>
       {/* 득점이 있을경우 득점자 섹션 보여주기 (경기가 시작하지 않았을 경우 득점은 없음으로 자동으로 필터링 효과도있음)*/}
