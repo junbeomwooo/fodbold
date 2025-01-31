@@ -123,13 +123,40 @@ export const getFixtures = createAsyncThunk(
   }
 );
 
+// 해당 팀의 경기 정보 가져오기
+export const getFixturesByTeam = createAsyncThunk(
+  "fixtureSlice/getFixturesByTeam",
+  async ({ team, season, timezone }: { team: number, season: number ,timezone: string }, { rejectWithValue }) => {
+    let result = null;
+
+    try {
+      const response = await axios.get(`${url}/fixtures?team=${team}&season=${season}&timezone=${timezone}`, {
+        headers: {
+          "x-rapidapi-host": "v3.football.api-sports.io",
+          "x-rapidapi-key": `${process.env.NEXT_PUBLIC_FOOTBALL_API_KEY}`,
+        },
+      });
+
+      result = response.data.response;
+    } catch (err) {
+      const axiosErr = err as AxiosError;
+      console.group("getFixtures Error");
+      result = rejectWithValue(axiosErr.response);
+      console.groupEnd();
+    }
+
+    return result;
+  }
+);
+
 export const fixtureSlice = createSlice({
   name: "fixtureSlice",
   initialState: {
     fixture: null,
     injurie: null,
     h2h: null,
-    fixtureByRound: null
+    fixtureByRound: null,
+    fixtureByTeam: null,
   },
   reducers: {
     // 현재 상태값 불러오기
@@ -163,6 +190,13 @@ export const fixtureSlice = createSlice({
       getFixtruesByRound.fulfilled,
       (state, { payload }: { payload: any }) => {
         state.fixtureByRound = payload;
+      }
+    );
+
+    builder.addCase(
+      getFixturesByTeam.fulfilled,
+      (state, { payload }: { payload: any }) => {
+        state.fixtureByTeam = payload;
       }
     );
   },

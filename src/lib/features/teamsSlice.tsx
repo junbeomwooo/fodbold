@@ -7,16 +7,18 @@ export const getTeamsStatistics = createAsyncThunk(
   "teamsSlice/getTeamsStatistics",
   async ({ league, season ,team}: { league: number, season:number, team: number }, { rejectWithValue }) => {
     let result = null;
+    console.log(league)
+    console.log(season)
+    console.log(team)
 
     try {
-      const response = await axios.get(`${url}/teams?statistics?league=${league}&team=${team}&season=${season}`, {
+      const response = await axios.get(`${url}/teams/statistics?season=${season}&team=${team}&league=${league}`, {
         headers: {
           "x-rapidapi-host": "v3.football.api-sports.io",
           "x-rapidapi-key": `${process.env.NEXT_PUBLIC_FOOTBALL_API_KEY}`,
         },
       });
-      console.log(result);
-      result = response.data.response[0];
+      result = response?.data?.response;
     } catch (err) {
       const axiosErr = err as AxiosError;
       console.group("getTeamsStatistics Error");
