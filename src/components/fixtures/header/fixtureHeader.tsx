@@ -206,7 +206,7 @@ export default function FixtureHeader({
       {/* 경기 할 팀 로고, 경기 정보 */}
       <div className="flex items-center justify-center w-full">
         {/* 홈팀 */}
-        <div className="flex items-center w-5/12 justify-end max-lg:flex-col-reverse max-md:w-4/12 cursor-pointer hover:opacity-70" onClick={()=> router.push(`/${locale}/teams/${fixture?.teams?.home?.id}/${fixture?.teams?.home?.name}`)}>
+        <div className="flex items-center w-5/12 justify-end max-lg:flex-col-reverse max-md:w-4/12 cursor-pointer hover:opacity-70" onClick={()=> router.push(`/${locale}/teams/${fixture?.teams?.home?.id}/${fixture?.teams?.home?.name}/overview`)}>
           <h1
             className="text-xl mr-8 max-lg:mr-0 max-lg:text-xs max-lg:mt-4 text-center"
           >
@@ -267,7 +267,7 @@ export default function FixtureHeader({
           )}
         </div>
         {/* 원정팀 */}
-        <div className="flex items-center w-5/12 justify-start  max-lg:flex-col max-md:w-4/12 cursor-pointer hover:opacity-70" onClick={() => {router.push(`/${locale}/teams/${fixture?.teams?.away?.id}/${fixture?.teams?.away?.name}`)}}>
+        <div className="flex items-center w-5/12 justify-start  max-lg:flex-col max-md:w-4/12 cursor-pointer hover:opacity-70" onClick={() => {router.push(`/${locale}/teams/${fixture?.teams?.away?.id}/${fixture?.teams?.away?.name}/overview`)}}>
           <Image
             src={fixture?.teams.away.logo || noimage}
             alt={fixture?.teams.away.name || "no away team"}

@@ -61,21 +61,21 @@ const FixturesOverView = ({ id, locale }: { id: number; locale: string }) => {
           getFixtures({ id: id, timezone: locate })
         );
         await Promise.all([
-          // dispatch(getInjuries({ id: id })),
-          // dispatch(
-          //   getFixtruesByRound({
-          //     leagueID: payload?.league.id,
-          //     season: payload?.league.season,
-          //     round: payload?.league.round,
-          //   })
-          // ),
-          // dispatch(
-          //   getH2H({
-          //     homeID: payload?.teams.home.id,
-          //     awayID: payload?.teams.away.id,
-          //     timezone: locate,
-          //   })
-          // ),
+          dispatch(getInjuries({ id: id })),
+          dispatch(
+            getFixtruesByRound({
+              leagueID: payload?.league.id,
+              season: payload?.league.season,
+              round: payload?.league.round,
+            })
+          ),
+          dispatch(
+            getH2H({
+              homeID: payload?.teams.home.id,
+              awayID: payload?.teams.away.id,
+              timezone: locate,
+            })
+          ),
         ]);
       } catch (error) {
         console.error("Error fetching data:", error);
