@@ -59,20 +59,20 @@ export default function TeamOverView({
   // 어떤 데이터들을 사용할지 생각해보기
   // http://localhost:3000/en/teams/47/Tottenham
   useEffect(() => {
-    // dispatch(getAllLeaguesByTeam({ team: id })).then(({ payload }) => {
-    //   const nationalLeague = payload[0]?.league?.id;
-    //   const latestSeason = payload[0]?.seasons?.at(-1)?.year;
-    //   dispatch(
-    //     getFixturesByTeam({ team: id, season: latestSeason, timezone: locate })
-    //   );
-    //   dispatch(
-    //     getTeamsStatistics({
-    //       league: nationalLeague,
-    //       season: latestSeason,
-    //       team: id,
-    //     })
-    //   );
-    // });
+    dispatch(getAllLeaguesByTeam({ team: id })).then(({ payload }) => {
+      const nationalLeague = payload[0]?.league?.id;
+      const latestSeason = payload[0]?.seasons?.at(-1)?.year;
+      dispatch(
+        getFixturesByTeam({ team: id, season: latestSeason, timezone: locate })
+      );
+      dispatch(
+        getTeamsStatistics({
+          league: nationalLeague,
+          season: latestSeason,
+          team: id,
+        })
+      );
+    });
   }, [dispatch, id, locate]);
 
   console.log(leagues);
@@ -87,28 +87,30 @@ export default function TeamOverView({
       ["FT", "PEN", "AET"].includes(match.fixture.status.short)
     )
     .sort(
-      (a, b) =>
-        new Date(b?.fixture?.date).getTime() - new Date(a?.fixture?.date).getTime()
-    );
+      (a: any, b: any) =>
+        new Date(b?.fixture?.date).getTime() -
+        new Date(a?.fixture?.date).getTime()
+    )
+    .slice(0, 5);
 
-  console.log(lastRecentMatches);
+    console.log(lastRecentMatches);
+
   return (
     <div className="w-full">
       {/* header */}
       <div className="w-full mt-6 max-lg:mt-0 max-xl:w-full border-slate-200 border border-solid bg-white px-7 pt-7 rounded-xl dark:bg-custom-dark dark:border-0 max-md:px-4">
         {/* team title */}
-        <div className="flex">
+        <div className="flex items-center">
           <Image
             src={statics?.team?.logo || noimage}
             alt={statics?.team?.name || "no home team"}
-            width={50}
-            height={50}
+            width={35}
+            height={35}
+            style={{ width: "auto", height: "auto" }}
           />
-          <div className="ml-4">
-            <h1 className="text-lg mr-8 max-lg:mr-0 max-lg:text-xs max-lg:mt-4 text-center">
-              {statics?.team?.name}
-            </h1>
-            <h1 className="text-sm mr-8 max-lg:mr-0 max-lg:text-xs max-lg:mt-4 text-custom-gray">
+          <div className="flex flex-col justify-center ml-4">
+            <h1 className="text-lg"> {statics?.team?.name}</h1>
+            <h1 className="text-sm mr-8 max-lg:mr-0 max-lg:text-xs text-custom-gray">
               {statics?.league?.country}
             </h1>
           </div>
@@ -133,9 +135,38 @@ export default function TeamOverView({
 
       <div className="flex gap-4">
         <div className="w-7/12">
-          <div className="w-full bg-white rounded-xl mt-6 px-8 py-5 dark:bg-custom-dark max-sm:px-4  border-slate-200 border border-solid dark:border-0 flex">
-            <h3 className="text-base">{t("teamForm")}</h3>
-          </div>
+
+          {lastRecentMatches?.length > 0 && (
+            <div className="w-full bg-white rounded-xl mt-6 px-8 py-5 dark:bg-custom-dark max-sm:px-4  border-slate-200 border border-solid dark:border-0">
+              <h3 className="text-base">{t("teamForm")}</h3>
+              <div className="flex justify-between mt-4 ">
+              {lastRecentMatches?.map((v: any, i: number) => {
+                let win =  null;
+
+
+                // 팀 성적에 따른 색상 변경 업데이트하기
+                
+                const isHomeTeam = v?.teams?.home?.id === id;
+                const isAwayTeam = v?.teams?.away?.id === id;
+
+                if (isHomeTeam) {
+                  return v?.teams?.home?.winner ? win = true : win = false ;
+                } else if (isAwayTeam) {
+                  return v?.teams?.away?.winner ? win = true : win = false ;
+                }
+
+                return (
+                  <div key={i}>
+                    <span className={`text-sm px-5 py-1 ${win === true ? 'bg-green-400': "bg-red-400"} rounded-md`}>
+                      {v?.goals?.home}-{v?.goals?.away}
+                    </span>
+                  </div>
+                );
+              })}
+              </div>
+            </div>
+          )}
+
           <div className="w-full bg-white rounded-xl mt-6 px-8 py-5 dark:bg-custom-dark max-sm:px-4  border-slate-200 border border-solid dark:border-0 flex">
             <h3 className="text-base">{t("nextMatch")}</h3>
           </div>
