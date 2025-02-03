@@ -269,5 +269,10 @@
     "secondH2H": "역대전적",
     "wins": "승리",
     "draws": "무승부"
+  },
+
+  "team": {
+    "teamForm": "팀 컨디션",
+    "nextMatch": "다음 경기"
   }
 }

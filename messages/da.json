@@ -269,5 +269,11 @@
     "secondH2H": "Indbyrdes opgør",
     "wins": "Sejre",
     "draws": "Uafgjorte"
+  },
+
+  "team": {
+    "teamForm": "Holdets form",
+    "nextMatch": "Næste kamp"
+    
   }
 }

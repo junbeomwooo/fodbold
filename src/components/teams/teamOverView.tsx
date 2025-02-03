@@ -9,7 +9,9 @@ import Image from "next/image";
 import noimage from "@/../public/img/noimage.png";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useTranslations } from "next-intl";
 
+/** for statics */
 interface Team {
   id: number;
   name: string;
@@ -52,29 +54,44 @@ export default function TeamOverView({
 
   const pathname = usePathname();
 
+  const t = useTranslations("team");
+
   // 어떤 데이터들을 사용할지 생각해보기
   // http://localhost:3000/en/teams/47/Tottenham
   useEffect(() => {
-    dispatch(getAllLeaguesByTeam({ team: id })).then(({ payload }) => {
-      const nationalLeague = payload[0]?.league?.id;
-      const latestSeason = payload[0]?.seasons?.at(-1)?.year;
-      dispatch(
-        getFixturesByTeam({ team: id, season: latestSeason, timezone: locate })
-      );
-      dispatch(
-        getTeamsStatistics({
-          league: nationalLeague,
-          season: latestSeason,
-          team: id,
-        })
-      );
-    });
+    // dispatch(getAllLeaguesByTeam({ team: id })).then(({ payload }) => {
+    //   const nationalLeague = payload[0]?.league?.id;
+    //   const latestSeason = payload[0]?.seasons?.at(-1)?.year;
+    //   dispatch(
+    //     getFixturesByTeam({ team: id, season: latestSeason, timezone: locate })
+    //   );
+    //   dispatch(
+    //     getTeamsStatistics({
+    //       league: nationalLeague,
+    //       season: latestSeason,
+    //       team: id,
+    //     })
+    //   );
+    // });
   }, [dispatch, id, locate]);
 
   console.log(leagues);
   console.log(statics);
   console.log(fixtureByTeam);
 
+  // data for using
+
+  // ?? 연산자 fixtureByTeam이 값이 없을 경우 빈배열로 대체
+  const lastRecentMatches = (fixtureByTeam ?? [])
+    .filter((match: any) =>
+      ["FT", "PEN", "AET"].includes(match.fixture.status.short)
+    )
+    .sort(
+      (a, b) =>
+        new Date(b?.fixture?.date).getTime() - new Date(a?.fixture?.date).getTime()
+    );
+
+  console.log(lastRecentMatches);
   return (
     <div className="w-full">
       {/* header */}
@@ -111,6 +128,20 @@ export default function TeamOverView({
               <></>
             )}
           </div>
+        </div>
+      </div>
+
+      <div className="flex gap-4">
+        <div className="w-7/12">
+          <div className="w-full bg-white rounded-xl mt-6 px-8 py-5 dark:bg-custom-dark max-sm:px-4  border-slate-200 border border-solid dark:border-0 flex">
+            <h3 className="text-base">{t("teamForm")}</h3>
+          </div>
+          <div className="w-full bg-white rounded-xl mt-6 px-8 py-5 dark:bg-custom-dark max-sm:px-4  border-slate-200 border border-solid dark:border-0 flex">
+            <h3 className="text-base">{t("nextMatch")}</h3>
+          </div>
+        </div>
+        <div className="w-5/12">
+          <div className="w-full bg-white rounded-xl mt-6 px-8 py-5 dark:bg-custom-dark max-sm:px-4  border-slate-200 border border-solid dark:border-0 flex"></div>
         </div>
       </div>
     </div>

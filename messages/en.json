@@ -277,5 +277,10 @@
     
 
 
+  },
+  "team": {
+    "teamForm": "Team form",
+    "nextMatch": "Next match"
   }
+  
 }
