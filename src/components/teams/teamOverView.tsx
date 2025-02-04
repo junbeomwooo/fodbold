@@ -10,6 +10,7 @@ import noimage from "@/../public/img/noimage.png";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useTranslations } from "next-intl";
+import { useRouter } from "next/navigation";
 
 /** for statics */
 interface Team {
@@ -56,31 +57,61 @@ export default function TeamOverView({
 
   const t = useTranslations("team");
 
+  const router = useRouter();
+
   // 어떤 데이터들을 사용할지 생각해보기
-  // http://localhost:3000/en/teams/47/Tottenham
+  // http://localhost:3000/en/teams/47/Tottenham/overview
   useEffect(() => {
-    dispatch(getAllLeaguesByTeam({ team: id })).then(({ payload }) => {
-      const nationalLeague = payload[0]?.league?.id;
-      const latestSeason = payload[0]?.seasons?.at(-1)?.year;
-      dispatch(
-        getFixturesByTeam({ team: id, season: latestSeason, timezone: locate })
-      );
-      dispatch(
-        getTeamsStatistics({
-          league: nationalLeague,
-          season: latestSeason,
-          team: id,
-        })
-      );
-    });
+    // dispatch(getAllLeaguesByTeam({ team: id })).then(({ payload }) => {
+    //   const nationalLeague = payload[0]?.league?.id;
+    //   const latestSeason = payload[0]?.seasons?.at(-1)?.year;
+    //   dispatch(
+    //     getFixturesByTeam({ team: id, season: latestSeason, timezone: locate })
+    //   );
+    //   dispatch(
+    //     getTeamsStatistics({
+    //       league: nationalLeague,
+    //       season: latestSeason,
+    //       team: id,
+    //     })
+    //   );
+    // });
   }, [dispatch, id, locate]);
 
   console.log(leagues);
   console.log(statics);
   console.log(fixtureByTeam);
 
-  // data for using
+  /** Move to Match Detail */
+  const formattedLeagueURL = (home: string, away: string, matchID: number) => {
+    const matchVS = `${home}-vs-${away}`;
 
+    // 하이픈을 모두 삭제합니다.
+    const noHyphens = matchVS.replace(/-/g, " ");
+
+    // 두 번 이상의 연속 공백을 하나로 줄입니다.
+    const cleanedString = noHyphens.replace(/\s{2,}/g, " ");
+
+    // 1. 공백을 하이픈으로 변경
+    const hyphenated = cleanedString.replace(/\s+/g, "-");
+
+    // 2. 온점을 제거
+    const withoutDots = hyphenated.replace(/\./g, "");
+
+    // 3. 대문자 뒤에 하이픈 추가 (선택 사항)
+    const withHyphens = withoutDots.replace(/(?<=[A-Z])-(?=[a-z])/g, "-");
+
+    // 4. 소문자로 변환
+    const name = withHyphens.toLowerCase();
+
+    /** 최종 */
+    const url = `/${locale}/matches/${name}/${matchID}`;
+
+    router.push(url);
+  };
+
+  // data for using
+  /** Last Recent Match  */
   // ?? 연산자 fixtureByTeam이 값이 없을 경우 빈배열로 대체
   const lastRecentMatches = (fixtureByTeam ?? [])
     .filter((match: any) =>
@@ -93,7 +124,11 @@ export default function TeamOverView({
     )
     .slice(0, 5);
 
-    console.log(lastRecentMatches);
+  const upcomingMatch = (fixtureByTeam ?? [])
+    .filter((match: any) => match.fixture.timestamp > Date.now() / 1000) // convert from milliseconds to seconds
+    .sort((a: any, b: any) => a.fixture.timestamp - b.fixture.timestamp) as any[];
+
+  console.log(upcomingMatch);
 
   return (
     <div className="w-full">
@@ -135,41 +170,105 @@ export default function TeamOverView({
 
       <div className="flex gap-4">
         <div className="w-7/12">
-
           {lastRecentMatches?.length > 0 && (
             <div className="w-full bg-white rounded-xl mt-6 px-8 py-5 dark:bg-custom-dark max-sm:px-4  border-slate-200 border border-solid dark:border-0">
               <h3 className="text-base">{t("teamForm")}</h3>
-              <div className="flex justify-between mt-4 ">
-              {lastRecentMatches?.map((v: any, i: number) => {
-                let win =  null;
+              <div className="flex justify-between mt-6">
+                {lastRecentMatches?.map((v: any, i: number) => {
+                  let win = null;
 
+                  const numbericID = Number(id);
 
-                // 팀 성적에 따른 색상 변경 업데이트하기
-                
-                const isHomeTeam = v?.teams?.home?.id === id;
-                const isAwayTeam = v?.teams?.away?.id === id;
+                  const isHomeTeam = v?.teams?.home?.id === numbericID;
+                  const isAwayTeam = v?.teams?.away?.id === numbericID;
 
-                if (isHomeTeam) {
-                  return v?.teams?.home?.winner ? win = true : win = false ;
-                } else if (isAwayTeam) {
-                  return v?.teams?.away?.winner ? win = true : win = false ;
-                }
+                  const opponentTeam =
+                    v?.teams?.home?.id === numbericID
+                      ? v?.teams?.away
+                      : v?.teams?.home;
 
-                return (
-                  <div key={i}>
-                    <span className={`text-sm px-5 py-1 ${win === true ? 'bg-green-400': "bg-red-400"} rounded-md`}>
-                      {v?.goals?.home}-{v?.goals?.away}
-                    </span>
-                  </div>
-                );
-              })}
+                  if (isHomeTeam) {
+                    win = v?.teams?.home?.winner;
+                  } else if (isAwayTeam) {
+                    win = v?.teams?.away?.winner;
+                  }
+
+                  return (
+                    <div
+                      key={i}
+                      className="text-center cursor-pointer hover:opacity-70"
+                      onClick={() => {
+                        formattedLeagueURL(
+                          v?.teams?.home?.name,
+                          v?.teams?.away?.name,
+                          v?.fixture?.id
+                        );
+                      }}
+                    >
+                      <span
+                        className={`text-xs px-3 py-[2px] ${
+                          win === true ? "bg-[#00985f]" : "bg-[#dd3635]"
+                        } rounded-[0.4vw] text-white`}
+                      >
+                        {v?.goals?.home}-{v?.goals?.away}
+                      </span>
+                      <div className="flex justify-center mt-4">
+                        <Image
+                          src={opponentTeam?.logo}
+                          alt={opponentTeam?.name}
+                          width={30}
+                          height={30}
+                        />
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
             </div>
           )}
 
-          <div className="w-full bg-white rounded-xl mt-6 px-8 py-5 dark:bg-custom-dark max-sm:px-4  border-slate-200 border border-solid dark:border-0 flex">
-            <h3 className="text-base">{t("nextMatch")}</h3>
-          </div>
+          {upcomingMatch?.length > 0 && (
+            <div className="w-full bg-white rounded-xl mt-6 px-8 py-5 dark:bg-custom-dark max-sm:px-4  border-slate-200 border border-solid dark:border-0">
+              {/* next match */}
+              <h3 className="text-base">{t("nextMatch")}</h3>
+              <div className="flex justify-between mt-6">
+                {/* home team */}
+                <div>
+                  <Image
+                    src={upcomingMatch[0]?.teams?.home?.logo}
+                    alt={upcomingMatch[0]?.teams?.home?.name}
+                    width={40}
+                    height={40}
+                    className="m-auto"
+                  />
+                  <h1 className="text-sm text-center mt-3">{upcomingMatch[0]?.teams?.home?.name}</h1>
+                </div>
+
+                {/* fixture info */}
+                <div>
+                  <h3>
+   
+                  </h3>
+                  <h4>
+
+                  </h4>
+
+                </div>
+
+                {/* away team */}
+                <div>
+                  <Image
+                    src={upcomingMatch[0]?.teams?.away?.logo}
+                    alt={upcomingMatch[0]?.teams?.away?.name}
+                    width={40}
+                    height={40}
+                    className="m-auto"
+                  />
+                  <h1 className="text-sm text-center mt-3">{upcomingMatch[0]?.teams?.away?.name}</h1>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
         <div className="w-5/12">
           <div className="w-full bg-white rounded-xl mt-6 px-8 py-5 dark:bg-custom-dark max-sm:px-4  border-slate-200 border border-solid dark:border-0 flex"></div>
