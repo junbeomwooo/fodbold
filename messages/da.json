@@ -273,7 +273,7 @@
 
   "team": {
     "teamForm": "Holdets form",
-    "nextMatch": "Næste kamp"
-    
+    "nextMatch": "Næste kamp",
+    "onGoing": "I gang"
   }
 }

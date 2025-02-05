@@ -280,7 +280,8 @@
   },
   "team": {
     "teamForm": "Team form",
-    "nextMatch": "Next match"
+    "nextMatch": "Next match",
+    "onGoing":"Ongoing"
   }
   
 }

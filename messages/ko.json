@@ -273,6 +273,7 @@
 
   "team": {
     "teamForm": "팀 컨디션",
-    "nextMatch": "다음 경기"
+    "nextMatch": "다음 경기",
+    "onGoing": "진행 중"
   }
 }
