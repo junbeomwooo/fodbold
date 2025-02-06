@@ -4,14 +4,17 @@ import { useAppDispatch, useAppSelector } from "@/lib/storeHooks";
 import { getTeamsStatistics } from "@/lib/features/teamsSlice";
 import { getAllLeaguesByTeam } from "@/lib/features/leagueSlice";
 import { getFixturesByTeam } from "@/lib/features/fixtureSlice";
+
+import noimage from "@/../public/img/noimage.png";
+
 import { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
-import noimage from "@/../public/img/noimage.png";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import moment from "moment-timezone";
+import { motion, AnimatePresence } from "motion/react";
 
 /** for statics */
 interface Team {
@@ -61,9 +64,8 @@ export default function TeamOverView({
 
   const router = useRouter();
 
-  // 다음 경기부분 경기 인포 마저 구현하기
   // http://localhost:3000/en/teams/47/Tottenham/overview
-  // http://localhost:3000/en/teams/34/Newcastle/overview
+  // http://localhost:3000/en/teams/1577/Al%20Ahly/overview
   useEffect(() => {
     dispatch(getAllLeaguesByTeam({ team: id })).then(({ payload }) => {
       const nationalLeague = payload[0]?.league?.id;
@@ -183,6 +185,29 @@ export default function TeamOverView({
     return { time: time, date: date };
   };
 
+  /** Formatted League Name as url */
+  const formatLeagueNameURL = (leagueName: string) => {
+    // remove all hyphens
+    const noHyphens = leagueName.replace(/-/g, " ");
+
+    // Reduce two or more spaces to a single space.
+    const cleanedString = noHyphens.replace(/\s{2,}/g, " ");
+
+    // Replace spaces with hyphens.
+    const hyphenated = cleanedString.replace(/\s+/g, "-");
+
+    // Remove dots
+    const withoutDots = hyphenated.replace(/\./g, "");
+
+    // Add a hyphen after uppercase letters
+    const withHyphens = withoutDots.replace(/(?<=[A-Z])-(?=[a-z])/g, "-");
+
+    // Change to lowercase
+    const name = withHyphens.toLowerCase();
+
+    return name;
+  };
+
   /** data for using */
 
   /** Last Recent Match */
@@ -228,7 +253,6 @@ export default function TeamOverView({
   const nextMatchDateWithTime = formatMatchDate(
     upcomingMatch[0]?.fixture?.date
   );
-  // 경기가 ongoing을때 점수와 경기시간을 번갈아가면서 렌더링하게 해두었으니 여기에 애니메이션 적용하고 난후 3초마다 재렌더링시키는 useEffect가 데이터 fetcing 하는 렌더링에도 혹시 영향을 끼치는지 api 사이트를 통해 확인해보기
 
   // State value to change between match time and match points when the game is ongoing
   const [isPoint, setIsPoint] = useState(true);
@@ -236,10 +260,12 @@ export default function TeamOverView({
   useEffect(() => {
     const interval = setInterval(() => {
       setIsPoint((prev) => !prev); // match goals <-> match time
-    }, 3000); // it updates useState value every 3 seconds
+    }, 2500); // it updates useState value every 2.5 seconds
 
     return () => clearInterval(interval); // clear Interval when componets is unmounted
   }, []);
+
+  console.log(nextMatchDateWithTime);
 
   return (
     <div className="w-full">
@@ -340,21 +366,55 @@ export default function TeamOverView({
 
           {upcomingMatch?.length > 0 && (
             <div className="w-full bg-white rounded-xl mt-6 px-8 py-5 dark:bg-custom-dark max-sm:px-4  border-slate-200 border border-solid dark:border-0">
-              {/* next match || ongoing match */}
-              <h3 className="text-base">
-                {/* the title change based on whether match is ongoing or not  */}
-                {live?.includes(upcomingMatch[0]?.fixture?.status?.short) ||
-                stop?.includes(upcomingMatch[0]?.fixture?.status?.short)
-                  ? t("onGoing")
-                  : t("nextMatch")}
-              </h3>
-              <div className="flex justify-between items-center mt-6">
+              <div className="w-full flex justify-between items-center">
+                {/* next match || ongoing match */}
+                <h3 className="text-base">
+                  {/* the title change based on whether match is ongoing or not  */}
+                  {live?.includes(upcomingMatch[0]?.fixture?.status?.short) ||
+                  stop?.includes(upcomingMatch[0]?.fixture?.status?.short)
+                    ? t("onGoing")
+                    : t("nextMatch")}
+                </h3>
+                {/* League name and logo */}
+                <div
+                  className="flex items-center gap-2 cursor-pointer hover:opacity-70"
+                  onClick={() => {
+                    router.push(
+                      `/${locale}/leagues/${
+                        upcomingMatch[0]?.league?.id
+                      }/${formatLeagueNameURL(
+                        upcomingMatch[0]?.league?.name
+                      )}/overview`
+                    );
+                  }}
+                >
+                  <h3 className="text-xs text-custom-gray">
+                    {upcomingMatch[0]?.league?.name}
+                  </h3>
+                  <div className="w-[25px] h-[25px] rounded-full border border-solid border-[#E8E8E8] flex justify-center items-center">
+                    <Image
+                      src={upcomingMatch[0]?.league?.logo || noimage}
+                      alt={upcomingMatch[0]?.league?.name || "no league name"}
+                      width={20}
+                      height={20}
+                    />
+                  </div>
+                </div>
+              </div>
+              <div
+                className="flex justify-between items-center mt-6 cursor-pointer hover:opacity-70"
+                onClick={() => {
+                  router.push(`/${locale}/matches/${upcomingMatch[0]?.teams?.home}-${upcomingMatch[0]?.teams?.away}/${upcomingMatch[0]?.fixture?.id}`)
+                }}
+              >
                 {/* home team */}
                 <div>
                   <div className="w-full h-[50px]">
                     <Image
-                      src={upcomingMatch[0]?.teams?.home?.logo}
-                      alt={upcomingMatch[0]?.teams?.home?.name}
+                      src={upcomingMatch[0]?.teams?.home?.logo || noimage}
+                      alt={
+                        upcomingMatch[0]?.teams?.home?.name || "no home team"
+                      }
                       width={50}
                       height={50}
                       className="m-auto w-auto h-full"
@@ -369,22 +429,29 @@ export default function TeamOverView({
                 <div>
                   {live?.includes(upcomingMatch[0]?.fixture?.status?.short) ||
                   stop?.includes(upcomingMatch[0]?.fixture?.status?.short) ? (
-                    <div className="bg-[#00985F] text-white text-sm w-[45px] h-[24px] rounded-[0.4vw] flex items-center justify-center">
-                      <h3>
-                        {isPoint
-                          ? `${upcomingMatch[0]?.goals?.home}
+                    <AnimatePresence>
+                      <div className="bg-[#00985F] text-white text-sm w-[45px] h-[24px] rounded-[0.4vw] flex items-center justify-center">
+                        <motion.h3
+                          key={isPoint ? "score" : "time"}
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: 1 }}
+                          exit={{ opacity: 0 }}
+                          transition={{ duration: 0.5, ease: "easeInOut" }}
+                        >
+                          {isPoint
+                            ? `${upcomingMatch[0]?.goals?.home}
                           -
                           ${upcomingMatch[0]?.goals?.away}`
-                          : `${
-                              upcomingMatch[0]?.fixture?.status?.elapsed || 0
-                            }'`}
-                      </h3>
-                    </div>
+                            : `${
+                                upcomingMatch[0]?.fixture?.status?.elapsed || 0
+                              }'`}
+                        </motion.h3>
+                      </div>
+                    </AnimatePresence>
                   ) : (
-                    <div>
-                      {" "}
-                      <h3></h3>
-                      <h4></h4>
+                    <div className="text-center">
+                      <h3>{nextMatchDateWithTime?.time || "null"}</h3>
+                      <h4 className="text-sm text-custom-gray mt-3">{nextMatchDateWithTime?.date || "null"}</h4>
                     </div>
                   )}
                 </div>
@@ -393,8 +460,10 @@ export default function TeamOverView({
                 <div>
                   <div className="w-full h-[50px]">
                     <Image
-                      src={upcomingMatch[0]?.teams?.away?.logo}
-                      alt={upcomingMatch[0]?.teams?.away?.name}
+                      src={upcomingMatch[0]?.teams?.away?.logo || noimage}
+                      alt={
+                        upcomingMatch[0]?.teams?.away?.name || "no away team"
+                      }
                       width={50}
                       height={50}
                       className="m-auto w-auto h-full"

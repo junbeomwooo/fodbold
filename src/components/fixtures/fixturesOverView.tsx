@@ -1015,7 +1015,7 @@ const FixturesOverView = ({ id, locale }: { id: number; locale: string }) => {
 
                             {/* 골키퍼 교체 */}
                             {fixture?.players[0]?.players[0]?.statistics[0]
-                              ?.games?.minutes < 90 ? (
+                              ?.games?.minutes < fixture?.status?.elapsed ? (
                               <div className="absolute w-4 h-4 bg-white rounded-full left-3 top-[-5px] flex items-center justify-center">
                                 <h1 className="absolute mb-7 text-white text-[10px] font-medium">
                                   {
@@ -1222,7 +1222,8 @@ const FixturesOverView = ({ id, locale }: { id: number; locale: string }) => {
 
                                           {/* 교체 */}
                                           {playerStats?.statistics[0].games
-                                            .minutes < 90 ? (
+                                            .minutes <
+                                          fixture?.status?.elapsed ? (
                                             <div className="absolute w-4 h-4 bg-white rounded-full left-3 top-[-5px] flex items-center justify-center">
                                               <h1 className="absolute mb-7 text-white text-[10px] font-medium">
                                                 {
@@ -1438,7 +1439,8 @@ const FixturesOverView = ({ id, locale }: { id: number; locale: string }) => {
 
                                           {/* 교체 */}
                                           {playerStats?.statistics[0].games
-                                            .minutes < 90 ? (
+                                            .minutes <
+                                          fixture?.status?.elapsed ? (
                                             <div className="absolute w-4 h-4 bg-white rounded-full left-3 top-[-5px] flex items-center justify-center">
                                               <h1 className="absolute mb-7 text-white text-[10px] font-medium">
                                                 {
@@ -1592,7 +1594,7 @@ const FixturesOverView = ({ id, locale }: { id: number; locale: string }) => {
 
                               {/* 골키퍼 교체 */}
                               {fixture?.players[1]?.players[0]?.statistics[0]
-                                ?.games?.minutes < 90 ? (
+                                ?.games?.minutes < fixture?.status?.elapsed ? (
                                 <div className="absolute w-4 h-4 bg-white rounded-full left-3 top-[-5px] flex items-center justify-center">
                                   <h1 className="absolute mb-7 text-white text-[10px] font-medium">
                                     {
@@ -2586,8 +2588,8 @@ const FixturesOverView = ({ id, locale }: { id: number; locale: string }) => {
         {/* When tab is Stats */}
         {tabPage === "stats" && (
           <>
-           {/* Match stats */}
-           {fixture?.statistics.length > 0 && (
+            {/* Match stats */}
+            {fixture?.statistics.length > 0 && (
               <div className="w-full bg-white mt-4 border border-solid border-slate-200 rounded-xl pt-7 dark:bg-custom-dark dark:border-none pb-6">
                 <div className="w-full">
                   <div className="text-base w-full">
@@ -4136,8 +4138,8 @@ const FixturesOverView = ({ id, locale }: { id: number; locale: string }) => {
                 </div>
               </div>
             )}
-             {/* Substitutes / Coach*/}
-             {(fixture?.lineups[0]?.coach?.id ||
+            {/* Substitutes / Coach*/}
+            {(fixture?.lineups[0]?.coach?.id ||
               fixture?.lineups[1]?.coach?.id ||
               homePlayedPlayer?.length > 0 ||
               awayPlayedPlayer?.length > 0) && (
