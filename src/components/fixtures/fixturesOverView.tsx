@@ -54,34 +54,35 @@ const FixturesOverView = ({ id, locale }: { id: number; locale: string }) => {
 
   /** useEffect  */
   // http://localhost:3000/en/matches/tottenham-vs-leicester/1208251
+  // 교체부분을 현재 경기 시간보다 출전시간이 적다면 교체 마크를 나타나게끔 코드를 수정했으니 현재 진행중인 매치 및 끝난 매치를 들어가 잘 작동하는지 확인해보기, 만약 잘 작동한다면 Lineup 부분 탭 이동시 렌더링될 요소들도 overview의 라인업으로 업데이트 시켜주기
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const { payload } = await dispatch(
-          getFixtures({ id: id, timezone: locate })
-        );
-        await Promise.all([
-          dispatch(getInjuries({ id: id })),
-          dispatch(
-            getFixtruesByRound({
-              leagueID: payload?.league.id,
-              season: payload?.league.season,
-              round: payload?.league.round,
-            })
-          ),
-          dispatch(
-            getH2H({
-              homeID: payload?.teams.home.id,
-              awayID: payload?.teams.away.id,
-              timezone: locate,
-            })
-          ),
-        ]);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
-    };
-    fetchData();
+    // const fetchData = async () => {
+    //   try {
+    //     const { payload } = await dispatch(
+    //       getFixtures({ id: id, timezone: locate })
+    //     );
+    //     await Promise.all([
+    //       dispatch(getInjuries({ id: id })),
+    //       dispatch(
+    //         getFixtruesByRound({
+    //           leagueID: payload?.league.id,
+    //           season: payload?.league.season,
+    //           round: payload?.league.round,
+    //         })
+    //       ),
+    //       dispatch(
+    //         getH2H({
+    //           homeID: payload?.teams.home.id,
+    //           awayID: payload?.teams.away.id,
+    //           timezone: locate,
+    //         })
+    //       ),
+    //     ]);
+    //   } catch (error) {
+    //     console.error("Error fetching data:", error);
+    //   }
+    // };
+    // fetchData();
   }, [dispatch, id, locate]);
 
   /** data for using */
@@ -233,6 +234,10 @@ const FixturesOverView = ({ id, locale }: { id: number; locale: string }) => {
 
     router.push(url);
   };
+
+  const substitutedPlayer = fixture?.events?.filter((player: any) => {
+    return player?.type === "subst";
+  });
 
   return (
     <div className="flex w-full justify-center">
@@ -972,11 +977,10 @@ const FixturesOverView = ({ id, locale }: { id: number; locale: string }) => {
                             </h3>{" "}
                             &nbsp;
                             <h3>
-                              {
-                                fixture?.lineups[0].startXI[0].player.name.split(
-                                  " "
-                                )[1]
-                              }
+                              {fixture?.lineups[0]?.startXI[0]?.player?.name.split(
+                                " "
+                              )[1] ||
+                                fixture?.lineups[0]?.startXI[0]?.player?.name}
                             </h3>
                           </div>
 
@@ -1014,8 +1018,12 @@ const FixturesOverView = ({ id, locale }: { id: number; locale: string }) => {
                             )}
 
                             {/* 골키퍼 교체 */}
-                            {fixture?.players[0]?.players[0]?.statistics[0]
-                              ?.games?.minutes < fixture?.status?.elapsed ? (
+                            {substitutedPlayer?.some((player: any) => {
+                              return (
+                                player?.assist?.id ===
+                                fixture?.lineups[0]?.startXI[0]?.player?.id
+                              );
+                            }) ? (
                               <div className="absolute w-4 h-4 bg-white rounded-full left-3 top-[-5px] flex items-center justify-center">
                                 <h1 className="absolute mb-7 text-white text-[10px] font-medium">
                                   {
@@ -1131,15 +1139,15 @@ const FixturesOverView = ({ id, locale }: { id: number; locale: string }) => {
                                   (player: any, playerIndex: number) => {
                                     // 성을 제외한 선수의 이름
                                     const playerName =
-                                      player?.player.name.split(" ")[1] ||
+                                      player?.player.name?.split(" ")[1] ||
                                       player?.player.name;
 
                                     // 플레이어의 스탯
                                     const playerStats =
-                                      fixture?.players[0].players.find(
+                                      fixture?.players[0]?.players.find(
                                         (v: any) => {
                                           return (
-                                            v.player.id === player?.player.id
+                                            v.player.id === player?.player?.id
                                           );
                                         }
                                       );
@@ -1221,9 +1229,14 @@ const FixturesOverView = ({ id, locale }: { id: number; locale: string }) => {
                                           )}
 
                                           {/* 교체 */}
-                                          {playerStats?.statistics[0].games
-                                            .minutes <
-                                          fixture?.status?.elapsed ? (
+                                          {substitutedPlayer?.some(
+                                            (player: any) => {
+                                              return (
+                                                player?.assist?.id ===
+                                                playerStats?.player?.id
+                                              );
+                                            }
+                                          ) ? (
                                             <div className="absolute w-4 h-4 bg-white rounded-full left-3 top-[-5px] flex items-center justify-center">
                                               <h1 className="absolute mb-7 text-white text-[10px] font-medium">
                                                 {
@@ -1348,15 +1361,15 @@ const FixturesOverView = ({ id, locale }: { id: number; locale: string }) => {
                                   (player: any, playerIndex: number) => {
                                     // 성을 제외한 선수의 이름
                                     const playerName =
-                                      player?.player.name.split(" ")[1] ||
-                                      player?.player.name;
+                                      player?.player?.name.split(" ")[1] ||
+                                      player?.player?.name;
 
                                     // 플레이어의 스탯
                                     const playerStats =
-                                      fixture?.players[1].players.find(
+                                      fixture?.players[1]?.players.find(
                                         (v: any) => {
                                           return (
-                                            v.player.id === player?.player.id
+                                            v.player?.id === player?.player?.id
                                           );
                                         }
                                       );
@@ -1438,9 +1451,14 @@ const FixturesOverView = ({ id, locale }: { id: number; locale: string }) => {
                                           )}
 
                                           {/* 교체 */}
-                                          {playerStats?.statistics[0].games
-                                            .minutes <
-                                          fixture?.status?.elapsed ? (
+                                          {substitutedPlayer?.some(
+                                            (player: any) => {
+                                              return (
+                                                player?.assist?.id ===
+                                                playerStats?.player?.id
+                                              );
+                                            }
+                                          ) ? (
                                             <div className="absolute w-4 h-4 bg-white rounded-full left-3 top-[-5px] flex items-center justify-center">
                                               <h1 className="absolute mb-7 text-white text-[10px] font-medium">
                                                 {
@@ -1553,11 +1571,10 @@ const FixturesOverView = ({ id, locale }: { id: number; locale: string }) => {
                             </h3>{" "}
                             &nbsp;
                             <h3>
-                              {
-                                fixture?.lineups[1].startXI[0].player.name.split(
-                                  " "
-                                )[1]
-                              }
+                              {fixture?.lineups[1].startXI[0].player.name.split(
+                                " "
+                              )[1] ||
+                                fixture?.lineups[1].startXI[0].player.name}
                             </h3>
                             {/* 골키퍼 스탯 */}
                             <>
@@ -1593,8 +1610,12 @@ const FixturesOverView = ({ id, locale }: { id: number; locale: string }) => {
                               )}
 
                               {/* 골키퍼 교체 */}
-                              {fixture?.players[1]?.players[0]?.statistics[0]
-                                ?.games?.minutes < fixture?.status?.elapsed ? (
+                              {substitutedPlayer?.some((player: any) => {
+                                return (
+                                  player?.assist?.id ===
+                                  fixture?.lineups[1]?.startXI[0]?.player?.id
+                                );
+                              }) ? (
                                 <div className="absolute w-4 h-4 bg-white rounded-full left-3 top-[-5px] flex items-center justify-center">
                                   <h1 className="absolute mb-7 text-white text-[10px] font-medium">
                                     {
