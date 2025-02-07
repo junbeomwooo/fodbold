@@ -54,35 +54,34 @@ const FixturesOverView = ({ id, locale }: { id: number; locale: string }) => {
 
   /** useEffect  */
   // http://localhost:3000/en/matches/tottenham-vs-leicester/1208251
-  // 교체부분을 현재 경기 시간보다 출전시간이 적다면 교체 마크를 나타나게끔 코드를 수정했으니 현재 진행중인 매치 및 끝난 매치를 들어가 잘 작동하는지 확인해보기, 만약 잘 작동한다면 Lineup 부분 탭 이동시 렌더링될 요소들도 overview의 라인업으로 업데이트 시켜주기
   useEffect(() => {
-    // const fetchData = async () => {
-    //   try {
-    //     const { payload } = await dispatch(
-    //       getFixtures({ id: id, timezone: locate })
-    //     );
-    //     await Promise.all([
-    //       dispatch(getInjuries({ id: id })),
-    //       dispatch(
-    //         getFixtruesByRound({
-    //           leagueID: payload?.league.id,
-    //           season: payload?.league.season,
-    //           round: payload?.league.round,
-    //         })
-    //       ),
-    //       dispatch(
-    //         getH2H({
-    //           homeID: payload?.teams.home.id,
-    //           awayID: payload?.teams.away.id,
-    //           timezone: locate,
-    //         })
-    //       ),
-    //     ]);
-    //   } catch (error) {
-    //     console.error("Error fetching data:", error);
-    //   }
-    // };
-    // fetchData();
+    const fetchData = async () => {
+      try {
+        const { payload } = await dispatch(
+          getFixtures({ id: id, timezone: locate })
+        );
+        // await Promise.all([
+        //   dispatch(getInjuries({ id: id })),
+        //   dispatch(
+        //     getFixtruesByRound({
+        //       leagueID: payload?.league.id,
+        //       season: payload?.league.season,
+        //       round: payload?.league.round,
+        //     })
+        //   ),
+        //   dispatch(
+        //     getH2H({
+        //       homeID: payload?.teams.home.id,
+        //       awayID: payload?.teams.away.id,
+        //       timezone: locate,
+        //     })
+        //   ),
+        // ]);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+    fetchData();
   }, [dispatch, id, locate]);
 
   /** data for using */
@@ -1020,8 +1019,11 @@ const FixturesOverView = ({ id, locale }: { id: number; locale: string }) => {
                             {/* 골키퍼 교체 */}
                             {substitutedPlayer?.some((player: any) => {
                               return (
+                                // The values of the variables differ for each match data, so the OR operator is used to return true if either one matches.
                                 player?.assist?.id ===
-                                fixture?.lineups[0]?.startXI[0]?.player?.id
+                                  fixture?.lineups[0]?.startXI[0]?.player?.id ||
+                                player?.player?.id ===
+                                  fixture?.lineups[0]?.startXI[0]?.player?.id
                               );
                             }) ? (
                               <div className="absolute w-4 h-4 bg-white rounded-full left-3 top-[-5px] flex items-center justify-center">
@@ -1232,8 +1234,11 @@ const FixturesOverView = ({ id, locale }: { id: number; locale: string }) => {
                                           {substitutedPlayer?.some(
                                             (player: any) => {
                                               return (
+                                                // The values of the variables differ for each match data, so the OR operator is used to return true if either one matches.
                                                 player?.assist?.id ===
-                                                playerStats?.player?.id
+                                                  playerStats?.player?.id ||
+                                                player?.player?.id ===
+                                                  playerStats?.player?.id
                                               );
                                             }
                                           ) ? (
@@ -1454,8 +1459,11 @@ const FixturesOverView = ({ id, locale }: { id: number; locale: string }) => {
                                           {substitutedPlayer?.some(
                                             (player: any) => {
                                               return (
+                                                // The values of the variables differ for each match data, so the OR operator is used to return true if either one matches.
                                                 player?.assist?.id ===
-                                                playerStats?.player?.id
+                                                  playerStats?.player?.id ||
+                                                player?.player?.id ===
+                                                  playerStats?.player?.id
                                               );
                                             }
                                           ) ? (
@@ -1612,8 +1620,12 @@ const FixturesOverView = ({ id, locale }: { id: number; locale: string }) => {
                               {/* 골키퍼 교체 */}
                               {substitutedPlayer?.some((player: any) => {
                                 return (
+                                  // The values of the variables differ for each match data, so the OR operator is used to return true if either one matches.
                                   player?.assist?.id ===
-                                  fixture?.lineups[1]?.startXI[0]?.player?.id
+                                    fixture?.lineups[1]?.startXI[0]?.player
+                                      ?.id ||
+                                  player?.player?.id ===
+                                    fixture?.lineups[1]?.startXI[0]?.player?.id
                                 );
                               }) ? (
                                 <div className="absolute w-4 h-4 bg-white rounded-full left-3 top-[-5px] flex items-center justify-center">
