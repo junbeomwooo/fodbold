@@ -60,23 +60,23 @@ const FixturesOverView = ({ id, locale }: { id: number; locale: string }) => {
         const { payload } = await dispatch(
           getFixtures({ id: id, timezone: locate })
         );
-        // await Promise.all([
-        //   dispatch(getInjuries({ id: id })),
-        //   dispatch(
-        //     getFixtruesByRound({
-        //       leagueID: payload?.league.id,
-        //       season: payload?.league.season,
-        //       round: payload?.league.round,
-        //     })
-        //   ),
-        //   dispatch(
-        //     getH2H({
-        //       homeID: payload?.teams.home.id,
-        //       awayID: payload?.teams.away.id,
-        //       timezone: locate,
-        //     })
-        //   ),
-        // ]);
+        await Promise.all([
+          dispatch(getInjuries({ id: id })),
+          dispatch(
+            getFixtruesByRound({
+              leagueID: payload?.league.id,
+              season: payload?.league.season,
+              round: payload?.league.round,
+            })
+          ),
+          dispatch(
+            getH2H({
+              homeID: payload?.teams.home.id,
+              awayID: payload?.teams.away.id,
+              timezone: locate,
+            })
+          ),
+        ]);
       } catch (error) {
         console.error("Error fetching data:", error);
       }
@@ -3468,11 +3468,10 @@ const FixturesOverView = ({ id, locale }: { id: number; locale: string }) => {
                             </h3>{" "}
                             &nbsp;
                             <h3>
-                              {
-                                fixture?.lineups[0].startXI[0].player.name.split(
-                                  " "
-                                )[1]
-                              }
+                              {fixture?.lineups[0]?.startXI[0]?.player?.name.split(
+                                " "
+                              )[1] ||
+                                fixture?.lineups[0]?.startXI[0]?.player?.name}
                             </h3>
                           </div>
 
@@ -3510,8 +3509,15 @@ const FixturesOverView = ({ id, locale }: { id: number; locale: string }) => {
                             )}
 
                             {/* 골키퍼 교체 */}
-                            {fixture?.players[0]?.players[0]?.statistics[0]
-                              ?.games?.minutes < 90 ? (
+                            {substitutedPlayer?.some((player: any) => {
+                              return (
+                                // The values of the variables differ for each match data, so the OR operator is used to return true if either one matches.
+                                player?.assist?.id ===
+                                  fixture?.lineups[0]?.startXI[0]?.player?.id ||
+                                player?.player?.id ===
+                                  fixture?.lineups[0]?.startXI[0]?.player?.id
+                              );
+                            }) ? (
                               <div className="absolute w-4 h-4 bg-white rounded-full left-3 top-[-5px] flex items-center justify-center">
                                 <h1 className="absolute mb-7 text-white text-[10px] font-medium">
                                   {
@@ -3627,15 +3633,15 @@ const FixturesOverView = ({ id, locale }: { id: number; locale: string }) => {
                                   (player: any, playerIndex: number) => {
                                     // 성을 제외한 선수의 이름
                                     const playerName =
-                                      player?.player.name.split(" ")[1] ||
+                                      player?.player.name?.split(" ")[1] ||
                                       player?.player.name;
 
                                     // 플레이어의 스탯
                                     const playerStats =
-                                      fixture?.players[0].players.find(
+                                      fixture?.players[0]?.players.find(
                                         (v: any) => {
                                           return (
-                                            v.player.id === player?.player.id
+                                            v.player.id === player?.player?.id
                                           );
                                         }
                                       );
@@ -3717,8 +3723,17 @@ const FixturesOverView = ({ id, locale }: { id: number; locale: string }) => {
                                           )}
 
                                           {/* 교체 */}
-                                          {playerStats?.statistics[0].games
-                                            .minutes < 90 ? (
+                                          {substitutedPlayer?.some(
+                                            (player: any) => {
+                                              return (
+                                                // The values of the variables differ for each match data, so the OR operator is used to return true if either one matches.
+                                                player?.assist?.id ===
+                                                  playerStats?.player?.id ||
+                                                player?.player?.id ===
+                                                  playerStats?.player?.id
+                                              );
+                                            }
+                                          ) ? (
                                             <div className="absolute w-4 h-4 bg-white rounded-full left-3 top-[-5px] flex items-center justify-center">
                                               <h1 className="absolute mb-7 text-white text-[10px] font-medium">
                                                 {
@@ -3843,15 +3858,15 @@ const FixturesOverView = ({ id, locale }: { id: number; locale: string }) => {
                                   (player: any, playerIndex: number) => {
                                     // 성을 제외한 선수의 이름
                                     const playerName =
-                                      player?.player.name.split(" ")[1] ||
-                                      player?.player.name;
+                                      player?.player?.name.split(" ")[1] ||
+                                      player?.player?.name;
 
                                     // 플레이어의 스탯
                                     const playerStats =
-                                      fixture?.players[1].players.find(
+                                      fixture?.players[1]?.players.find(
                                         (v: any) => {
                                           return (
-                                            v.player.id === player?.player.id
+                                            v.player?.id === player?.player?.id
                                           );
                                         }
                                       );
@@ -3933,8 +3948,17 @@ const FixturesOverView = ({ id, locale }: { id: number; locale: string }) => {
                                           )}
 
                                           {/* 교체 */}
-                                          {playerStats?.statistics[0].games
-                                            .minutes < 90 ? (
+                                          {substitutedPlayer?.some(
+                                            (player: any) => {
+                                              return (
+                                                // The values of the variables differ for each match data, so the OR operator is used to return true if either one matches.
+                                                player?.assist?.id ===
+                                                  playerStats?.player?.id ||
+                                                player?.player?.id ===
+                                                  playerStats?.player?.id
+                                              );
+                                            }
+                                          ) ? (
                                             <div className="absolute w-4 h-4 bg-white rounded-full left-3 top-[-5px] flex items-center justify-center">
                                               <h1 className="absolute mb-7 text-white text-[10px] font-medium">
                                                 {
@@ -4047,11 +4071,10 @@ const FixturesOverView = ({ id, locale }: { id: number; locale: string }) => {
                             </h3>{" "}
                             &nbsp;
                             <h3>
-                              {
-                                fixture?.lineups[1].startXI[0].player.name.split(
-                                  " "
-                                )[1]
-                              }
+                              {fixture?.lineups[1].startXI[0].player.name.split(
+                                " "
+                              )[1] ||
+                                fixture?.lineups[1].startXI[0].player.name}
                             </h3>
                             {/* 골키퍼 스탯 */}
                             <>
@@ -4087,8 +4110,16 @@ const FixturesOverView = ({ id, locale }: { id: number; locale: string }) => {
                               )}
 
                               {/* 골키퍼 교체 */}
-                              {fixture?.players[1]?.players[0]?.statistics[0]
-                                ?.games?.minutes < 90 ? (
+                              {substitutedPlayer?.some((player: any) => {
+                                return (
+                                  // The values of the variables differ for each match data, so the OR operator is used to return true if either one matches.
+                                  player?.assist?.id ===
+                                    fixture?.lineups[1]?.startXI[0]?.player
+                                      ?.id ||
+                                  player?.player?.id ===
+                                    fixture?.lineups[1]?.startXI[0]?.player?.id
+                                );
+                              }) ? (
                                 <div className="absolute w-4 h-4 bg-white rounded-full left-3 top-[-5px] flex items-center justify-center">
                                   <h1 className="absolute mb-7 text-white text-[10px] font-medium">
                                     {
