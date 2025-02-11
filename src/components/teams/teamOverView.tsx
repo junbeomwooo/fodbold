@@ -4,6 +4,8 @@ import { useAppDispatch, useAppSelector } from "@/lib/storeHooks";
 import { getTeamsStatistics } from "@/lib/features/teamsSlice";
 import { getAllLeaguesByTeam, getStanding } from "@/lib/features/leagueSlice";
 import { getFixturesByTeam } from "@/lib/features/fixtureSlice";
+import FormatMatchDetailURL from "@/lib/formatMatchDetailURL";
+import FormatLeagueOrTeamName from "@/lib/formatLeagueOrTeamName";
 
 import noimage from "@/../public/img/noimage.png";
 
@@ -69,8 +71,11 @@ export default function TeamOverView({
   // http://localhost:3000/en/teams/47/Tottenham/overview
   // http://localhost:3000/en/teams/1577/Al%20Ahly/overview
 
-  /** 스탠딩에 리그이름 클릭시 리그페이지 이동구현 완료했으니 작동하는지 확인하고 스탠딩에 팀이름 클릭시 팀페이지 이동 구현하기, 미디어쿼리 적용시키기 */
-  
+  /** 
+   * 1. 리그 사이트 , 경기 매치 이동, 팀 이동 시 url 포맷하는 걸 컴포넌트화 했으니 제대로 작동하는지 확인하기. 제대로 작동한다면 fixtureOverView에서 팀 이동 url 조건 변경하기. 
+   * 2. formatMatchDate도 컴포넌트 화 하기
+   */
+
   useEffect(() => {
     // dispatch(getAllLeaguesByTeam({ team: id })).then(({ payload }) => {
     //   const nationalLeague = payload[0]?.league?.id;
@@ -78,9 +83,7 @@ export default function TeamOverView({
     //   dispatch(
     //     getFixturesByTeam({ team: id, season: latestSeason, timezone: locate })
     //   );
-    //   dispatch(
-    //     getStanding({id:nationalLeague, year:latestSeason})
-    //   );
+    //   dispatch(getStanding({ id: nationalLeague, year: latestSeason }));
     //   // dispatch(
     //   //   getTeamsStatistics({
     //   //     league: nationalLeague,
@@ -105,34 +108,6 @@ export default function TeamOverView({
   console.group("statics");
   console.log(statics);
   console.groupEnd();
-
-  /** Move to Match Detail */
-  const formattedLeagueURL = (home: string, away: string, matchID: number) => {
-    const matchVS = `${home}-vs-${away}`;
-
-    // 하이픈을 모두 삭제합니다.
-    const noHyphens = matchVS.replace(/-/g, " ");
-
-    // 두 번 이상의 연속 공백을 하나로 줄입니다.
-    const cleanedString = noHyphens.replace(/\s{2,}/g, " ");
-
-    // 1. 공백을 하이픈으로 변경
-    const hyphenated = cleanedString.replace(/\s+/g, "-");
-
-    // 2. 온점을 제거
-    const withoutDots = hyphenated.replace(/\./g, "");
-
-    // 3. 대문자 뒤에 하이픈 추가 (선택 사항)
-    const withHyphens = withoutDots.replace(/(?<=[A-Z])-(?=[a-z])/g, "-");
-
-    // 4. 소문자로 변환
-    const name = withHyphens.toLowerCase();
-
-    /** 최종 */
-    const url = `/${locale}/matches/${name}/${matchID}`;
-
-    router.push(url);
-  };
 
   /** Date format function */
   const formatMatchDate = (matchDate: string) => {
@@ -202,29 +177,6 @@ export default function TeamOverView({
     }
 
     return { time: time, date: date };
-  };
-
-  /** Formatted League Name as url */
-  const formatLeagueNameURL = (leagueName: string) => {
-    // remove all hyphens
-    const noHyphens = leagueName.replace(/-/g, " ");
-
-    // Reduce two or more spaces to a single space.
-    const cleanedString = noHyphens.replace(/\s{2,}/g, " ");
-
-    // Replace spaces with hyphens.
-    const hyphenated = cleanedString.replace(/\s+/g, "-");
-
-    // Remove dots
-    const withoutDots = hyphenated.replace(/\./g, "");
-
-    // Add a hyphen after uppercase letters
-    const withHyphens = withoutDots.replace(/(?<=[A-Z])-(?=[a-z])/g, "-");
-
-    // Change to lowercase
-    const name = withHyphens.toLowerCase();
-
-    return name;
   };
 
   /** data for using */
@@ -356,10 +308,13 @@ export default function TeamOverView({
                       key={i}
                       className="text-center cursor-pointer hover:opacity-70"
                       onClick={() => {
-                        formattedLeagueURL(
-                          v?.teams?.home?.name,
-                          v?.teams?.away?.name,
-                          v?.fixture?.id
+                        router.push(
+                          FormatMatchDetailURL(
+                            v?.teams?.home?.name,
+                            v?.teams?.away?.name,
+                            v?.fixture?.id,
+                            locale
+                          )
                         );
                       }}
                     >
@@ -402,11 +357,9 @@ export default function TeamOverView({
                   className="flex items-center gap-2 cursor-pointer hover:opacity-70"
                   onClick={() => {
                     router.push(
-                      `/${locale}/leagues/${
-                        upcomingMatch[0]?.league?.id
-                      }/${formatLeagueNameURL(
-                        upcomingMatch[0]?.league?.name
-                      )}/overview`
+                      FormatLeagueOrTeamName(
+                        `/${locale}/league/${leagues[0]?.league?.id}/${leagues[0]?.league?.name}/overview`
+                      )
                     );
                   }}
                 >
@@ -427,7 +380,12 @@ export default function TeamOverView({
                 className="flex justify-between items-center mt-6 cursor-pointer hover:opacity-70"
                 onClick={() => {
                   router.push(
-                    `/${locale}/matches/${upcomingMatch[0]?.teams?.home}-${upcomingMatch[0]?.teams?.away}/${upcomingMatch[0]?.fixture?.id}`
+                    FormatMatchDetailURL(
+                      upcomingMatch[0]?.teams?.home?.name,
+                      upcomingMatch[0]?.teams?.away?.name,
+                      upcomingMatch[0]?.fixture?.id,
+                      locale
+                    )
                   );
                 }}
               >
@@ -506,9 +464,18 @@ export default function TeamOverView({
           {stands?.length > 0 && (
             <>
               <div className="w-full bg-white rounded-xl mt-6 px-8 py-5 dark:bg-custom-dark max-sm:px-4  border-slate-200 border border-solid dark:border-0">
-                <div className="w-full flex items-center gap-4 mb-5 cursor-pointer hover:opacity-70" onClick={() => {
-                  router.push(`/${locale}/leagues/${leagues[0]?.league?.id}/${formatLeagueNameURL(leagues[0]?.league?.name)}/overview`)
-                }}>
+                <div
+                  className="w-full flex items-center gap-4 mb-5 cursor-pointer hover:opacity-70"
+                  onClick={() => {
+                    router.push(
+                      `/${locale}/leagues/${
+                        leagues[0]?.league?.id
+                      }/${FormatLeagueOrTeamName(
+                        leagues[0]?.league?.name
+                      )}/overview`
+                    );
+                  }}
+                >
                   <Image
                     src={leagues[0]?.league?.logo}
                     alt={leagues[0]?.league?.name}
