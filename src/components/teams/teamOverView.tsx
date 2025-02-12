@@ -73,7 +73,8 @@ export default function TeamOverView({
   // http://localhost:3000/en/teams/1577/Al%20Ahly/overview
 
   /**
-   * 1. formatMatchDate도 컴포넌트 화 하기
+   * 1. 가장 최근 데이터를 구했으니 이 데이터를 통해 가장 최근 매치의 라인업을 보여주기.
+   * 2. 불필요한 데이터 페칭은 없애고 최적화 시키기
    */
 
   useEffect(() => {
