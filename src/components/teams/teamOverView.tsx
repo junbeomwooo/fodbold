@@ -4,9 +4,13 @@ import { useAppDispatch, useAppSelector } from "@/lib/storeHooks";
 import { getTeamsStatistics } from "@/lib/features/teamsSlice";
 import { getAllLeaguesByTeam, getStanding } from "@/lib/features/leagueSlice";
 import { getFixturesByTeam } from "@/lib/features/fixtureSlice";
+import { getFixtures } from "@/lib/features/fixtureSlice";
 import FormatMatchDetailURL from "@/lib/formatMatchDetailURL";
 import FormatLeagueOrTeamName from "@/lib/formatLeagueOrTeamName";
 import FormatMatchDate from "@/lib/formatMatchDate";
+
+import lightFieldHalf from "@/../public/img/lightfieldHalf.png";
+import darkFieldHalf from "@/../public/img/darkfieldHalf.png";
 
 import noimage from "@/../public/img/noimage.png";
 
@@ -18,6 +22,7 @@ import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import moment from "moment-timezone";
 import { motion, AnimatePresence } from "motion/react";
+import { useTheme } from "next-themes";
 
 /** for statics */
 interface Team {
@@ -58,6 +63,7 @@ export default function TeamOverView({
   };
   const { fixtureByTeam } = useAppSelector((state) => state.fixtureSlice);
   const { location }: any = useAppSelector((state) => state.locationSlice);
+  const { fixture }: any = useAppSelector((state) => state.fixtureSlice);
 
   // if there is no location it will fixed Europe/Copenhagen as timezone
   const locate = useMemo(() => location || "Europe/Copenhagen", [location]);
@@ -69,6 +75,8 @@ export default function TeamOverView({
 
   const router = useRouter();
 
+  const { theme } = useTheme();
+
   // http://localhost:3000/en/teams/47/Tottenham/overview
   // http://localhost:3000/en/teams/1577/Al%20Ahly/overview
 
@@ -78,37 +86,34 @@ export default function TeamOverView({
    */
 
   useEffect(() => {
-    dispatch(getAllLeaguesByTeam({ team: id })).then(({ payload }) => {
-      const nationalLeague = payload[0]?.league?.id;
-      const latestSeason = payload[0]?.seasons?.at(-1)?.year;
-      dispatch(
-        getFixturesByTeam({ team: id, season: latestSeason, timezone: locate })
-      ).then(({ payload }) => {
-
-        // to get latest match data
-        const lastMatch = (payload ?? [])
-          .filter((match: any) =>
-            ["FT", "PEN", "AET"].includes(match.fixture.status.short)
-          )
-          .sort(
-            (a: any, b: any) =>
-              new Date(b?.fixture?.date).getTime() -
-              new Date(a?.fixture?.date).getTime()
-          )
-          .at(0);
-
-          console.log(lastMatch);
-      });
-      dispatch(getStanding({ id: nationalLeague, year: latestSeason }));
-
-      // dispatch(
-      //   getTeamsStatistics({
-      //     league: nationalLeague,
-      //     season: latestSeason,
-      //     team: id,
-      //   })
-      // );
-    });
+    // dispatch(getAllLeaguesByTeam({ team: id })).then(({ payload }) => {
+    //   const nationalLeague = payload[0]?.league?.id;
+    //   const latestSeason = payload[0]?.seasons?.at(-1)?.year;
+    //   dispatch(
+    //     getFixturesByTeam({ team: id, season: latestSeason, timezone: locate })
+    //   ).then(({ payload }) => {
+    //     // to get latest match data
+    //     const lastMatch = (payload ?? [])
+    //       .filter((match: any) =>
+    //         ["FT", "PEN", "AET"].includes(match.fixture.status.short)
+    //       )
+    //       .sort(
+    //         (a: any, b: any) =>
+    //           new Date(b?.fixture?.date).getTime() -
+    //           new Date(a?.fixture?.date).getTime()
+    //       )
+    //       .at(0);
+    //     dispatch(getFixtures({ id: lastMatch?.fixture?.id, timezone: locate }));
+    //   });
+    //   dispatch(getStanding({ id: nationalLeague, year: latestSeason }));
+    //   dispatch(
+    //     getTeamsStatistics({
+    //       league: nationalLeague,
+    //       season: latestSeason,
+    //       team: id,
+    //     })
+    //   );
+    // });
   }, [dispatch, id, locate]);
 
   console.group("leagues");
@@ -120,6 +125,9 @@ export default function TeamOverView({
   console.group("standing");
   console.log(standing);
   console.groupEnd();
+  console.group("fixture");
+  console.log(fixture);
+  console.groupEnd();
 
   // statics은 쓸데이터인지 확실하지 않음 아직
   console.group("statics");
@@ -128,7 +136,14 @@ export default function TeamOverView({
 
   /** data for using */
 
-  /** Last Recent Match */
+  /** Last match's start XI */
+  const lastMatchStartXI = fixture?.lineups?.filter((team: any) => {
+    return Number(id) === team?.team?.id;
+  });
+
+  console.log(lastMatchStartXI);
+
+  /** Last Recent 5 Matches */
   // ?? 연산자 fixtureByTeam이 값이 없을 경우 빈배열로 대체
   const lastRecentMatches = (fixtureByTeam ?? [])
     .filter((match: any) =>
@@ -225,8 +240,8 @@ export default function TeamOverView({
         </div>
       </div>
 
-      {/* last 5 matches , next match, lineups */}
       <div className="flex gap-4">
+        {/* last 5 matches , next match || ongoing match */}
         <div className="w-7/12">
           {/* team form */}
           {lastRecentMatches?.length > 0 && (
@@ -578,8 +593,68 @@ export default function TeamOverView({
             </>
           )}
         </div>
+        {/* last stratXI */}
         <div className="w-5/12">
-          <div className="w-full bg-white rounded-xl mt-6 px-8 py-5 dark:bg-custom-dark max-sm:px-4  border-slate-200 border border-solid dark:border-0 flex"></div>
+          {fixture?.lineups && (
+            <>
+              {/* header */}
+              <div className="w-full bg-white rounded-t-xl mt-6 px-8 py-5 dark:bg-custom-dark max-sm:px-4  border-slate-200 border border-solid dark:border-0 flex">
+                <div className="flex w-full items-center justify-between">
+                  <div className="flex items-center gap-4">
+                    <Image
+                      src={fixture?.league?.logo}
+                      alt={fixture?.league?.name}
+                      width={20}
+                      height={20}
+                    />
+                    <h1 className="text-base">Season stats</h1>
+                  </div>
+                  <h1 className="text-xs text-custom-gray">Last starting XI</h1>
+                </div>
+              </div>
+              {/* feild */}
+              <div className="w-full relative">
+                <div className="w-full">
+                  <Image
+                    src={theme === "light" ? lightFieldHalf : darkFieldHalf}
+                    alt="field"
+                    width={1000}
+                    height={1000}
+                    className="w-full h-auto"
+                  />
+                </div>
+
+                {/* start XI */}
+                <div
+                  className="relative w-full h-full grid grid-rows-5 grid-cols-4  gap-2 "
+                >
+                  {lastMatchStartXI[0]?.startXI.map((v: any, i: number) => {
+                    const [row, col] = v?.player?.grid.split(":").map(Number);
+                    console.log(`row:${row} :::: col:${col}`);
+
+                    return (
+                      <div
+                        key={i}
+                        className={`
+          flex flex-col items-center justify-center w-14 h-14 bg-white rounded-full text-xs font-semibold text-center 
+        `}
+                        style={{
+                          gridRowStart: row,
+                          gridColumnStart: col,
+                          justifySelf: "center",
+                        }}
+                      >
+                        <span className="text-gray-700">
+                          {v?.player?.number}
+                        </span>
+                        <span className="text-black">{v?.player?.name}</span>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            </>
+          )}
         </div>
       </div>
     </div>
