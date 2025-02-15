@@ -82,7 +82,7 @@ export default function TeamOverView({
   // http://localhost:3000/en/teams/1577/Al%20Ahly/overview
 
   /**
-   * 1. 축구 라인업 화면 어떻게 구성할건지 생각하기
+   * 1. 라인업 마저 구현하기
    */
 
   useEffect(() => {
@@ -155,7 +155,7 @@ export default function TeamOverView({
   console.groupEnd();
 
   const lastMatchFormation = lastMatchStartXI?.length
-    ? lastMatchStartXI[0]?.formation?.split("-")
+    ? lastMatchStartXI[0]?.formation?.split("-")?.reverse()
     : [];
 
   /** Last Recent 5 Matches */
@@ -640,11 +640,100 @@ export default function TeamOverView({
                 </div>
 
                 {/* start XI */}
-                <div className="absolute top-0 left-0 text-[12px] h-full w-full flex-col-reverse">
-                  <div className="flex-col-reverse h-full w-1/2 justify-around px-4 items-center">
+                <div className="absolute top-0 left-0 text-[12px] h-full w-full">
+                <div className="h-full w-full justify-around px-4 items-center flex-col">
+                    {/* players */}
+                    {lastMatchFormation?.map((line: number, index: number) => {
+                      const players = lastMatchStartXI[0]?.startXI?.slice(
+                        1,
+                        11
+                      )?.reverse();
+
+                      /** ex) 4-2-3-1
+                       *
+                       * when slice is (0,0) it always returns 0.
+                       *
+                       * index = 1 =>  startIndex = 0 , endIndex = 4
+                       * index = 2 =>  startIndex = 4 , endIndex = 6
+                       * index = 3 =>  startIndex = 6 , endIndex = 9
+                       * index = 4 =>  startIndex = 9 , endIndex = 10
+                       */
+                      const startIndex = lastMatchFormation
+                        .slice(0, index)
+                        .reduce((acc: number, players: string) => {
+                          return acc + parseInt(players);
+                        }, 0);
+
+                      const endIndex = startIndex + Number(line);
+
+                      const playersPerLine = players.slice(
+                        startIndex,
+                        endIndex
+                      );
+
+                      // console.log(playersPerLine);
+
+                      return (
+                        <div key={index} className="flex justify-around">
+                          {playersPerLine.map(
+                            (player: any, playerIndex: number) => {
+                              // player first name
+                              const playerName =
+                                player?.player.name?.split(" ")[1] ||
+                                player?.player.name;
+
+                              const playerStats =
+                                lastMatchPlayers[0]?.players?.find((v: any) => {
+                                  return v?.player?.id === player?.player?.id;
+                                });
+
+                              return (
+                                <div
+                                  key={playerIndex}
+                                  className="flex-col mx-0 sm:mx-6 md:mx-8 lg:mx-0 w-[80px] relative hover:opacity-70 cursor-pointer"
+                                  style={{ height: `${100 / (lastMatchFormation + 1)}%` }}
+                                  onClick={() =>
+                                    router.push(
+                                      `/${locale}/players/${
+                                        player?.player.id
+                                      }/${(player?.player.name).replace(
+                                        / /g,
+                                        "-"
+                                      )}`
+                                    )
+                                  }
+                                >
+                                  {/* player image */}
+                                  <Image
+                                    src={`https://media.api-sports.io/football/players/${player?.player.id}.png`}
+                                    alt={player?.player.name || "player image"}
+                                    width={45}
+                                    height={45}
+                                    className="rounded-full m-auto bg-white max-md:w-[40px]"
+                                  />
+                                  {/* player number and name */}
+                                  <div className="flex justify-center text-white mt-2">
+                                    {playerStats?.statistics[0].games
+                                      .captain && (
+                                      <div className="w-3 h-3 bg-white rounded-full flex justify-center items-center mr-1">
+                                        <h3 className="text-[8px] font-bold text-black">
+                                          C
+                                        </h3>
+                                      </div>
+                                    )}
+                                    <h3>{player?.player.number}</h3> &nbsp;
+                                    <h3>{playerName}</h3>
+                                  </div>
+                                </div>
+                              );
+                            }
+                          )}
+                        </div>
+                      );
+                    })}
                     {/* goal keeper */}
                     <div
-                      className="justify-center relative w-[80px] hover:opacity-70 cursor-pointer"
+                      className="w-full justify-center relative hover:opacity-70 cursor-pointer"
                       onClick={() =>
                         router.push(
                           `/${locale}/players/${
@@ -685,94 +774,6 @@ export default function TeamOverView({
                         </h3>
                       </div>
                     </div>
-                    {/* players */}
-                    {lastMatchFormation?.map((line: number, index: number) => {
-                      const players = lastMatchStartXI[0]?.startXI?.slice(
-                        1,
-                        11
-                      );
-
-                      /** ex) 4-2-3-1
-                       *
-                       * when slice is (0,0) it always returns 0.
-                       *
-                       * index = 1 =>  startIndex = 0 , endIndex = 4
-                       * index = 2 =>  startIndex = 4 , endIndex = 6
-                       * index = 3 =>  startIndex = 6 , endIndex = 9
-                       * index = 4 =>  startIndex = 9 , endIndex = 10
-                       */
-                      const startIndex = lastMatchFormation
-                        .slice(0, index)
-                        .reduce((acc: number, players: string) => {
-                          return acc + parseInt(players);
-                        }, 0);
-
-                      const endIndex = startIndex + Number(line);
-
-                      const playersPerLine = players.slice(
-                        startIndex,
-                        endIndex
-                      );
-
-                      // console.log(playersPerLine);
-
-                      return (
-                        <div key={index} className="flex ">
-                          {playersPerLine.map(
-                            (player: any, playerIndex: number) => {
-                              // player first name
-                              const playerName =
-                                player?.player.name?.split(" ")[1] ||
-                                player?.player.name;
-
-                              const playerStats =
-                                lastMatchPlayers[0]?.players?.find((v: any) => {
-                                  return v?.player?.id === player?.player?.id;
-                                });
-
-                              return (
-                                <div
-                                  key={playerIndex}
-                                  className="flex-col mx-0 sm:mx-6 md:mx-8 lg:mx-0 lg:my-0 xl:my-6 2xl:my-10 w-[80px] relative hover:opacity-70 cursor-pointer"
-                                  onClick={() =>
-                                    router.push(
-                                      `/${locale}/players/${
-                                        player?.player.id
-                                      }/${(player?.player.name).replace(
-                                        / /g,
-                                        "-"
-                                      )}`
-                                    )
-                                  }
-                                >
-                                  {/* player image */}
-                                  <Image
-                                    src={`https://media.api-sports.io/football/players/${player?.player.id}.png`}
-                                    alt={player?.player.name || "player image"}
-                                    width={45}
-                                    height={45}
-                                    className="rounded-full m-auto bg-white max-md:w-[40px]"
-                                  />
-                                  {/* player number and name */}
-                                  <div className="flex justify-center text-white mt-2">
-                                    {playerStats?.statistics[0].games
-                                      .captain && (
-                                      <div className="w-3 h-3 bg-white rounded-full flex justify-center items-center mr-1">
-                                        <h3 className="text-[8px] font-bold text-black">
-                                          C
-                                        </h3>
-                                      </div>
-                                    )}
-                                    <h3>{player?.player.number}</h3> &nbsp;
-                                    <h3>{playerName}</h3>
-                                  </div>
-                                </div>
-                              );
-                            }
-                          )}
-                        </div>
-                      );
-                    })}
                   </div>
                 </div>
               </div>
