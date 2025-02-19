@@ -1,7 +1,7 @@
 "use client";
 
 import { useAppDispatch, useAppSelector } from "@/lib/storeHooks";
-import { getTeamsStatistics } from "@/lib/features/teamsSlice";
+import { getPlayerStatsByTeam, getTeamsStatistics } from "@/lib/features/teamsSlice";
 import { getAllLeaguesByTeam, getStanding } from "@/lib/features/leagueSlice";
 import { getFixturesByTeam } from "@/lib/features/fixtureSlice";
 import { getFixtures } from "@/lib/features/fixtureSlice";
@@ -59,9 +59,7 @@ export default function TeamOverView({
   const { leagues, standing }: { leagues: any; standing: any } = useAppSelector(
     (state) => state.leagueSlice
   );
-  const { statics } = useAppSelector((state) => state.teamsSlice) as {
-    statics: Statics | null;
-  };
+  const { statics, playerStats }:{statics:any, playerStats:any} = useAppSelector((state) => state.teamsSlice);
   const { fixtureByTeam } = useAppSelector((state) => state.fixtureSlice);
   const { location }: any = useAppSelector((state) => state.locationSlice);
   const { fixture }: any = useAppSelector((state) => state.fixtureSlice);
@@ -106,6 +104,7 @@ export default function TeamOverView({
     //     dispatch(getFixtures({ id: lastMatch?.fixture?.id, timezone: locate }));
     //   });
     //   dispatch(getStanding({ id: nationalLeague, year: latestSeason }));
+    //   dispatch(getPlayerStatsByTeam({ team: id, season: latestSeason}));
     //   // dispatch(
     //   //   getTeamsStatistics({
     //   //     league: nationalLeague,
@@ -128,11 +127,14 @@ export default function TeamOverView({
   console.group("fixture");
   console.log(fixture);
   console.groupEnd();
+  console.group("playerStats");
+  console.log(playerStats);
+  console.groupEnd();
 
   // statics은 쓸데이터인지 확실하지 않음 아직
-  console.group("statics");
-  console.log(statics);
-  console.groupEnd();
+  // console.group("statics");
+  // console.log(statics);
+  // console.groupEnd();
 
   /** data for using */
 
@@ -224,16 +226,16 @@ export default function TeamOverView({
         {/* team title */}
         <div className="flex items-center">
           <Image
-            src={statics?.team?.logo || noimage}
-            alt={statics?.team?.name || "no home team"}
+            src={lastMatchStartXI[0]?.team?.logo || noimage}
+            alt={lastMatchStartXI[0]?.team?.name || "no home team"}
             width={35}
             height={35}
             style={{ width: "auto", height: "auto" }}
           />
           <div className="flex flex-col justify-center ml-4">
-            <h1 className="text-lg"> {statics?.team?.name}</h1>
+            <h1 className="text-lg"> {lastMatchStartXI[0]?.team?.name}</h1>
             <h1 className="text-sm mr-8 max-lg:mr-0 max-lg:text-xs text-custom-gray">
-              {statics?.league?.country}
+              {lastMatchStartXI?.league?.country}
             </h1>
           </div>
         </div>
@@ -255,9 +257,9 @@ export default function TeamOverView({
         </div>
       </div>
 
-      <div className="flex gap-4">
+      <div className="xl:flex gap-4">
         {/* last 5 matches , next match || ongoing match */}
-        <div className="w-7/12">
+        <div className="w-full xl:w-7/12">
           {/* team form */}
           {lastRecentMatches?.length > 0 && (
             <div className="w-full bg-white rounded-xl mt-6 px-8 py-5 dark:bg-custom-dark max-sm:px-4  border-slate-200 border border-solid dark:border-0">
@@ -609,7 +611,7 @@ export default function TeamOverView({
           )}
         </div>
         {/* last stratXI */}
-        <div className="w-5/12">
+        <div className="w-full xl:w-5/12">
           {fixture?.lineups && (
             <>
               {/* header */}
@@ -641,13 +643,12 @@ export default function TeamOverView({
 
                 {/* start XI */}
                 <div className="absolute top-0 left-0 text-[12px] h-full w-full">
-                <div className="h-full w-full justify-around px-4 items-center flex-col">
+                  <div className="h-full w-full justify-around px-4 items-center flex-col">
                     {/* players */}
                     {lastMatchFormation?.map((line: number, index: number) => {
-                      const players = lastMatchStartXI[0]?.startXI?.slice(
-                        1,
-                        11
-                      )?.reverse();
+                      const players = lastMatchStartXI[0]?.startXI
+                        ?.slice(1, 11)
+                        ?.reverse();
 
                       /** ex) 4-2-3-1
                        *
@@ -671,10 +672,16 @@ export default function TeamOverView({
                         endIndex
                       );
 
-                      // console.log(playersPerLine);
-
                       return (
-                        <div key={index} className="flex justify-around">
+                        <div
+                          key={index}
+                          className="flex justify-around items-center"
+                          style={{
+                            height: `${
+                              100 / (lastMatchFormation?.length + 1)
+                            }%`,
+                          }}
+                        >
                           {playersPerLine.map(
                             (player: any, playerIndex: number) => {
                               // player first name
@@ -688,10 +695,9 @@ export default function TeamOverView({
                                 });
 
                               return (
+                                // a player
                                 <div
                                   key={playerIndex}
-                                  className="flex-col mx-0 sm:mx-6 md:mx-8 lg:mx-0 w-[80px] relative hover:opacity-70 cursor-pointer"
-                                  style={{ height: `${100 / (lastMatchFormation + 1)}%` }}
                                   onClick={() =>
                                     router.push(
                                       `/${locale}/players/${
@@ -702,6 +708,7 @@ export default function TeamOverView({
                                       )}`
                                     )
                                   }
+                                  className="w-[80px] cursor-pointer hover:opacity-70"
                                 >
                                   {/* player image */}
                                   <Image
@@ -732,46 +739,57 @@ export default function TeamOverView({
                       );
                     })}
                     {/* goal keeper */}
-                    <div
-                      className="w-full justify-center relative hover:opacity-70 cursor-pointer"
-                      onClick={() =>
-                        router.push(
-                          `/${locale}/players/${
-                            fixture?.lineups[0].startXI[0].player.id
-                          }/${(fixture?.lineups[0].startXI[0].player.name).replace(
-                            / /g,
-                            "-"
-                          )}`
-                        )
-                      }
-                    >
-                      <Image
-                        src={`https://media.api-sports.io/football/players/${lastMatchStartXI[0]?.startXI[0]?.player?.id}.png`}
-                        alt={
-                          lastMatchStartXI[0]?.startXI[0]?.player?.name ||
-                          "keeper image"
-                        }
-                        width={45}
-                        height={45}
-                        className="rounded-full m-auto bg-white max-md:w-[40px]"
-                      />
 
-                      <div className="flex text-white mt-2 justify-center">
-                        {fixture?.players[0]?.players[0]?.statistics[0]?.games
-                          ?.captain && (
-                          <div className="w-3 h-3 bg-white rounded-full flex justify-center items-center mr-1">
-                            <h3 className="text-[8px] font-bold text-black">
-                              C
-                            </h3>
-                          </div>
-                        )}
-                        <h3>{lastMatchStartXI[0]?.startXI[0].player.number}</h3>{" "}
-                        &nbsp;
-                        <h3>
-                          {lastMatchStartXI[0]?.startXI[0].player?.name.split(
-                            " "
-                          )[1] || lastMatchStartXI[0]?.startXI[0]?.player?.name}
-                        </h3>
+                    <div
+                      className="flex justify-around items-center"
+                      style={{
+                        height: `${100 / (lastMatchFormation?.length + 1)}%`,
+                      }}
+                    >
+                      <div
+                        className="w-full justify-center relative hover:opacity-70 cursor-pointer"
+                        onClick={() =>
+                          router.push(
+                            `/${locale}/players/${
+                              fixture?.lineups[0].startXI[0].player.id
+                            }/${(fixture?.lineups[0].startXI[0].player.name).replace(
+                              / /g,
+                              "-"
+                            )}`
+                          )
+                        }
+                      >
+                        <Image
+                          src={`https://media.api-sports.io/football/players/${lastMatchStartXI[0]?.startXI[0]?.player?.id}.png`}
+                          alt={
+                            lastMatchStartXI[0]?.startXI[0]?.player?.name ||
+                            "keeper image"
+                          }
+                          width={45}
+                          height={45}
+                          className="rounded-full m-auto bg-white max-md:w-[40px]"
+                        />
+
+                        <div className="flex text-white mt-2 justify-center">
+                          {fixture?.players[0]?.players[0]?.statistics[0]?.games
+                            ?.captain && (
+                            <div className="w-3 h-3 bg-white rounded-full flex justify-center items-center mr-1">
+                              <h3 className="text-[8px] font-bold text-black">
+                                C
+                              </h3>
+                            </div>
+                          )}
+                          <h3>
+                            {lastMatchStartXI[0]?.startXI[0].player.number}
+                          </h3>{" "}
+                          &nbsp;
+                          <h3>
+                            {lastMatchStartXI[0]?.startXI[0].player?.name.split(
+                              " "
+                            )[1] ||
+                              lastMatchStartXI[0]?.startXI[0]?.player?.name}
+                          </h3>
+                        </div>
                       </div>
                     </div>
                   </div>
