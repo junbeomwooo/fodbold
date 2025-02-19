@@ -3,33 +3,6 @@ import axios, { AxiosError } from "axios";
 
 const url = "https://v3.football.api-sports.io";
 
-
-export const getPlayerStatsByTeam = createAsyncThunk(
-  "teamsSlice/getPlayerStatsByTeam",
-  async ({ team, season}: {  team: number ,season:number}, { rejectWithValue }) => {
-    let result = null;
-
-    try {
-      const response = await axios.get(`${url}/players?season=${season}&team=${team}`, {
-        headers: {
-          "x-rapidapi-host": "v3.football.api-sports.io",
-          "x-rapidapi-key": `${process.env.NEXT_PUBLIC_FOOTBALL_API_KEY}`,
-        },
-      });
-
-      console.log(response);
-      result = response?.data?.response;
-    } catch (err) {
-      const axiosErr = err as AxiosError;
-      console.group("getPlayerStatsByTeam Error");
-      result = rejectWithValue(axiosErr.response);
-      console.groupEnd();
-    }
-
-    return result;
-  }
-);
-
 export const getTeamsStatistics = createAsyncThunk(
   "teamsSlice/getTeamsStatistics",
   async ({ league, season ,team}: { league: number, season:number, team: number }, { rejectWithValue }) => {
@@ -71,13 +44,6 @@ export const teamsSlice = createSlice({
       getTeamsStatistics.fulfilled,
       (state, { payload }: { payload: any }) => {
         state.statics = payload;
-      }
-    );
-
-    builder.addCase(
-      getPlayerStatsByTeam.fulfilled,
-      (state, { payload }: { payload: any }) => {
-        state.playerStats = payload;
       }
     );
   },

@@ -1,7 +1,7 @@
 "use client";
 
 import { useAppDispatch, useAppSelector } from "@/lib/storeHooks";
-import { getPlayerStatsByTeam, getTeamsStatistics } from "@/lib/features/teamsSlice";
+import { getTeamsStatistics } from "@/lib/features/teamsSlice";
 import { getAllLeaguesByTeam, getStanding } from "@/lib/features/leagueSlice";
 import { getFixturesByTeam } from "@/lib/features/fixtureSlice";
 import { getFixtures } from "@/lib/features/fixtureSlice";
@@ -59,7 +59,8 @@ export default function TeamOverView({
   const { leagues, standing }: { leagues: any; standing: any } = useAppSelector(
     (state) => state.leagueSlice
   );
-  const { statics, playerStats }:{statics:any, playerStats:any} = useAppSelector((state) => state.teamsSlice);
+  const { statics, playerStats }: { statics: any; playerStats: any } =
+    useAppSelector((state) => state.teamsSlice);
   const { fixtureByTeam } = useAppSelector((state) => state.fixtureSlice);
   const { location }: any = useAppSelector((state) => state.locationSlice);
   const { fixture }: any = useAppSelector((state) => state.fixtureSlice);
@@ -81,38 +82,40 @@ export default function TeamOverView({
 
   /**
    * 1. 라인업 마저 구현하기
+   * 선수 스탯 데이터 가져왔으니 라인업에 업데이트 시킬것
    */
 
   useEffect(() => {
-    // dispatch(getAllLeaguesByTeam({ team: id })).then(({ payload }) => {
-    //   const nationalLeague = payload[0]?.league?.id;
-    //   const latestSeason = payload[0]?.seasons?.at(-1)?.year;
-    //   dispatch(
-    //     getFixturesByTeam({ team: id, season: latestSeason, timezone: locate })
-    //   ).then(({ payload }) => {
-    //     // to get latest match data
-    //     const lastMatch = (payload ?? [])
-    //       .filter((match: any) =>
-    //         ["FT", "PEN", "AET"].includes(match.fixture.status.short)
-    //       )
-    //       .sort(
-    //         (a: any, b: any) =>
-    //           new Date(b?.fixture?.date).getTime() -
-    //           new Date(a?.fixture?.date).getTime()
-    //       )
-    //       .at(0);
-    //     dispatch(getFixtures({ id: lastMatch?.fixture?.id, timezone: locate }));
-    //   });
-    //   dispatch(getStanding({ id: nationalLeague, year: latestSeason }));
-    //   dispatch(getPlayerStatsByTeam({ team: id, season: latestSeason}));
-    //   // dispatch(
-    //   //   getTeamsStatistics({
-    //   //     league: nationalLeague,
-    //   //     season: latestSeason,
-    //   //     team: id,
-    //   //   })
-    //   // );
-    // });
+    dispatch(getAllLeaguesByTeam({ team: id })).then(({ payload }) => {
+      const nationalLeague = payload[0]?.league?.id;
+      const latestSeason = payload[0]?.seasons?.at(-1)?.year;
+      dispatch(
+        getFixturesByTeam({ team: id, season: latestSeason, timezone: locate })
+      ).then(({ payload }) => {
+        // to get latest match data
+        const lastMatch = (payload ?? [])
+          .filter((match: any) => {
+            
+            return match.league.id === nationalLeague &&
+            ["FT", "PEN", "AET"].includes(match.fixture.status.short);
+          })
+          .sort(
+            (a: any, b: any) =>
+              new Date(b?.fixture?.date).getTime() -
+              new Date(a?.fixture?.date).getTime()
+          )
+          .at(0);
+        dispatch(getFixtures({ id: lastMatch?.fixture?.id, timezone: locate }));
+      });
+      dispatch(getStanding({ id: nationalLeague, year: latestSeason }));
+      // dispatch(
+      //   getTeamsStatistics({
+      //     league: nationalLeague,
+      //     season: latestSeason,
+      //     team: id,
+      //   })
+      // );
+    });
   }, [dispatch, id, locate]);
 
   console.group("leagues");
@@ -226,16 +229,29 @@ export default function TeamOverView({
         {/* team title */}
         <div className="flex items-center">
           <Image
-            src={lastMatchStartXI[0]?.team?.logo || noimage}
-            alt={lastMatchStartXI[0]?.team?.name || "no home team"}
+            src={
+              lastMatchStartXI?.length > 0
+                ? lastMatchStartXI[0]?.team?.logo
+                : noimage
+            }
+            alt={
+              lastMatchStartXI?.length > 0
+                ? lastMatchStartXI[0]?.team?.name
+                : "no home team"
+            }
             width={35}
             height={35}
             style={{ width: "auto", height: "auto" }}
           />
           <div className="flex flex-col justify-center ml-4">
-            <h1 className="text-lg"> {lastMatchStartXI[0]?.team?.name}</h1>
+            <h1 className="text-lg">
+              {" "}
+              {lastMatchStartXI?.length > 0
+                ? lastMatchStartXI[0]?.team?.name
+                : null}
+            </h1>
             <h1 className="text-sm mr-8 max-lg:mr-0 max-lg:text-xs text-custom-gray">
-              {lastMatchStartXI?.league?.country}
+              {leagues?.length > 0 ? lastMatchStartXI?.league?.country : null}
             </h1>
           </div>
         </div>
