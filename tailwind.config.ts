@@ -88,6 +88,7 @@ const config = {
         "max-lg": { max: "1024px" },
         "max-xl": { max: "1280px" },
         "max-2xl": { max: "1536px" },
+        "mlg": '72rem'
       },
       fontSize: {
         'xxs' : '10px',

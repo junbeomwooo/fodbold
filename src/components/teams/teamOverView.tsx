@@ -1,19 +1,18 @@
 "use client";
 
+// redux
 import { useAppDispatch, useAppSelector } from "@/lib/storeHooks";
 import { getTeamsStatistics } from "@/lib/features/teamsSlice";
 import { getAllLeaguesByTeam, getStanding } from "@/lib/features/leagueSlice";
 import { getFixturesByTeam } from "@/lib/features/fixtureSlice";
 import { getFixtures } from "@/lib/features/fixtureSlice";
+
+// format url function
 import FormatMatchDetailURL from "@/lib/formatMatchDetailURL";
 import FormatLeagueOrTeamName from "@/lib/formatLeagueOrTeamName";
 import FormatMatchDate from "@/lib/formatMatchDate";
 
-import lightFieldHalf from "@/../public/img/lightfieldHalf.png";
-import darkFieldHalf from "@/../public/img/darkfieldHalf.png";
-
-import noimage from "@/../public/img/noimage.png";
-
+// ...
 import { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
@@ -23,7 +22,18 @@ import { useRouter } from "next/navigation";
 import moment from "moment-timezone";
 import { motion, AnimatePresence } from "motion/react";
 import { useTheme } from "next-themes";
+
+// Images
 import undefined from "@/../public/img/undefined.png";
+import { FaArrowCircleLeft } from "react-icons/fa";
+import { PiSoccerBallLight } from "react-icons/pi";
+import MissedPenalty from "@/../public/img/missedPenalty.png";
+import Shoes from "@/../public/img/soccershoes.png";
+import lightFieldHalf from "@/../public/img/lightfieldHalf.png";
+import darkFieldHalf from "@/../public/img/darkfieldHalf.png";
+import noimage from "@/../public/img/noimage.png";
+import Saved from "@/../public/img/saved.png";
+import arrow from "../../../public/img/arrow.png";
 
 /** for statics */
 interface Team {
@@ -61,7 +71,7 @@ export default function TeamOverView({
   );
   const { statics, playerStats }: { statics: any; playerStats: any } =
     useAppSelector((state) => state.teamsSlice);
-  const { fixtureByTeam } = useAppSelector((state) => state.fixtureSlice);
+  const { fixtureByTeam }: any = useAppSelector((state) => state.fixtureSlice);
   const { location }: any = useAppSelector((state) => state.locationSlice);
   const { fixture }: any = useAppSelector((state) => state.fixtureSlice);
 
@@ -78,7 +88,6 @@ export default function TeamOverView({
   const { theme } = useTheme();
 
   // http://localhost:3000/en/teams/47/Tottenham/overview
-  // http://localhost:3000/en/teams/1577/Al%20Ahly/overview
 
   /**
    * 1. 라인업 마저 구현하기
@@ -95,7 +104,6 @@ export default function TeamOverView({
         // to get latest match data
         const lastMatch = (payload ?? [])
           .filter((match: any) => {
-            
             return match.league.id === nationalLeague &&
             ["FT", "PEN", "AET"].includes(match.fixture.status.short);
           })
@@ -129,9 +137,6 @@ export default function TeamOverView({
   console.groupEnd();
   console.group("fixture");
   console.log(fixture);
-  console.groupEnd();
-  console.group("playerStats");
-  console.log(playerStats);
   console.groupEnd();
 
   // statics은 쓸데이터인지 확실하지 않음 아직
@@ -214,6 +219,11 @@ export default function TeamOverView({
   // State value to change between match time and match points when the game is ongoing
   const [isPoint, setIsPoint] = useState(true);
 
+  // Variable for substitution event on this fixture
+  const substitutedPlayer = fixture?.events?.filter((player: any) => {
+    return player?.type === "subst";
+  });
+
   useEffect(() => {
     const interval = setInterval(() => {
       setIsPoint((prev) => !prev); // match goals <-> match time
@@ -221,6 +231,48 @@ export default function TeamOverView({
 
     return () => clearInterval(interval); // clear Interval when componets is unmounted
   }, []);
+
+  /** pagenation */
+
+  // 1. find index for today date or closest date
+  const closestIndex = useMemo(() => {
+    const today = moment();
+    return (
+      fixtureByTeam?.findIndex((match:any) => {
+        // find same date or after date 
+        return moment(match?.fixture?.date).isSameOrAfter(today, "day") || 0;
+      })
+    )
+  },[fixtureByTeam])
+
+  // 2. state value for pagenation
+  const [startIndex, setStartIndex] = useState(
+    Math.max(0, closestIndex - (closestIndex % 5))
+  )
+  const matchesPerPage = 5;
+  const totalPages = Math.ceil(fixtureByTeam?.length / matchesPerPage);
+  const currentPage = Math.floor(startIndex / matchesPerPage);
+
+
+  // 3. match data for current page
+  const displayedMatches = fixtureByTeam?.slice(
+    startIndex,
+    startIndex + matchesPerPage
+  );
+
+  // 4. Page movement function
+  const moveNext = () => {
+    if (startIndex + matchesPerPage < fixtureByTeam?.length) {
+      setStartIndex(startIndex + matchesPerPage);
+    }
+  };
+
+  const movePrev = () => {
+    if (startIndex - matchesPerPage >= 0) {
+      setStartIndex(startIndex - matchesPerPage);
+    }
+  };
+
 
   return (
     <div className="w-full">
@@ -273,9 +325,9 @@ export default function TeamOverView({
         </div>
       </div>
 
-      <div className="xl:flex gap-4">
+      <div className="mlg:flex gap-4">
         {/* last 5 matches , next match || ongoing match */}
-        <div className="w-full xl:w-7/12">
+        <div className="w-full mlg:w-8/12">
           {/* team form */}
           {lastRecentMatches?.length > 0 && (
             <div className="w-full bg-white rounded-xl mt-6 px-8 py-5 dark:bg-custom-dark max-sm:px-4  border-slate-200 border border-solid dark:border-0">
@@ -626,8 +678,8 @@ export default function TeamOverView({
             </>
           )}
         </div>
-        {/* last stratXI */}
-        <div className="w-full xl:w-5/12">
+        {/* last stratXI, upcoming fixture */}
+        <div className="w-full mlg:w-4/12">
           {fixture?.lineups && (
             <>
               {/* header */}
@@ -640,9 +692,11 @@ export default function TeamOverView({
                       width={20}
                       height={20}
                     />
-                    <h1 className="text-base">Season stats</h1>
+                    <h1 className="text-base">Last starting XI</h1>
                   </div>
-                  <h1 className="text-xs text-custom-gray">Last starting XI</h1>
+                  <h1 className="text-xs text-custom-gray">
+                    {fixture?.league?.name}
+                  </h1>
                 </div>
               </div>
               {/* feild */}
@@ -724,7 +778,7 @@ export default function TeamOverView({
                                       )}`
                                     )
                                   }
-                                  className="w-[80px] cursor-pointer hover:opacity-70"
+                                  className="w-[80px] cursor-pointer hover:opacity-70 relative"
                                 >
                                   {/* player image */}
                                   <Image
@@ -747,6 +801,120 @@ export default function TeamOverView({
                                     <h3>{player?.player.number}</h3> &nbsp;
                                     <h3>{playerName}</h3>
                                   </div>
+
+                                  {/* player stats */}
+                                  <>
+                                    {/* 선수 평점 */}
+                                    {playerStats?.statistics[0].games.rating ? (
+                                      <div
+                                        className="absolute w-7 h-[18px] right-[4px] top-[-4px] rounded-full flex items-center justify-center text-white"
+                                        style={{
+                                          backgroundColor:
+                                            parseInt(
+                                              playerStats?.statistics[0].games
+                                                .rating
+                                            ) >= 9
+                                              ? "#4389f9"
+                                              : parseInt(
+                                                  playerStats?.statistics[0]
+                                                    .games.rating
+                                                ) >= 7
+                                              ? "#22B268"
+                                              : "#EF8022",
+                                        }}
+                                      >
+                                        <h3>
+                                          {
+                                            playerStats?.statistics[0].games
+                                              .rating
+                                          }
+                                        </h3>
+                                      </div>
+                                    ) : (
+                                      <></>
+                                    )}
+
+                                    {/* 교체 */}
+                                    {substitutedPlayer?.some((player: any) => {
+                                      return (
+                                        // The values of the variables differ for each match data, so the OR operator is used to return true if either one matches.
+                                        player?.assist?.id ===
+                                          playerStats?.player?.id ||
+                                        player?.player?.id ===
+                                          playerStats?.player?.id
+                                      );
+                                    }) ? (
+                                      <div className="absolute w-4 h-4 bg-white rounded-full left-3 top-[-5px] flex items-center justify-center">
+                                        <h1 className="absolute mb-7 text-white text-[10px] font-medium">
+                                          {
+                                            playerStats?.statistics[0].games
+                                              .minutes
+                                          }
+                                          &apos;
+                                        </h1>
+                                        <FaArrowCircleLeft className=" text-red-500 w-3 h-3" />
+                                      </div>
+                                    ) : (
+                                      <></>
+                                    )}
+
+                                    {/* 카드 */}
+                                    {playerStats?.statistics[0].cards.red ||
+                                    playerStats?.statistics[0].cards.yellow ? (
+                                      <div
+                                        className="absolute w-4 h-4 left-[7px] top-3 rounded-full"
+                                        style={{
+                                          backgroundColor: playerStats
+                                            ?.statistics[0].cards.red
+                                            ? "#EF4444"
+                                            : "#FDE046",
+                                        }}
+                                      ></div>
+                                    ) : (
+                                      <></>
+                                    )}
+
+                                    {/* 골 */}
+                                    {playerStats?.statistics[0].goals.total ? (
+                                      <div className="w-4 h-4 right-3 absolute bg-white rounded-full bottom-4 flex items-center justify-center">
+                                        <PiSoccerBallLight className="w-3 h-3 dark:text-black" />
+                                      </div>
+                                    ) : (
+                                      <></>
+                                    )}
+
+                                    {/* 패널티 실축 */}
+                                    {playerStats?.statistics[0].penalty
+                                      .missed ? (
+                                      <div className="w-4 h-4 right-3 absolute bg-white rounded-full bottom-[35px] flex items-center justify-center">
+                                        <Image
+                                          src={MissedPenalty}
+                                          alt="penalty missed"
+                                          width={15}
+                                          height={15}
+                                          className="w-3 h-3"
+                                        />
+                                      </div>
+                                    ) : (
+                                      <></>
+                                    )}
+
+                                    {/* 어시스트 */}
+                                    {playerStats?.statistics[0].goals
+                                      .assists ? (
+                                      <div className="w-4 h-4 left-3 absolute bg-white rounded-full bottom-4 flex items-center justify-center">
+                                        <Image
+                                          src={Shoes}
+                                          alt="assist"
+                                          width={15}
+                                          height={15}
+                                          className="w-3 h-3 -rotate-12"
+                                        />
+                                      </div>
+                                    ) : (
+                                      <></>
+                                    )}
+                                  </>
                                 </div>
                               );
                             }
@@ -755,7 +923,6 @@ export default function TeamOverView({
                       );
                     })}
                     {/* goal keeper */}
-
                     <div
                       className="flex justify-around items-center"
                       style={{
@@ -763,7 +930,7 @@ export default function TeamOverView({
                       }}
                     >
                       <div
-                        className="w-full justify-center relative hover:opacity-70 cursor-pointer"
+                        className="w-[80px] justify-center relative hover:opacity-70 cursor-pointer"
                         onClick={() =>
                           router.push(
                             `/${locale}/players/${
@@ -805,6 +972,123 @@ export default function TeamOverView({
                             )[1] ||
                               lastMatchStartXI[0]?.startXI[0]?.player?.name}
                           </h3>
+                          {/* 골키퍼 스탯 */}
+                          <>
+                            {/* 골키퍼 평점 */}
+                            {fixture?.players[1]?.players[0]?.statistics[0]
+                              ?.games?.rating ? (
+                              <div
+                                className="absolute w-7 h-[18px] right-[4px] top-[-4px] rounded-full flex items-center justify-center text-white"
+                                style={{
+                                  backgroundColor:
+                                    parseInt(
+                                      fixture?.players[0].players[0]
+                                        .statistics[0].games.rating
+                                    ) >= 9
+                                      ? "#4389f9"
+                                      : parseInt(
+                                          fixture?.players[0].players[0]
+                                            .statistics[0].games.rating
+                                        ) >= 7
+                                      ? "#22B268"
+                                      : "#EF8022",
+                                }}
+                              >
+                                <h3>
+                                  {
+                                    fixture?.players[0].players[0].statistics[0]
+                                      .games.rating
+                                  }
+                                </h3>
+                              </div>
+                            ) : (
+                              <></>
+                            )}
+
+                            {/* 골키퍼 교체 */}
+                            {substitutedPlayer?.some((player: any) => {
+                              return (
+                                // The values of the variables differ for each match data, so the OR operator is used to return true if either one matches.
+                                player?.assist?.id ===
+                                  fixture?.lineups[1]?.startXI[0]?.player?.id ||
+                                player?.player?.id ===
+                                  fixture?.lineups[1]?.startXI[0]?.player?.id
+                              );
+                            }) ? (
+                              <div className="absolute w-4 h-4 bg-white rounded-full left-3 top-[-5px] flex items-center justify-center">
+                                <h1 className="absolute mb-7 text-white text-[10px] font-medium">
+                                  {
+                                    fixture?.players[0].players[0].statistics[0]
+                                      .games.minutes
+                                  }
+                                  &apos;
+                                </h1>
+                                <FaArrowCircleLeft className=" text-red-500 w-3 h-3" />
+                              </div>
+                            ) : (
+                              <></>
+                            )}
+
+                            {/* 골키퍼 카드 */}
+                            {fixture?.players[1]?.players[0]?.statistics[0]
+                              ?.cards?.red ||
+                            fixture?.players[0]?.players[0]?.statistics[0]
+                              ?.cards?.yellow ? (
+                              <div
+                                className="absolute w-4 h-4 left-[7px] top-3 rounded-full"
+                                style={{
+                                  backgroundColor: fixture?.players[0]
+                                    .players[0].statistics[0].cards.red
+                                    ? "#EF4444"
+                                    : "#FDE046",
+                                }}
+                              ></div>
+                            ) : (
+                              <></>
+                            )}
+
+                            {/* 골키퍼 골 */}
+                            {fixture?.players[1]?.players[0]?.statistics[0]
+                              ?.goals?.total ? (
+                              <div className="w-4 h-4 right-3 absolute bg-white rounded-full bottom-4 flex items-center justify-center">
+                                <PiSoccerBallLight className="w-3 h-3 dark:text-black" />
+                              </div>
+                            ) : (
+                              <></>
+                            )}
+
+                            {/* 골키퍼 선방 */}
+                            {fixture?.players[1]?.players[0]?.statistics[0]
+                              ?.penalty?.saved ? (
+                              <div className="w-4 h-4 right-3 absolute bg-white rounded-full bottom-[35px] flex items-center justify-center">
+                                <Image
+                                  src={Saved}
+                                  alt="penalty saved"
+                                  width={15}
+                                  height={15}
+                                  className="w-3 h-3"
+                                />
+                              </div>
+                            ) : (
+                              <></>
+                            )}
+
+                            {/* 골키퍼 어시스트 */}
+                            {fixture?.players[1]?.players[0]?.statistics[0]
+                              ?.goals?.assists ? (
+                              <div className="w-4 h-4 left-3 absolute bg-white rounded-full bottom-4 flex items-center justify-center">
+                                <Image
+                                  src={Shoes}
+                                  alt="assist"
+                                  width={15}
+                                  height={15}
+                                  className="w-3 h-3 -rotate-12"
+                                />
+                              </div>
+                            ) : (
+                              <></>
+                            )}
+                          </>
                         </div>
                       </div>
                     </div>
@@ -812,6 +1096,38 @@ export default function TeamOverView({
                 </div>
               </div>
             </>
+          )}
+
+          {fixtureByTeam?.length > 0 && (
+            <div className="w-full bg-white rounded-xl mt-6 px-8 py-5 dark:bg-custom-dark max-sm:px-4  border-slate-200 border border-solid dark:border-0 flex">
+              <div className="flex w-full items-center justify-between">
+                {/* left button */}
+                <div className="w-7 h-7 rounded-full bg-slate-200 flex justify-center items-center hover:cursor-pointer  hover:bg-slate-400 dark:bg-custom-gray3 dark:hover:bg-custom-gray">
+                  <Image
+                    src={arrow}
+                    alt="arrow"
+                    width={11}
+                    height={11}
+                    style={{ width: "11px", height: "11px" }}
+                    className="rotate-90 dark:invert"
+                  />
+                </div>
+
+                <h1 className="text-sm">Fixtures</h1>
+
+                {/* right button */}
+                <div className="w-7 h-7 rounded-full bg-slate-200 flex justify-center items-center hover:cursor-pointer  hover:bg-slate-400 dark:bg-custom-gray3 dark:hover:bg-custom-gray">
+                  <Image
+                    src={arrow}
+                    alt="arrow"
+                    width={11}
+                    height={11}
+                    style={{ width: "11px", height: "11px" }}
+                    className="rotate-270 dark:invert"
+                  />
+                </div>
+              </div>
+            </div>
           )}
         </div>
       </div>
