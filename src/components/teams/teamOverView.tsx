@@ -95,35 +95,35 @@ export default function TeamOverView({
    */
 
   useEffect(() => {
-    dispatch(getAllLeaguesByTeam({ team: id })).then(({ payload }) => {
-      const nationalLeague = payload[0]?.league?.id;
-      const latestSeason = payload[0]?.seasons?.at(-1)?.year;
-      dispatch(
-        getFixturesByTeam({ team: id, season: latestSeason, timezone: locate })
-      ).then(({ payload }) => {
-        // to get latest match data
-        const lastMatch = (payload ?? [])
-          .filter((match: any) => {
-            return match.league.id === nationalLeague &&
-            ["FT", "PEN", "AET"].includes(match.fixture.status.short);
-          })
-          .sort(
-            (a: any, b: any) =>
-              new Date(b?.fixture?.date).getTime() -
-              new Date(a?.fixture?.date).getTime()
-          )
-          .at(0);
-        dispatch(getFixtures({ id: lastMatch?.fixture?.id, timezone: locate }));
-      });
-      dispatch(getStanding({ id: nationalLeague, year: latestSeason }));
-      // dispatch(
-      //   getTeamsStatistics({
-      //     league: nationalLeague,
-      //     season: latestSeason,
-      //     team: id,
-      //   })
-      // );
-    });
+    // dispatch(getAllLeaguesByTeam({ team: id })).then(({ payload }) => {
+    //   const nationalLeague = payload[0]?.league?.id;
+    //   const latestSeason = payload[0]?.seasons?.at(-1)?.year;
+    //   dispatch(
+    //     getFixturesByTeam({ team: id, season: latestSeason, timezone: locate })
+    //   ).then(({ payload }) => {
+    //     // to get latest match data
+    //     const lastMatch = (payload ?? [])
+    //       .filter((match: any) => {
+    //         return match.league.id === nationalLeague &&
+    //         ["FT", "PEN", "AET"].includes(match.fixture.status.short);
+    //       })
+    //       .sort(
+    //         (a: any, b: any) =>
+    //           new Date(b?.fixture?.date).getTime() -
+    //           new Date(a?.fixture?.date).getTime()
+    //       )
+    //       .at(0);
+    //     dispatch(getFixtures({ id: lastMatch?.fixture?.id, timezone: locate }));
+    //   });
+    //   dispatch(getStanding({ id: nationalLeague, year: latestSeason }));
+    //   // dispatch(
+    //   //   getTeamsStatistics({
+    //   //     league: nationalLeague,
+    //   //     season: latestSeason,
+    //   //     team: id,
+    //   //   })
+    //   // );
+    // });
   }, [dispatch, id, locate]);
 
   console.group("leagues");
@@ -224,35 +224,40 @@ export default function TeamOverView({
     return player?.type === "subst";
   });
 
+  // Show match scores and game time alternately every 2.5 seconds.
   useEffect(() => {
     const interval = setInterval(() => {
       setIsPoint((prev) => !prev); // match goals <-> match time
-    }, 2500); // it updates useState value every 2.5 seconds
+    }, 2500);
 
     return () => clearInterval(interval); // clear Interval when componets is unmounted
   }, []);
 
   /** pagenation */
 
-  // 1. find index for today date or closest date
+  // 1. find index for today date or closest date (deafult value)
   const closestIndex = useMemo(() => {
     const today = moment();
-    return (
-      fixtureByTeam?.findIndex((match:any) => {
-        // find same date or after date 
-        return moment(match?.fixture?.date).isSameOrAfter(today, "day") || 0;
-      })
-    )
-  },[fixtureByTeam])
+    return fixtureByTeam?.findIndex((match: any) => {
+      // find same date or after date
+      return moment(match?.fixture?.date).isSameOrAfter(today, "day") || 0;
+    });
+  }, [fixtureByTeam]);
+
+  console.log(closestIndex);
 
   // 2. state value for pagenation
-  const [startIndex, setStartIndex] = useState(
-    Math.max(0, closestIndex - (closestIndex % 5))
-  )
+  const [startIndex, setStartIndex] = useState(0);
+
+  useEffect(() => {
+    if (Number.isFinite(closestIndex)) {
+      setStartIndex(Math.max(0, closestIndex - (closestIndex % 5)));
+    }
+  }, [closestIndex]);
+
   const matchesPerPage = 5;
   const totalPages = Math.ceil(fixtureByTeam?.length / matchesPerPage);
   const currentPage = Math.floor(startIndex / matchesPerPage);
-
 
   // 3. match data for current page
   const displayedMatches = fixtureByTeam?.slice(
@@ -273,6 +278,7 @@ export default function TeamOverView({
     }
   };
 
+  console.log(displayedMatches);
 
   return (
     <div className="w-full">
@@ -678,7 +684,7 @@ export default function TeamOverView({
             </>
           )}
         </div>
-        {/* last stratXI, upcoming fixture */}
+        {/* last stratXI, fixture pagenation */}
         <div className="w-full mlg:w-4/12">
           {fixture?.lineups && (
             <>
@@ -1098,8 +1104,10 @@ export default function TeamOverView({
             </>
           )}
 
+          {/* fixture pagenation */}
           {fixtureByTeam?.length > 0 && (
-            <div className="w-full bg-white rounded-xl mt-6 px-8 py-5 dark:bg-custom-dark max-sm:px-4  border-slate-200 border border-solid dark:border-0 flex">
+            <div className="w-full bg-white rounded-xl mt-6 px-8 py-5 dark:bg-custom-dark max-sm:px-4  border-slate-200 border border-solid dark:border-0">
+              {/* fixture header */}
               <div className="flex w-full items-center justify-between">
                 {/* left button */}
                 <div className="w-7 h-7 rounded-full bg-slate-200 flex justify-center items-center hover:cursor-pointer  hover:bg-slate-400 dark:bg-custom-gray3 dark:hover:bg-custom-gray">
@@ -1127,6 +1135,29 @@ export default function TeamOverView({
                   />
                 </div>
               </div>
+
+              {/* fixtures */}
+              <ul className="w-full">
+                {displayedMatches?.map((v: any, i: number) => {
+                  // const matchDate = FormatMatchDate(v?.fixture?.date,locale);
+                  // console.log(matchDate);
+
+                  return (
+                    <li key={i} className="w-full">
+                      <div className="w-full flex justify-between text-xs text-custom-gray">
+                        <h4>
+                          {v?.fixture?.date}
+                        </h4>
+                        <div className="flex">
+                          <h4>
+                            {v?.league?.name}
+                          </h4>
+                        </div>
+                      </div>
+                    </li>
+                  );
+                })}
+              </ul>
             </div>
           )}
         </div>

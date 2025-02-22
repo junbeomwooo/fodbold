@@ -55,33 +55,33 @@ const FixturesOverView = ({ id, locale }: { id: number; locale: string }) => {
   /** useEffect  */
   // http://localhost:3000/en/matches/tottenham-vs-leicester/1208251
   useEffect(() => {
-    // const fetchData = async () => {
-    //   try {
-    //     const { payload } = await dispatch(
-    //       getFixtures({ id: id, timezone: locate })
-    //     );
-    //     await Promise.all([
-    //       dispatch(getInjuries({ id: id })),
-    //       dispatch(
-    //         getFixtruesByRound({
-    //           leagueID: payload?.league.id,
-    //           season: payload?.league.season,
-    //           round: payload?.league.round,
-    //         })
-    //       ),
-    //       dispatch(
-    //         getH2H({
-    //           homeID: payload?.teams.home.id,
-    //           awayID: payload?.teams.away.id,
-    //           timezone: locate,
-    //         })
-    //       ),
-    //     ]);
-    //   } catch (error) {
-    //     console.error("Error fetching data:", error);
-    //   }
-    // };
-    // fetchData();
+    const fetchData = async () => {
+      try {
+        const { payload } = await dispatch(
+          getFixtures({ id: id, timezone: locate })
+        );
+        await Promise.all([
+          dispatch(getInjuries({ id: id })),
+          dispatch(
+            getFixtruesByRound({
+              leagueID: payload?.league.id,
+              season: payload?.league.season,
+              round: payload?.league.round,
+            })
+          ),
+          dispatch(
+            getH2H({
+              homeID: payload?.teams.home.id,
+              awayID: payload?.teams.away.id,
+              timezone: locate,
+            })
+          ),
+        ]);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+    fetchData();
   }, [dispatch, id, locate]);
 
   /** data for using */
