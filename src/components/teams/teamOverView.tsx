@@ -10,7 +10,7 @@ import { getFixtures } from "@/lib/features/fixtureSlice";
 // format url function
 import FormatMatchDetailURL from "@/lib/formatMatchDetailURL";
 import FormatLeagueOrTeamName from "@/lib/formatLeagueOrTeamName";
-import FormatMatchDate from "@/lib/formatMatchDate";
+import UseFormatMatchDate from "@/lib/useFormatMatchDate";
 
 // ...
 import { useEffect, useMemo, useState } from "react";
@@ -90,40 +90,48 @@ export default function TeamOverView({
   // http://localhost:3000/en/teams/47/Tottenham/overview
 
   /**
-   * 1. 라인업 마저 구현하기
-   * 선수 스탯 데이터 가져왔으니 라인업에 업데이트 시킬것
+   * 1. UseFormatMatchDate에서의 에러 발생 해결하기.
+   * 이유는 모르겠는데 
+   * 
+   *   const nextMatchDateWithTime = UseFormatMatchDate(
+    upcomingMatch[0]?.fixture?.date,
+    locale
+  ); 
+  
+  에서는 잘 작동하는데 map함수 내부던 외부던 displayedMatches에 대해 UseFormatMatchDate 커스텀훅을 사용하면 계속 NextIntlClientProvider was not found.에러가 지속적으로 발생함
+
    */
 
   useEffect(() => {
-    // dispatch(getAllLeaguesByTeam({ team: id })).then(({ payload }) => {
-    //   const nationalLeague = payload[0]?.league?.id;
-    //   const latestSeason = payload[0]?.seasons?.at(-1)?.year;
-    //   dispatch(
-    //     getFixturesByTeam({ team: id, season: latestSeason, timezone: locate })
-    //   ).then(({ payload }) => {
-    //     // to get latest match data
-    //     const lastMatch = (payload ?? [])
-    //       .filter((match: any) => {
-    //         return match.league.id === nationalLeague &&
-    //         ["FT", "PEN", "AET"].includes(match.fixture.status.short);
-    //       })
-    //       .sort(
-    //         (a: any, b: any) =>
-    //           new Date(b?.fixture?.date).getTime() -
-    //           new Date(a?.fixture?.date).getTime()
-    //       )
-    //       .at(0);
-    //     dispatch(getFixtures({ id: lastMatch?.fixture?.id, timezone: locate }));
-    //   });
-    //   dispatch(getStanding({ id: nationalLeague, year: latestSeason }));
-    //   // dispatch(
-    //   //   getTeamsStatistics({
-    //   //     league: nationalLeague,
-    //   //     season: latestSeason,
-    //   //     team: id,
-    //   //   })
-    //   // );
-    // });
+    dispatch(getAllLeaguesByTeam({ team: id })).then(({ payload }) => {
+      const nationalLeague = payload[0]?.league?.id;
+      const latestSeason = payload[0]?.seasons?.at(-1)?.year;
+      dispatch(
+        getFixturesByTeam({ team: id, season: latestSeason, timezone: locate })
+      ).then(({ payload }) => {
+        // to get latest match data
+        const lastMatch = (payload ?? [])
+          .filter((match: any) => {
+            return match.league.id === nationalLeague &&
+            ["FT", "PEN", "AET"].includes(match.fixture.status.short);
+          })
+          .sort(
+            (a: any, b: any) =>
+              new Date(b?.fixture?.date).getTime() -
+              new Date(a?.fixture?.date).getTime()
+          )
+          .at(0);
+        dispatch(getFixtures({ id: lastMatch?.fixture?.id, timezone: locate }));
+      });
+      dispatch(getStanding({ id: nationalLeague, year: latestSeason }));
+      // dispatch(
+      //   getTeamsStatistics({
+      //     league: nationalLeague,
+      //     season: latestSeason,
+      //     team: id,
+      //   })
+      // );
+    });
   }, [dispatch, id, locate]);
 
   console.group("leagues");
@@ -211,7 +219,7 @@ export default function TeamOverView({
   const g = useTranslations("general");
 
   // Next match date and time
-  const nextMatchDateWithTime = FormatMatchDate(
+  const nextMatchDateWithTime = UseFormatMatchDate(
     upcomingMatch[0]?.fixture?.date,
     locale
   );
@@ -277,8 +285,6 @@ export default function TeamOverView({
       setStartIndex(startIndex - matchesPerPage);
     }
   };
-
-  console.log(displayedMatches);
 
   return (
     <div className="w-full">
@@ -1139,19 +1145,15 @@ export default function TeamOverView({
               {/* fixtures */}
               <ul className="w-full">
                 {displayedMatches?.map((v: any, i: number) => {
-                  // const matchDate = FormatMatchDate(v?.fixture?.date,locale);
+                  // const matchDate = UseFormatMatchDate(v?.fixture?.date, locale);
                   // console.log(matchDate);
 
                   return (
                     <li key={i} className="w-full">
                       <div className="w-full flex justify-between text-xs text-custom-gray">
-                        <h4>
-                          {v?.fixture?.date}
-                        </h4>
+                        <h4>{v?.fixture?.date}</h4>
                         <div className="flex">
-                          <h4>
-                            {v?.league?.name}
-                          </h4>
+                          <h4>{v?.league?.name}</h4>
                         </div>
                       </div>
                     </li>
