@@ -10,7 +10,7 @@ import { getFixtures } from "@/lib/features/fixtureSlice";
 // format url function
 import FormatMatchDetailURL from "@/lib/formatMatchDetailURL";
 import FormatLeagueOrTeamName from "@/lib/formatLeagueOrTeamName";
-import UseFormatMatchDate from "@/lib/useFormatMatchDate";
+import FormatMatchDate from "@/lib/formatMatchDate";
 
 // ...
 import { useEffect, useMemo, useState } from "react";
@@ -90,7 +90,7 @@ export default function TeamOverView({
   // http://localhost:3000/en/teams/47/Tottenham/overview
 
   /**
-   * 1. UseFormatMatchDate에서의 에러 발생 해결하기.
+   * 1. FormatMatchDate에서의 에러 발생 해결하기.
    * 이유는 모르겠는데 
    * 
    *   const nextMatchDateWithTime = UseFormatMatchDate(
@@ -102,37 +102,37 @@ export default function TeamOverView({
 
    */
 
-  useEffect(() => {
-    dispatch(getAllLeaguesByTeam({ team: id })).then(({ payload }) => {
-      const nationalLeague = payload[0]?.league?.id;
-      const latestSeason = payload[0]?.seasons?.at(-1)?.year;
-      dispatch(
-        getFixturesByTeam({ team: id, season: latestSeason, timezone: locate })
-      ).then(({ payload }) => {
-        // to get latest match data
-        const lastMatch = (payload ?? [])
-          .filter((match: any) => {
-            return match.league.id === nationalLeague &&
-            ["FT", "PEN", "AET"].includes(match.fixture.status.short);
-          })
-          .sort(
-            (a: any, b: any) =>
-              new Date(b?.fixture?.date).getTime() -
-              new Date(a?.fixture?.date).getTime()
-          )
-          .at(0);
-        dispatch(getFixtures({ id: lastMatch?.fixture?.id, timezone: locate }));
-      });
-      dispatch(getStanding({ id: nationalLeague, year: latestSeason }));
-      // dispatch(
-      //   getTeamsStatistics({
-      //     league: nationalLeague,
-      //     season: latestSeason,
-      //     team: id,
-      //   })
-      // );
-    });
-  }, [dispatch, id, locate]);
+  // useEffect(() => {
+  //   dispatch(getAllLeaguesByTeam({ team: id })).then(({ payload }) => {
+  //     const nationalLeague = payload[0]?.league?.id;
+  //     const latestSeason = payload[0]?.seasons?.at(-1)?.year;
+  //     dispatch(
+  //       getFixturesByTeam({ team: id, season: latestSeason, timezone: locate })
+  //     ).then(({ payload }) => {
+  //       // to get latest match data
+  //       const lastMatch = (payload ?? [])
+  //         .filter((match: any) => {
+  //           return match.league.id === nationalLeague &&
+  //           ["FT", "PEN", "AET"].includes(match.fixture.status.short);
+  //         })
+  //         .sort(
+  //           (a: any, b: any) =>
+  //             new Date(b?.fixture?.date).getTime() -
+  //             new Date(a?.fixture?.date).getTime()
+  //         )
+  //         .at(0);
+  //       dispatch(getFixtures({ id: lastMatch?.fixture?.id, timezone: locate }));
+  //     });
+  //     dispatch(getStanding({ id: nationalLeague, year: latestSeason }));
+  //     // dispatch(
+  //     //   getTeamsStatistics({
+  //     //     league: nationalLeague,
+  //     //     season: latestSeason,
+  //     //     team: id,
+  //     //   })
+  //     // );
+  //   });
+  // }, [dispatch, id, locate]);
 
   console.group("leagues");
   console.log(leagues);
@@ -219,9 +219,10 @@ export default function TeamOverView({
   const g = useTranslations("general");
 
   // Next match date and time
-  const nextMatchDateWithTime = UseFormatMatchDate(
+  const nextMatchDateWithTime = FormatMatchDate(
     upcomingMatch[0]?.fixture?.date,
-    locale
+    locale,
+    d
   );
 
   // State value to change between match time and match points when the game is ongoing
@@ -285,6 +286,39 @@ export default function TeamOverView({
       setStartIndex(startIndex - matchesPerPage);
     }
   };
+
+
+  // example
+
+  // const example = [
+  //   {
+  //     fixture: {
+  //       date: "2025-02-21T14:00:00+00:00",
+  //     },
+  //   },
+  //   {
+  //     fixture: {
+  //       date: "2025-02-22T14:00:00+00:00",
+  //     },
+  //   },
+  //   {
+  //     fixture: {
+  //       date: "2025-02-23T14:00:00+00:00",
+  //     },
+  //   },
+  //   {
+  //     fixture: {
+  //       date: "2025-02-24T14:00:00+00:00",
+  //     },
+  //   },
+  //   {
+  //     fixture: {
+  //       date: "2025-02-25T14:00:00+00:00",
+  //     },
+  //   },
+  // ];
+
+  // console.log(example);
 
   return (
     <div className="w-full">
@@ -1145,7 +1179,7 @@ export default function TeamOverView({
               {/* fixtures */}
               <ul className="w-full">
                 {displayedMatches?.map((v: any, i: number) => {
-                  // const matchDate = UseFormatMatchDate(v?.fixture?.date, locale);
+                  // const matchDate = FormatMatchDate(v?.fixture?.date, locale, d);
                   // console.log(matchDate);
 
                   return (
@@ -1164,6 +1198,19 @@ export default function TeamOverView({
           )}
         </div>
       </div>
+
+      {/* example  */}
+      {/* <div>
+        {example?.map((v:any,i:number) => {
+          console.log(v)
+          const {date, time} = FormatMatchDate(v?.fixture?.date, locale, d);
+          console.log(date);
+          console.log(time);
+          return (
+            <h4 key={i}>{}</h4>
+          )
+        })}
+      </div> */}
     </div>
   );
 }
