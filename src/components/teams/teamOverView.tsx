@@ -89,19 +89,6 @@ export default function TeamOverView({
 
   // http://localhost:3000/en/teams/47/Tottenham/overview
 
-  /**
-   * 1. FormatMatchDate에서의 에러 발생 해결하기.
-   * 이유는 모르겠는데 
-   * 
-   *   const nextMatchDateWithTime = UseFormatMatchDate(
-    upcomingMatch[0]?.fixture?.date,
-    locale
-  ); 
-  
-  에서는 잘 작동하는데 map함수 내부던 외부던 displayedMatches에 대해 UseFormatMatchDate 커스텀훅을 사용하면 계속 NextIntlClientProvider was not found.에러가 지속적으로 발생함
-
-   */
-
   // useEffect(() => {
   //   dispatch(getAllLeaguesByTeam({ team: id })).then(({ payload }) => {
   //     const nationalLeague = payload[0]?.league?.id;
@@ -124,13 +111,13 @@ export default function TeamOverView({
   //       dispatch(getFixtures({ id: lastMatch?.fixture?.id, timezone: locate }));
   //     });
   //     dispatch(getStanding({ id: nationalLeague, year: latestSeason }));
-  //     // dispatch(
-  //     //   getTeamsStatistics({
-  //     //     league: nationalLeague,
-  //     //     season: latestSeason,
-  //     //     team: id,
-  //     //   })
-  //     // );
+  //     dispatch(
+  //       getTeamsStatistics({
+  //         league: nationalLeague,
+  //         season: latestSeason,
+  //         team: id,
+  //       })
+  //     );
   //   });
   // }, [dispatch, id, locate]);
 
@@ -147,10 +134,9 @@ export default function TeamOverView({
   console.log(fixture);
   console.groupEnd();
 
-  // statics은 쓸데이터인지 확실하지 않음 아직
-  // console.group("statics");
-  // console.log(statics);
-  // console.groupEnd();
+  console.group("statics");
+  console.log(statics);
+  console.groupEnd();
 
   /** data for using */
 
@@ -163,14 +149,6 @@ export default function TeamOverView({
     return Number(id) === team?.team?.id;
   });
 
-  // last match formation
-  console.group("lastMatchStartXI");
-  console.log(lastMatchStartXI);
-  console.groupEnd();
-
-  console.group("lastMatchPlayers");
-  console.log(lastMatchPlayers);
-  console.groupEnd();
 
   const lastMatchFormation = lastMatchStartXI?.length
     ? lastMatchStartXI[0]?.formation?.split("-")?.reverse()
@@ -197,6 +175,12 @@ export default function TeamOverView({
   const live = ["1H", "2H", "ET", "P", "LIVE", "HT", "BT"];
   // stopped by referee
   const stop = ["SUSP", "INT"];
+  //match finsiehd
+  const finish = ["FT", "AET", "PEN"];
+  // match cancled || postponed
+  const cancle = ["PST", "CANC", "ABD"];
+  // unearned win
+  const unearned = ["AWD", "WO"];
 
   /** Upcoming matches */
   const upcomingMatch = (fixtureByTeam ?? [])
@@ -244,16 +228,22 @@ export default function TeamOverView({
 
   /** pagenation */
 
+  const sortedFixtureByTeam = useMemo(() => {
+    return Array.isArray(fixtureByTeam)
+      ? [...fixtureByTeam].sort(
+          (a: any, b: any) => a?.fixture?.timestamp - b?.fixture?.timestamp
+        )
+      : [];
+  }, [fixtureByTeam]);
+
   // 1. find index for today date or closest date (deafult value)
   const closestIndex = useMemo(() => {
     const today = moment();
-    return fixtureByTeam?.findIndex((match: any) => {
+    return sortedFixtureByTeam?.findIndex((match: any) => {
       // find same date or after date
       return moment(match?.fixture?.date).isSameOrAfter(today, "day") || 0;
     });
-  }, [fixtureByTeam]);
-
-  console.log(closestIndex);
+  }, [sortedFixtureByTeam]);
 
   // 2. state value for pagenation
   const [startIndex, setStartIndex] = useState(0);
@@ -265,18 +255,16 @@ export default function TeamOverView({
   }, [closestIndex]);
 
   const matchesPerPage = 5;
-  const totalPages = Math.ceil(fixtureByTeam?.length / matchesPerPage);
-  const currentPage = Math.floor(startIndex / matchesPerPage);
 
   // 3. match data for current page
-  const displayedMatches = fixtureByTeam?.slice(
+  const displayedMatches = sortedFixtureByTeam?.slice(
     startIndex,
     startIndex + matchesPerPage
   );
 
   // 4. Page movement function
   const moveNext = () => {
-    if (startIndex + matchesPerPage < fixtureByTeam?.length) {
+    if (startIndex + matchesPerPage < sortedFixtureByTeam?.length) {
       setStartIndex(startIndex + matchesPerPage);
     }
   };
@@ -286,39 +274,6 @@ export default function TeamOverView({
       setStartIndex(startIndex - matchesPerPage);
     }
   };
-
-
-  // example
-
-  // const example = [
-  //   {
-  //     fixture: {
-  //       date: "2025-02-21T14:00:00+00:00",
-  //     },
-  //   },
-  //   {
-  //     fixture: {
-  //       date: "2025-02-22T14:00:00+00:00",
-  //     },
-  //   },
-  //   {
-  //     fixture: {
-  //       date: "2025-02-23T14:00:00+00:00",
-  //     },
-  //   },
-  //   {
-  //     fixture: {
-  //       date: "2025-02-24T14:00:00+00:00",
-  //     },
-  //   },
-  //   {
-  //     fixture: {
-  //       date: "2025-02-25T14:00:00+00:00",
-  //     },
-  //   },
-  // ];
-
-  // console.log(example);
 
   return (
     <div className="w-full">
@@ -415,7 +370,11 @@ export default function TeamOverView({
                     >
                       <span
                         className={`text-xs px-3 py-[2px] ${
-                          win === true ? "bg-[#00985f]" : "bg-[#dd3635]"
+                          win === null
+                            ? "bg-[#8C9498]"
+                            : win === true
+                            ? "bg-[#00985f]"
+                            : "bg-[#dd3635]"
                         } rounded-[0.4vw] text-white`}
                       >
                         {v?.goals?.home}-{v?.goals?.away}
@@ -583,7 +542,7 @@ export default function TeamOverView({
                     {leagues[0]?.league?.name}
                   </h1>
                 </div>
-                <hr />
+                <hr className="dark:border-custom-gray3" />
                 {/* 데이터가 있을 경우 데이터를 보여주고 없을 경우 데이터가 없다고 알려줌 */}
                 {stands ? (
                   <>
@@ -1146,11 +1105,14 @@ export default function TeamOverView({
 
           {/* fixture pagenation */}
           {fixtureByTeam?.length > 0 && (
-            <div className="w-full bg-white rounded-xl mt-6 px-8 py-5 dark:bg-custom-dark max-sm:px-4  border-slate-200 border border-solid dark:border-0">
+            <div className="w-full bg-white rounded-xl mt-6 px-8 pt-5 pb-4 dark:bg-custom-dark max-sm:px-4  border-slate-200 border border-solid dark:border-0">
               {/* fixture header */}
               <div className="flex w-full items-center justify-between">
                 {/* left button */}
-                <div className="w-7 h-7 rounded-full bg-slate-200 flex justify-center items-center hover:cursor-pointer  hover:bg-slate-400 dark:bg-custom-gray3 dark:hover:bg-custom-gray">
+                <div
+                  className="w-7 h-7 rounded-full bg-slate-200 flex justify-center items-center hover:cursor-pointer  hover:bg-slate-400 dark:bg-custom-gray3 dark:hover:bg-custom-gray"
+                  onClick={movePrev}
+                >
                   <Image
                     src={arrow}
                     alt="arrow"
@@ -1164,7 +1126,10 @@ export default function TeamOverView({
                 <h1 className="text-sm">Fixtures</h1>
 
                 {/* right button */}
-                <div className="w-7 h-7 rounded-full bg-slate-200 flex justify-center items-center hover:cursor-pointer  hover:bg-slate-400 dark:bg-custom-gray3 dark:hover:bg-custom-gray">
+                <div
+                  className="w-7 h-7 rounded-full bg-slate-200 flex justify-center items-center hover:cursor-pointer  hover:bg-slate-400 dark:bg-custom-gray3 dark:hover:bg-custom-gray"
+                  onClick={moveNext}
+                >
                   <Image
                     src={arrow}
                     alt="arrow"
@@ -1179,18 +1144,147 @@ export default function TeamOverView({
               {/* fixtures */}
               <ul className="w-full">
                 {displayedMatches?.map((v: any, i: number) => {
-                  // const matchDate = FormatMatchDate(v?.fixture?.date, locale, d);
-                  // console.log(matchDate);
+                  const { date, time } = FormatMatchDate(
+                    v?.fixture?.date,
+                    locale,
+                    d
+                  );
+
+                  // check which team is winner for when match is done
+                  let win = null;
+
+                  const numbericID = Number(id);
+
+                  const isHomeTeam = v?.teams?.home?.id === numbericID;
+                  const isAwayTeam = v?.teams?.away?.id === numbericID;
+
+                  if (isHomeTeam) {
+                    win = v?.teams?.home?.winner;
+                  } else if (isAwayTeam) {
+                    win = v?.teams?.away?.winner;
+                  }
 
                   return (
-                    <li key={i} className="w-full">
-                      <div className="w-full flex justify-between text-xs text-custom-gray">
-                        <h4>{v?.fixture?.date}</h4>
-                        <div className="flex">
-                          <h4>{v?.league?.name}</h4>
+                    <div
+                      key={i}
+                      className="hover:cursor-pointer hover:opacity-70"
+                    >
+                      <li className="w-full pt-[35px] pb-[10px]" onClick={() =>  router.push(
+                          FormatMatchDetailURL(
+                            v?.teams?.home?.name,
+                            v?.teams?.away?.name,
+                            v?.fixture?.id,
+                            locale
+                          )
+                        )}>
+                        {/* match date and league */}
+                        <div className="w-full flex justify-between text-xs text-custom-gray h-[18px] items-center">
+                          <h4>{date}</h4>
+                          <div className="flex items-center gap-2">
+                            <h4>{v?.league?.name}</h4>
+                            <div className="w-4 h-4 rounded-full border border-solid border-custom-gray flex items-center justify-center">
+                              <Image
+                                src={v?.league?.logo}
+                                alt={v?.league?.name}
+                                width={12}
+                                height={12}
+                              />
+                            </div>
+                          </div>
                         </div>
-                      </div>
-                    </li>
+                        {/* team and match time */}
+                        <div className="text-xs flex justify-center h-[41px] items-center">
+                          {/* home team */}
+                          <div className="flex w-2/5 justify-end items-center gap-4">
+                            <h3>{v?.teams?.home?.name}</h3>
+                            <Image
+                              src={v?.teams?.home?.logo}
+                              alt={v?.teams?.home?.name}
+                              width={30}
+                              height={30}
+                            />
+                          </div>
+                          {/* match time */}
+                          <div className="w-1/5 flex justify-center">
+                            {/* match didn't start yet */}
+                            {scheduled.includes(v?.fixture?.status?.short) ? (
+                              <h3>{time}</h3>
+                            ) : // live match || Match is stopped by referee
+                            live.includes(v?.fixture?.status?.short) ||
+                              stop.includes(v?.fixture?.status?.short) ? (
+                              <AnimatePresence>
+                                <div className="bg-[#00985F] text-white text-sm w-[45px] h-[24px] rounded-[0.4vw] flex items-center justify-center">
+                                  <motion.h3
+                                    key={isPoint ? "score" : "time"}
+                                    initial={{ opacity: 0 }}
+                                    animate={{ opacity: 1 }}
+                                    exit={{ opacity: 0 }}
+                                    transition={{
+                                      duration: 0.5,
+                                      ease: "easeInOut",
+                                    }}
+                                  >
+                                    {isPoint
+                                      ? `${upcomingMatch[0]?.goals?.home}
+                                      -
+                                      ${upcomingMatch[0]?.goals?.away}`
+                                      : `${
+                                          upcomingMatch[0]?.fixture?.status
+                                            ?.elapsed || 0
+                                        }'`}
+                                  </motion.h3>
+                                </div>
+                              </AnimatePresence>
+                            ) : // Match finished
+                            finish.includes(v?.fixture?.status?.short) ? (
+                              <h3
+                                className={`text-xs px-3 py-[2px] ${
+                                  win === null
+                                    ? "bg-[#8C9498]"
+                                    : win === true
+                                    ? "bg-[#00985f]"
+                                    : "bg-[#dd3635]"
+                                } rounded-[0.4vw] text-white`}
+                              >
+                                {v?.goals?.home}-{v?.goals?.away}
+                              </h3>
+                            ) : // Match is cancled
+                            cancle.includes(v?.fixture?.status?.short) ? (
+                              <h3 className="line-through">{time}</h3>
+                            ) : unearned.includes(v?.fixture?.status?.short) ? (
+                              <h3>
+                                {" "}
+                                className=
+                                {`text-xs px-3 py-[2px] ${
+                                  win === null
+                                    ? "bg-[#8C9498]"
+                                    : win === true
+                                    ? "bg-[#00985f]"
+                                    : "bg-[#dd3635]"
+                                } rounded-[0.4vw] text-white`}
+                                {v?.fixture?.status?.short}
+                              </h3>
+                            ) : (
+                              <></>
+                            )}
+                          </div>
+
+                          {/* away team */}
+                          <div className="flex w-2/5 items-center gap-4">
+                            <Image
+                              src={v?.teams?.away?.logo}
+                              alt={v?.teams?.away?.name}
+                              width={30}
+                              height={30}
+                            />
+                            <h3>{v?.teams?.away?.name}</h3>
+                          </div>
+                        </div>
+                      </li>
+                      {displayedMatches?.length > i + 1 && (
+                        <hr className="dark:border-custom-gray3" />
+                      )}
+                    </div>
                   );
                 })}
               </ul>
@@ -1198,19 +1292,6 @@ export default function TeamOverView({
           )}
         </div>
       </div>
-
-      {/* example  */}
-      {/* <div>
-        {example?.map((v:any,i:number) => {
-          console.log(v)
-          const {date, time} = FormatMatchDate(v?.fixture?.date, locale, d);
-          console.log(date);
-          console.log(time);
-          return (
-            <h4 key={i}>{}</h4>
-          )
-        })}
-      </div> */}
     </div>
   );
 }
