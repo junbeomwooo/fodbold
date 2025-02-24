@@ -2,7 +2,7 @@
 
 // redux
 import { useAppDispatch, useAppSelector } from "@/lib/storeHooks";
-import { getTeamsStatistics } from "@/lib/features/teamsSlice";
+import { getTeamSquad } from "@/lib/features/teamsSlice";
 import { getAllLeaguesByTeam, getStanding } from "@/lib/features/leagueSlice";
 import { getFixturesByTeam } from "@/lib/features/fixtureSlice";
 import { getFixtures } from "@/lib/features/fixtureSlice";
@@ -69,8 +69,9 @@ export default function TeamOverView({
   const { leagues, standing }: { leagues: any; standing: any } = useAppSelector(
     (state) => state.leagueSlice
   );
-  const { statics, playerStats }: { statics: any; playerStats: any } =
-    useAppSelector((state) => state.teamsSlice);
+  const { statics, squads }: { statics: any; squads: any } = useAppSelector(
+    (state) => state.teamsSlice
+  );
   const { fixtureByTeam }: any = useAppSelector((state) => state.fixtureSlice);
   const { location }: any = useAppSelector((state) => state.locationSlice);
   const { fixture }: any = useAppSelector((state) => state.fixtureSlice);
@@ -89,37 +90,61 @@ export default function TeamOverView({
 
   // http://localhost:3000/en/teams/47/Tottenham/overview
 
-  // useEffect(() => {
-  //   dispatch(getAllLeaguesByTeam({ team: id })).then(({ payload }) => {
-  //     const nationalLeague = payload[0]?.league?.id;
-  //     const latestSeason = payload[0]?.seasons?.at(-1)?.year;
-  //     dispatch(
-  //       getFixturesByTeam({ team: id, season: latestSeason, timezone: locate })
-  //     ).then(({ payload }) => {
-  //       // to get latest match data
-  //       const lastMatch = (payload ?? [])
-  //         .filter((match: any) => {
-  //           return match.league.id === nationalLeague &&
-  //           ["FT", "PEN", "AET"].includes(match.fixture.status.short);
-  //         })
-  //         .sort(
-  //           (a: any, b: any) =>
-  //             new Date(b?.fixture?.date).getTime() -
-  //             new Date(a?.fixture?.date).getTime()
-  //         )
-  //         .at(0);
-  //       dispatch(getFixtures({ id: lastMatch?.fixture?.id, timezone: locate }));
-  //     });
-  //     dispatch(getStanding({ id: nationalLeague, year: latestSeason }));
-  //     dispatch(
-  //       getTeamsStatistics({
-  //         league: nationalLeague,
-  //         season: latestSeason,
-  //         team: id,
-  //       })
-  //     );
-  //   });
-  // }, [dispatch, id, locate]);
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        /** 1. Get team squad and all leagues the team is playing in  */
+        const [_notused1, getAllLeaguesByTeamAction] = await Promise.all([
+          dispatch(getTeamSquad({ team: id })),
+          dispatch(getAllLeaguesByTeam({ team: id })),
+        ]);
+
+        // Assign National league ID and Latest season year to variable  */
+        const leagues = getAllLeaguesByTeamAction.payload;
+        const nationalLeague = leagues[0]?.league?.id;
+        const latestSeason = leagues[0]?.seasons?.at(-1)?.year;
+
+        /** 2. Get all matches of the team and league standings  */
+        const [getFixturesByTeamAction, _notused2] = await Promise.all([
+          dispatch(
+            getFixturesByTeam({
+              team: id,
+              season: latestSeason,
+              timezone: locate,
+            })
+          ),
+          dispatch(getStanding({ id: nationalLeague, year: latestSeason })),
+        ]);
+
+        // Find the most recent match
+        const fixturesByTeam = getFixturesByTeamAction.payload;
+        const lastMatch = (fixturesByTeam ?? [])
+          .filter((match: any) => {
+            return (
+              match.league.id === nationalLeague &&
+              ["FT", "PEN", "AET"].includes(match.fixture.status.short)
+            );
+          })
+          .sort(
+            (a: any, b: any) =>
+              new Date(b?.fixture?.date).getTime() -
+              new Date(a?.fixture?.date).getTime()
+          )
+          .at(0);
+
+        /** Get data of the most recent match */
+        if (lastMatch?.fixture?.id) {
+          await dispatch(
+            getFixtures({ id: lastMatch.fixture.id, timezone: locate })
+          );
+        }
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+
+    fetchData();
+  }, [dispatch, id, locate]);
 
   console.group("leagues");
   console.log(leagues);
@@ -133,9 +158,8 @@ export default function TeamOverView({
   console.group("fixture");
   console.log(fixture);
   console.groupEnd();
-
-  console.group("statics");
-  console.log(statics);
+  console.group("sqauds");
+  console.log(squads);
   console.groupEnd();
 
   /** data for using */
@@ -148,7 +172,6 @@ export default function TeamOverView({
   const lastMatchPlayers = fixture?.players?.filter((team: any) => {
     return Number(id) === team?.team?.id;
   });
-
 
   const lastMatchFormation = lastMatchStartXI?.length
     ? lastMatchStartXI[0]?.formation?.split("-")?.reverse()
@@ -1169,14 +1192,19 @@ export default function TeamOverView({
                       key={i}
                       className="hover:cursor-pointer hover:opacity-70"
                     >
-                      <li className="w-full pt-[35px] pb-[10px]" onClick={() =>  router.push(
-                          FormatMatchDetailURL(
-                            v?.teams?.home?.name,
-                            v?.teams?.away?.name,
-                            v?.fixture?.id,
-                            locale
+                      <li
+                        className="w-full pt-[35px] pb-[10px]"
+                        onClick={() =>
+                          router.push(
+                            FormatMatchDetailURL(
+                              v?.teams?.home?.name,
+                              v?.teams?.away?.name,
+                              v?.fixture?.id,
+                              locale
+                            )
                           )
-                        )}>
+                        }
+                      >
                         {/* match date and league */}
                         <div className="w-full flex justify-between text-xs text-custom-gray h-[18px] items-center">
                           <h4>{date}</h4>

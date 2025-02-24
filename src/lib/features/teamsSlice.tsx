@@ -3,6 +3,30 @@ import axios, { AxiosError } from "axios";
 
 const url = "https://v3.football.api-sports.io";
 
+export const getTeamSquad = createAsyncThunk(
+  "teamsSlice/getTeamSquad",
+  async ({ team }: { team: number }, { rejectWithValue }) => {
+    let result = null;
+
+    try {
+      const response = await axios.get(`${url}/players/squads?team=${team}`, {
+        headers: {
+          "x-rapidapi-host": "v3.football.api-sports.io",
+          "x-rapidapi-key": `${process.env.NEXT_PUBLIC_FOOTBALL_API_KEY}`,
+        },
+      });
+      result = response?.data?.response;
+    } catch (err) {
+      const axiosErr = err as AxiosError;
+      console.group("getTeamSquad Error");
+      result = rejectWithValue(axiosErr.response);
+      console.groupEnd();
+    }
+
+    return result;
+  }
+);
+
 export const getTeamsStatistics = createAsyncThunk(
   "teamsSlice/getTeamsStatistics",
   async ({ league, season ,team}: { league: number, season:number, team: number }, { rejectWithValue }) => {
@@ -31,7 +55,8 @@ export const teamsSlice = createSlice({
   name: "teamsSlice",
   initialState: {
     statics: null,
-    playerStats : null
+    squads : null,
+    
   },
   reducers: {
     // 현재 상태값 불러오기
@@ -44,6 +69,13 @@ export const teamsSlice = createSlice({
       getTeamsStatistics.fulfilled,
       (state, { payload }: { payload: any }) => {
         state.statics = payload;
+      }
+    );
+
+    builder.addCase(
+      getTeamSquad.fulfilled,
+      (state, { payload }: { payload: any }) => {
+        state.squads = payload;
       }
     );
   },
