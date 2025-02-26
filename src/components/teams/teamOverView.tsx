@@ -95,14 +95,14 @@ export default function TeamOverView({
   // http://localhost:3000/en/teams/47/Tottenham/overview
 
   useEffect(() => {
-
+    // 모든 리그의 nationalLeague가 첫번째에 위치하지않는다는걸 알게되었으니 확인후 적절한 수정하기.
     const fetchData = async () => {
       try {
         /** 1. Get team squad and all leagues the team is playing in  */
         const [getAllLeaguesByTeamAction, _notsued2] = await Promise.all([
           // dispatch(getTeamSquad({ team: id })),
           dispatch(getAllLeaguesByTeam({ team: id })),
-          dispatch(getTransferInfoByTeam({team: id}))
+          dispatch(getTransferInfoByTeam({ team: id })),
         ]);
         // Assign National league ID and Latest season year to variable  */
         const leagues = getAllLeaguesByTeamAction.payload;
@@ -167,13 +167,17 @@ export default function TeamOverView({
   // Find player transfer history in lastest season
   const filterTransfer = transfer
     ?.filter(
-      (player: any) => new Date(player?.update) >= new Date(leagues[0]?.seasons?.at(-1)?.start)
+      (player: any) =>
+        new Date(player?.update) >= new Date(leagues[0]?.seasons?.at(-1)?.start)
     )
     .map((v: any) => {
       return {
         ...v,
         transfers: v?.transfers?.filter((transfer: any) => {
-          return new Date(transfer?.date) >= new Date(leagues[0]?.seasons?.at(-1)?.start);
+          return (
+            new Date(transfer?.date) >=
+            new Date(leagues[0]?.seasons?.at(-1)?.start)
+          );
         }),
       };
     })
@@ -183,9 +187,13 @@ export default function TeamOverView({
   const transferIn = filterTransfer
     ?.map((v: any) => ({
       ...v,
-      transfers: v?.transfers?.filter(
-        (transfer: any) => transfer?.teams?.in?.id === Number(id)
-      ),
+      transfers: v?.transfers
+        ?.filter((transfer: any) => transfer?.teams?.in?.id === Number(id))
+        ?.slice()
+        ?.sort(
+          (a1: any, b1: any) =>
+            new Date(b1?.date)?.getTime() - new Date(a1?.date)?.getTime()
+        ),
     }))
     .filter((v: any) => v?.transfers?.length > 0)
     .sort((a: any, b: any) => {
@@ -199,9 +207,13 @@ export default function TeamOverView({
   const transferOut = filterTransfer
     ?.map((v: any) => ({
       ...v,
-      transfers: v?.transfers?.filter(
-        (transfer: any) => transfer?.teams?.out?.id === Number(id)
-      ),
+      transfers: v?.transfers
+        ?.filter((transfer: any) => transfer?.teams?.out?.id === Number(id))
+        ?.slice()
+        ?.sort(
+          (a1: any, b1: any) =>
+            new Date(b1?.date)?.getTime() - new Date(a1?.date)?.getTime()
+        ),
     }))
     .filter((v: any) => v?.transfers?.length > 0)
     .sort((a: any, b: any) => {
@@ -210,7 +222,6 @@ export default function TeamOverView({
         new Date(a?.transfers[0]?.date).getTime()
       );
     });
-
 
   console.log(transferIn);
   console.log(transferOut);
@@ -401,7 +412,7 @@ export default function TeamOverView({
       </div>
 
       <div className="mlg:flex gap-4">
-        {/* last 5 matches , next match || ongoing match */}
+        {/* last 5 matches , next match || ongoing match, transfer info */}
         <div className="w-full mlg:w-8/12">
           {/* team form */}
           {lastRecentMatches?.length > 0 && (
@@ -756,6 +767,8 @@ export default function TeamOverView({
               </div>
             </>
           )}
+
+          {/* transfer info */}
         </div>
         {/* last stratXI, fixture pagenation */}
         <div className="w-full mlg:w-4/12">
