@@ -2,7 +2,7 @@
 
 // redux
 import { useAppDispatch, useAppSelector } from "@/lib/storeHooks";
-import { getTeamSquad } from "@/lib/features/teamsSlice";
+import { getTeamSquad, getTransferInfoByTeam } from "@/lib/features/teamsSlice";
 import { getAllLeaguesByTeam, getStanding } from "@/lib/features/leagueSlice";
 import { getFixturesByTeam } from "@/lib/features/fixtureSlice";
 import { getFixtures } from "@/lib/features/fixtureSlice";
@@ -69,7 +69,11 @@ export default function TeamOverView({
   const { leagues, standing }: { leagues: any; standing: any } = useAppSelector(
     (state) => state.leagueSlice
   );
-  const { statics, squads }: { statics: any; squads: any } = useAppSelector(
+  const {
+    statics,
+    squads,
+    transfer,
+  }: { statics: any; squads: any; transfer: any } = useAppSelector(
     (state) => state.teamsSlice
   );
   const { fixtureByTeam }: any = useAppSelector((state) => state.fixtureSlice);
@@ -91,21 +95,21 @@ export default function TeamOverView({
   // http://localhost:3000/en/teams/47/Tottenham/overview
 
   useEffect(() => {
+
     const fetchData = async () => {
       try {
         /** 1. Get team squad and all leagues the team is playing in  */
-        const [_notused1, getAllLeaguesByTeamAction] = await Promise.all([
-          dispatch(getTeamSquad({ team: id })),
+        const [getAllLeaguesByTeamAction, _notsued2] = await Promise.all([
+          // dispatch(getTeamSquad({ team: id })),
           dispatch(getAllLeaguesByTeam({ team: id })),
+          dispatch(getTransferInfoByTeam({team: id}))
         ]);
-
         // Assign National league ID and Latest season year to variable  */
         const leagues = getAllLeaguesByTeamAction.payload;
         const nationalLeague = leagues[0]?.league?.id;
         const latestSeason = leagues[0]?.seasons?.at(-1)?.year;
-
         /** 2. Get all matches of the team and league standings  */
-        const [getFixturesByTeamAction, _notused2] = await Promise.all([
+        const [getFixturesByTeamAction, _notused3] = await Promise.all([
           dispatch(
             getFixturesByTeam({
               team: id,
@@ -115,7 +119,6 @@ export default function TeamOverView({
           ),
           dispatch(getStanding({ id: nationalLeague, year: latestSeason })),
         ]);
-
         // Find the most recent match
         const fixturesByTeam = getFixturesByTeamAction.payload;
         const lastMatch = (fixturesByTeam ?? [])
@@ -131,7 +134,6 @@ export default function TeamOverView({
               new Date(a?.fixture?.date).getTime()
           )
           .at(0);
-
         /** Get data of the most recent match */
         if (lastMatch?.fixture?.id) {
           await dispatch(
@@ -142,8 +144,7 @@ export default function TeamOverView({
         console.error("Error fetching data:", error);
       }
     };
-
-    fetchData();
+    // fetchData();
   }, [dispatch, id, locate]);
 
   console.group("leagues");
@@ -163,8 +164,58 @@ export default function TeamOverView({
   console.groupEnd();
 
   /** data for using */
+  // Find player transfer history in lastest season
+  const filterTransfer = transfer
+    ?.filter(
+      (player: any) => new Date(player?.update) >= new Date(leagues[0]?.seasons?.at(-1)?.start)
+    )
+    .map((v: any) => {
+      return {
+        ...v,
+        transfers: v?.transfers?.filter((transfer: any) => {
+          return new Date(transfer?.date) >= new Date(leagues[0]?.seasons?.at(-1)?.start);
+        }),
+      };
+    })
+    ?.filter((v: any) => v?.transfers?.length > 0);
 
-  /** Last match's start XI */
+  // Find data that the current team has signed the player
+  const transferIn = filterTransfer
+    ?.map((v: any) => ({
+      ...v,
+      transfers: v?.transfers?.filter(
+        (transfer: any) => transfer?.teams?.in?.id === Number(id)
+      ),
+    }))
+    .filter((v: any) => v?.transfers?.length > 0)
+    .sort((a: any, b: any) => {
+      return (
+        new Date(b?.transfers[0]?.date).getTime() -
+        new Date(a?.transfers[0]?.date).getTime()
+      );
+    });
+
+  // Find data that the current team has released the player
+  const transferOut = filterTransfer
+    ?.map((v: any) => ({
+      ...v,
+      transfers: v?.transfers?.filter(
+        (transfer: any) => transfer?.teams?.out?.id === Number(id)
+      ),
+    }))
+    .filter((v: any) => v?.transfers?.length > 0)
+    .sort((a: any, b: any) => {
+      return (
+        new Date(b?.transfers[0]?.date).getTime() -
+        new Date(a?.transfers[0]?.date).getTime()
+      );
+    });
+
+
+  console.log(transferIn);
+  console.log(transferOut);
+
+  // Last match's start XI
   const lastMatchStartXI = fixture?.lineups?.filter((team: any) => {
     return Number(id) === team?.team?.id;
   });
@@ -177,7 +228,7 @@ export default function TeamOverView({
     ? lastMatchStartXI[0]?.formation?.split("-")?.reverse()
     : [];
 
-  /** Last Recent 5 Matches */
+  // Last Recent 5 Matches
   // ?? 연산자 fixtureByTeam이 값이 없을 경우 빈배열로 대체
   const lastRecentMatches = (fixtureByTeam ?? [])
     .filter((match: any) =>
@@ -190,7 +241,7 @@ export default function TeamOverView({
     )
     .slice(0, 5);
 
-  /** Match status  */
+  // Match status
 
   // scehduled
   const scheduled = ["TBD", "NS"];
@@ -205,7 +256,7 @@ export default function TeamOverView({
   // unearned win
   const unearned = ["AWD", "WO"];
 
-  /** Upcoming matches */
+  // Upcoming matches
   const upcomingMatch = (fixtureByTeam ?? [])
     .filter((match: any) => {
       const status = match?.fixture?.status?.short;

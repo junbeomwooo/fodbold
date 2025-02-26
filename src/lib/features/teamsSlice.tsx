@@ -3,6 +3,31 @@ import axios, { AxiosError } from "axios";
 
 const url = "https://v3.football.api-sports.io";
 
+export const getTransferInfoByTeam = createAsyncThunk(
+  "teamsSlice/getTransferInfoByTeam",
+  async ({ team}: { team: number }, { rejectWithValue }) => {
+    let result = null;
+
+    try {
+      const response = await axios.get(`${url}/transfers?team=${team}`, {
+        headers: {
+          "x-rapidapi-host": "v3.football.api-sports.io",
+          "x-rapidapi-key": `${process.env.NEXT_PUBLIC_FOOTBALL_API_KEY}`,
+        },
+      });
+      console.log(response);
+      result = response?.data?.response;
+    } catch (err) {
+      const axiosErr = err as AxiosError;
+      console.group("getTransferInfoByTeam Error");
+      result = rejectWithValue(axiosErr.response);
+      console.groupEnd();
+    }
+
+    return result;
+  }
+);
+
 export const getTeamSquad = createAsyncThunk(
   "teamsSlice/getTeamSquad",
   async ({ team }: { team: number }, { rejectWithValue }) => {
@@ -56,6 +81,7 @@ export const teamsSlice = createSlice({
   initialState: {
     statics: null,
     squads : null,
+    transfer: null,
     
   },
   reducers: {
@@ -76,6 +102,13 @@ export const teamsSlice = createSlice({
       getTeamSquad.fulfilled,
       (state, { payload }: { payload: any }) => {
         state.squads = payload;
+      }
+    );
+
+    builder.addCase(
+      getTransferInfoByTeam.fulfilled,
+      (state, { payload }: { payload: any }) => {
+        state.transfer = payload;
       }
     );
   },
