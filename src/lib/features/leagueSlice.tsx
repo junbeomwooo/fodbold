@@ -197,7 +197,6 @@ export const getAllLeaguesByTeam = createAsyncThunk(
           },
         }
       );
-
       result = response.data.response;
     } catch (err) {
       const axiosErr = err as AxiosError;

@@ -96,6 +96,7 @@ export default function TeamOverView({
 
   useEffect(() => {
     // 모든 리그의 nationalLeague가 첫번째에 위치하지않는다는걸 알게되었으니 확인후 적절한 수정하기.
+    // Lague 타입으로 찾은 후 여러개일 경우 현재 최신년도인 리그 반영하기
     const fetchData = async () => {
       try {
         /** 1. Get team squad and all leagues the team is playing in  */
