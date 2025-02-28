@@ -92,7 +92,10 @@ export default function TeamOverView({
 
   const { theme } = useTheme();
 
+  const [leagueNational, setLeagueNational]:any = useState(null);
+
   // http://localhost:3000/en/teams/47/Tottenham/overview
+  // http://localhost:3000/en/teams/57/ipswich/overview
 
   useEffect(() => {
     // 모든 리그의 nationalLeague가 첫번째에 위치하지않는다는걸 알게되었으니 확인후 적절한 수정하기.
@@ -100,15 +103,24 @@ export default function TeamOverView({
     const fetchData = async () => {
       try {
         /** 1. Get team squad and all leagues the team is playing in  */
-        const [getAllLeaguesByTeamAction, _notsued2] = await Promise.all([
+        const [getAllLeaguesByTeamAction] = await Promise.all([
           // dispatch(getTeamSquad({ team: id })),
           dispatch(getAllLeaguesByTeam({ team: id })),
-          dispatch(getTransferInfoByTeam({ team: id })),
+          // dispatch(getTransferInfoByTeam({ team: id })),
         ]);
         // Assign National league ID and Latest season year to variable  */
         const leagues = getAllLeaguesByTeamAction.payload;
-        const nationalLeague = leagues[0]?.league?.id;
-        const latestSeason = leagues[0]?.seasons?.at(-1)?.year;
+        const nationalLeagueObj = leagues?.filter(
+          (league: any) =>
+            league?.league?.type === "League" &&
+            league?.seasons?.some((v: any) => v?.current === true)
+        );
+
+        setLeagueNational(nationalLeagueObj[0]);
+
+        const nationalLeague = nationalLeagueObj[0]?.league?.id;
+        const latestSeason = nationalLeagueObj[0]?.seasons?.at(-1)?.year;
+        
         /** 2. Get all matches of the team and league standings  */
         const [getFixturesByTeamAction, _notused3] = await Promise.all([
           dispatch(
@@ -145,7 +157,7 @@ export default function TeamOverView({
         console.error("Error fetching data:", error);
       }
     };
-    // fetchData();
+    fetchData();
   }, [dispatch, id, locate]);
 
   console.group("leagues");
@@ -162,6 +174,7 @@ export default function TeamOverView({
   console.groupEnd();
   console.group("sqauds");
   console.log(squads);
+  console.log(leagueNational);
   console.groupEnd();
 
   /** data for using */
@@ -611,21 +624,21 @@ export default function TeamOverView({
                   onClick={() => {
                     router.push(
                       `/${locale}/leagues/${
-                        leagues[0]?.league?.id
+                        leagueNational?.league?.id
                       }/${FormatLeagueOrTeamName(
-                        leagues[0]?.league?.name
+                        leagueNational?.league?.name
                       )}/overview`
                     );
                   }}
                 >
                   <Image
-                    src={leagues[0]?.league?.logo}
-                    alt={leagues[0]?.league?.name}
+                    src={leagueNational?.league?.logo}
+                    alt={leagueNational?.league?.name}
                     width={27}
                     height={27}
                   />
                   <h1 className="text-sm font-medium">
-                    {leagues[0]?.league?.name}
+                    {leagueNational?.league?.name}
                   </h1>
                 </div>
                 <hr className="dark:border-custom-gray3" />
