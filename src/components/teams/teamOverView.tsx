@@ -160,7 +160,7 @@ export default function TeamOverView({
         console.error("Error fetching data:", error);
       }
     };
-    // fetchData();
+    fetchData();
   }, [dispatch, id, locate]);
 
   console.group("leagues");
@@ -833,7 +833,7 @@ export default function TeamOverView({
                   transferIn?.map((v: any, i: number) => {
                     console.log(v);
                     return (
-                      <tr key={i}>
+                      <tr key={i} className="h-[50px] align-middle">
                         <td className="flex gap-4 items-center">
                           <Image
                             src={`https://media.api-sports.io/football/players/${v?.player?.id}.png`}
@@ -844,7 +844,15 @@ export default function TeamOverView({
                           <span>{v?.player?.name}</span>
                         </td>
                         <td>{v?.transfers[0]?.type}</td>
-                        <td>{v?.transfers[0]?.teams?.out?.name}</td>
+                        <td className="flex items-center gap-4">
+                          <Image
+                            src={v?.transfers[0]?.teams?.out?.logo}
+                            alt={v?.player?.name}
+                            width={20}
+                            height={20}
+                          />
+                          {v?.transfers[0]?.teams?.out?.name}
+                        </td>
                         <td>{v?.transfers[0]?.date}</td>
                       </tr>
                     );
