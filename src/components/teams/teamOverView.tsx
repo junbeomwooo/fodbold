@@ -92,22 +92,25 @@ export default function TeamOverView({
 
   const { theme } = useTheme();
 
-  const [leagueNational, setLeagueNational]:any = useState(null);
+  // A state value useed for rendering with data obtained from Data fetching by useEffect;
+  const [leagueNational, setLeagueNational]: any = useState(null);
+
+  const [transferFilter, setTransferFilter]: any = useState("playerIn");
 
   // http://localhost:3000/en/teams/47/Tottenham/overview
   // http://localhost:3000/en/teams/57/ipswich/overview
 
   useEffect(() => {
-    // 모든 리그의 nationalLeague가 첫번째에 위치하지않는다는걸 알게되었으니 확인후 적절한 수정하기.
-    // Lague 타입으로 찾은 후 여러개일 경우 현재 최신년도인 리그 반영하기
+    // squad, transfer 마저 구현하기
     const fetchData = async () => {
       try {
         /** 1. Get team squad and all leagues the team is playing in  */
-        const [getAllLeaguesByTeamAction] = await Promise.all([
-          // dispatch(getTeamSquad({ team: id })),
-          dispatch(getAllLeaguesByTeam({ team: id })),
-          // dispatch(getTransferInfoByTeam({ team: id })),
-        ]);
+        const [_notused1, getAllLeaguesByTeamAction, _notused2] =
+          await Promise.all([
+            dispatch(getTeamSquad({ team: id })),
+            dispatch(getAllLeaguesByTeam({ team: id })),
+            dispatch(getTransferInfoByTeam({ team: id })),
+          ]);
         // Assign National league ID and Latest season year to variable  */
         const leagues = getAllLeaguesByTeamAction.payload;
         const nationalLeagueObj = leagues?.filter(
@@ -120,7 +123,7 @@ export default function TeamOverView({
 
         const nationalLeague = nationalLeagueObj[0]?.league?.id;
         const latestSeason = nationalLeagueObj[0]?.seasons?.at(-1)?.year;
-        
+
         /** 2. Get all matches of the team and league standings  */
         const [getFixturesByTeamAction, _notused3] = await Promise.all([
           dispatch(
@@ -157,7 +160,7 @@ export default function TeamOverView({
         console.error("Error fetching data:", error);
       }
     };
-    fetchData();
+    // fetchData();
   }, [dispatch, id, locate]);
 
   console.group("leagues");
@@ -174,6 +177,8 @@ export default function TeamOverView({
   console.groupEnd();
   console.group("sqauds");
   console.log(squads);
+  console.groupEnd();
+  console.group("leagueNational");
   console.log(leagueNational);
   console.groupEnd();
 
@@ -182,7 +187,8 @@ export default function TeamOverView({
   const filterTransfer = transfer
     ?.filter(
       (player: any) =>
-        new Date(player?.update) >= new Date(leagues[0]?.seasons?.at(-1)?.start)
+        new Date(player?.update) >=
+        new Date(leagueNational?.seasons?.at(-1)?.start)
     )
     .map((v: any) => {
       return {
@@ -783,6 +789,69 @@ export default function TeamOverView({
           )}
 
           {/* transfer info */}
+          <div className="w-full bg-white rounded-xl mt-6 px-8 py-5 dark:bg-custom-dark max-sm:px-4  border-slate-200 border border-solid dark:border-0">
+            {/* transfer header */}
+            <h1 className="text-base">Transfer</h1>
+            {/* transfer filter */}
+            <div className="flex text-xsm font-medium gap-3 mt-4">
+              <button
+                className={`w-1/2 mlg:w-[110px] h-[34px] border border-solid border-[#E4E7EB] rounded-full
+                  dark:border-none
+                  ${
+                    transferFilter === "playerIn"
+                      ? "bg-black dark:bg-white text-white dark:text-black"
+                      : "dark:bg-[#333333]"
+                  }`}
+                onClick={() => setTransferFilter("playerIn")}
+              >
+                <h1>Players in</h1>
+              </button>
+              <button
+                className={`w-1/2 mlg:w-[110px] h-[34px] border border-solid border-[#E4E7EB] rounded-full
+                  dark:border-none
+                  ${
+                    transferFilter === "playerOut"
+                      ? "bg-black dark:bg-white text-white dark:text-black"
+                      : "dark:bg-[#333333]"
+                  }`}
+                onClick={() => setTransferFilter("playerOut")}
+              >
+                <h1>Players out</h1>
+              </button>
+            </div>
+            <table className="w-full mt-5">
+              <thead>
+                <tr className="text-sm">
+                  <th>Player</th>
+                  <th>Fee</th>
+                  <th>From</th>
+                  <th>Date</th>
+                </tr>
+              </thead>
+              <tbody className="text-sm">
+                {transferFilter === "playerIn" &&
+                  transferIn?.map((v: any, i: number) => {
+                    console.log(v);
+                    return (
+                      <tr key={i}>
+                        <td className="flex gap-4 items-center">
+                          <Image
+                            src={`https://media.api-sports.io/football/players/${v?.player?.id}.png`}
+                            alt={v?.player?.name}
+                            width={40}
+                            height={40}
+                          />
+                          <span>{v?.player?.name}</span>
+                        </td>
+                        <td>{v?.transfers[0]?.type}</td>
+                        <td>{v?.transfers[0]?.teams?.out?.name}</td>
+                        <td>{v?.transfers[0]?.date}</td>
+                      </tr>
+                    );
+                  })}
+              </tbody>
+            </table>
+          </div>
         </div>
         {/* last stratXI, fixture pagenation */}
         <div className="w-full mlg:w-4/12">
