@@ -99,18 +99,18 @@ export default function TeamOverView({
 
   // http://localhost:3000/en/teams/47/Tottenham/overview
   // http://localhost:3000/en/teams/57/ipswich/overview
+  // 중앙정렬이 안됌 trasnfer가 그리고 몇몇 데이터에서 transfer가 두개인 데이터들도 있으니 코드 구성을 다시해봐야할듯
 
   useEffect(() => {
     // squad, transfer 마저 구현하기
     const fetchData = async () => {
       try {
         /** 1. Get team squad and all leagues the team is playing in  */
-        const [_notused1, getAllLeaguesByTeamAction, _notused2] =
-          await Promise.all([
-            dispatch(getTeamSquad({ team: id })),
-            dispatch(getAllLeaguesByTeam({ team: id })),
-            dispatch(getTransferInfoByTeam({ team: id })),
-          ]);
+        const [getAllLeaguesByTeamAction, _notused2] = await Promise.all([
+          // dispatch(getTeamSquad({ team: id })),
+          dispatch(getAllLeaguesByTeam({ team: id })),
+          dispatch(getTransferInfoByTeam({ team: id })),
+        ]);
         // Assign National league ID and Latest season year to variable  */
         const leagues = getAllLeaguesByTeamAction.payload;
         const nationalLeagueObj = leagues?.filter(
@@ -124,38 +124,38 @@ export default function TeamOverView({
         const nationalLeague = nationalLeagueObj[0]?.league?.id;
         const latestSeason = nationalLeagueObj[0]?.seasons?.at(-1)?.year;
 
-        /** 2. Get all matches of the team and league standings  */
-        const [getFixturesByTeamAction, _notused3] = await Promise.all([
-          dispatch(
-            getFixturesByTeam({
-              team: id,
-              season: latestSeason,
-              timezone: locate,
-            })
-          ),
-          dispatch(getStanding({ id: nationalLeague, year: latestSeason })),
-        ]);
-        // Find the most recent match
-        const fixturesByTeam = getFixturesByTeamAction.payload;
-        const lastMatch = (fixturesByTeam ?? [])
-          .filter((match: any) => {
-            return (
-              match.league.id === nationalLeague &&
-              ["FT", "PEN", "AET"].includes(match.fixture.status.short)
-            );
-          })
-          .sort(
-            (a: any, b: any) =>
-              new Date(b?.fixture?.date).getTime() -
-              new Date(a?.fixture?.date).getTime()
-          )
-          .at(0);
-        /** Get data of the most recent match */
-        if (lastMatch?.fixture?.id) {
-          await dispatch(
-            getFixtures({ id: lastMatch.fixture.id, timezone: locate })
-          );
-        }
+        // /** 2. Get all matches of the team and league standings  */
+        // const [getFixturesByTeamAction, _notused3] = await Promise.all([
+        //   dispatch(
+        //     getFixturesByTeam({
+        //       team: id,
+        //       season: latestSeason,
+        //       timezone: locate,
+        //     })
+        //   ),
+        //   dispatch(getStanding({ id: nationalLeague, year: latestSeason })),
+        // ]);
+        // // Find the most recent match
+        // const fixturesByTeam = getFixturesByTeamAction.payload;
+        // const lastMatch = (fixturesByTeam ?? [])
+        //   .filter((match: any) => {
+        //     return (
+        //       match.league.id === nationalLeague &&
+        //       ["FT", "PEN", "AET"].includes(match.fixture.status.short)
+        //     );
+        //   })
+        //   .sort(
+        //     (a: any, b: any) =>
+        //       new Date(b?.fixture?.date).getTime() -
+        //       new Date(a?.fixture?.date).getTime()
+        //   )
+        //   .at(0);
+        // /** Get data of the most recent match */
+        // if (lastMatch?.fixture?.id) {
+        //   await dispatch(
+        //     getFixtures({ id: lastMatch.fixture.id, timezone: locate })
+        //   );
+        // }
       } catch (error) {
         console.error("Error fetching data:", error);
       }
@@ -205,41 +205,36 @@ export default function TeamOverView({
 
   // Find data that the current team has signed the player
   const transferIn = filterTransfer
-    ?.map((v: any) => ({
-      ...v,
-      transfers: v?.transfers
+    ?.flatMap((v: any) =>
+      v.transfers
         ?.filter((transfer: any) => transfer?.teams?.in?.id === Number(id))
-        ?.slice()
-        ?.sort(
-          (a1: any, b1: any) =>
-            new Date(b1?.date)?.getTime() - new Date(a1?.date)?.getTime()
-        ),
-    }))
-    .filter((v: any) => v?.transfers?.length > 0)
+        ?.map((transfer: any) => ({
+          player: v.player,
+          update: v.update,
+          transfer,
+        }))
+    )
     .sort((a: any, b: any) => {
       return (
-        new Date(b?.transfers[0]?.date).getTime() -
-        new Date(a?.transfers[0]?.date).getTime()
+        new Date(b?.transfer?.date).getTime() -
+        new Date(a?.transfer?.date).getTime()
       );
     });
-
   // Find data that the current team has released the player
   const transferOut = filterTransfer
-    ?.map((v: any) => ({
-      ...v,
-      transfers: v?.transfers
+    ?.flatMap((v: any) =>
+      v.transfers
         ?.filter((transfer: any) => transfer?.teams?.out?.id === Number(id))
-        ?.slice()
-        ?.sort(
-          (a1: any, b1: any) =>
-            new Date(b1?.date)?.getTime() - new Date(a1?.date)?.getTime()
-        ),
-    }))
-    .filter((v: any) => v?.transfers?.length > 0)
+        ?.map((transfer: any) => ({
+          player: v.player,
+          update: v.update,
+          transfer,
+        }))
+    )
     .sort((a: any, b: any) => {
       return (
-        new Date(b?.transfers[0]?.date).getTime() -
-        new Date(a?.transfers[0]?.date).getTime()
+        new Date(b?.transfer?.date).getTime() -
+        new Date(a?.transfer?.date).getTime()
       );
     });
 
@@ -793,7 +788,7 @@ export default function TeamOverView({
             {/* transfer header */}
             <h1 className="text-base">Transfer</h1>
             {/* transfer filter */}
-            <div className="flex text-xsm font-medium gap-3 mt-4">
+            <div className="flex text-xsm font-medium gap-3 mt-10">
               <button
                 className={`w-1/2 mlg:w-[110px] h-[34px] border border-solid border-[#E4E7EB] rounded-full
                   dark:border-none
@@ -819,13 +814,18 @@ export default function TeamOverView({
                 <h1>Players out</h1>
               </button>
             </div>
-            <table className="w-full mt-5">
+            <table className="w-full mt-10">
               <thead>
                 <tr className="text-sm">
-                  <th>Player</th>
-                  <th>Fee</th>
-                  <th>From</th>
-                  <th>Date</th>
+                  <th className="text-start">Player</th>
+                  <th className="text-start">Fee</th>
+                  {transferFilter === "playerIn" && (
+                    <th className="text-start">From</th>
+                  )}
+                  {transferFilter === "playerOut" && (
+                    <th className="text-start">To</th>
+                  )}
+                  <th className="text-start">Date</th>
                 </tr>
               </thead>
               <tbody className="text-sm">
@@ -833,27 +833,66 @@ export default function TeamOverView({
                   transferIn?.map((v: any, i: number) => {
                     console.log(v);
                     return (
-                      <tr key={i} className="h-[50px] align-middle">
-                        <td className="flex gap-4 items-center">
+                      <tr key={i} className="align-middle h-[50px]">
+                        <td className="flex gap-4 items-center h-[50px] align-middle">
                           <Image
                             src={`https://media.api-sports.io/football/players/${v?.player?.id}.png`}
                             alt={v?.player?.name}
                             width={40}
                             height={40}
+                            className="rounded-full"
                           />
                           <span>{v?.player?.name}</span>
                         </td>
-                        <td>{v?.transfers[0]?.type}</td>
-                        <td className="flex items-center gap-4">
+                        <td className="h-[50px] align-middle">
+                          {v?.transfer?.type}
+                        </td>
+                        <td className="flex items-center gap-4 h-[50px] align-middle">
                           <Image
-                            src={v?.transfers[0]?.teams?.out?.logo}
-                            alt={v?.player?.name}
+                            src={v?.transfer?.teams?.out?.logo}
+                            alt={v?.transfer?.teams?.out?.name}
                             width={20}
                             height={20}
                           />
-                          {v?.transfers[0]?.teams?.out?.name}
+                          {v?.transfer?.teams?.out?.name}
                         </td>
-                        <td>{v?.transfers[0]?.date}</td>
+                        <td className="h-[50px] align-middle">
+                          {v?.transfer?.date}
+                        </td>
+                      </tr>
+                    );
+                  })}
+
+                {transferFilter === "playerOut" &&
+                  transferOut?.map((v: any, i: number) => {
+                    console.log(v);
+                    return (
+                      <tr key={i} className="align-middle h-[50px]">
+                        <td className="flex gap-4 items-center h-[50px] align-middle">
+                          <Image
+                            src={`https://media.api-sports.io/football/players/${v?.player?.id}.png`}
+                            alt={v?.player?.name}
+                            width={40}
+                            height={40}
+                            className="rounded-full"
+                          />
+                          <span>{v?.player?.name}</span>
+                        </td>
+                        <td className="h-[50px] align-middle">
+                          {v?.transfer?.type}
+                        </td>
+                        <td className="flex items-center gap-4 h-[50px] align-middle">
+                          <Image
+                            src={v?.transfer?.teams?.in?.logo}
+                            alt={v?.transfer?.teams?.in?.name}
+                            width={20}
+                            height={20}
+                          />
+                          {v?.transfer?.teams?.in?.name}
+                        </td>
+                        <td className="h-[50px] align-middle">
+                          {v?.transfer?.date}
+                        </td>
                       </tr>
                     );
                   })}
