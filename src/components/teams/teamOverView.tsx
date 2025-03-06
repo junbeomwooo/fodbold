@@ -99,7 +99,7 @@ export default function TeamOverView({
 
   // http://localhost:3000/en/teams/47/Tottenham/overview
   // http://localhost:3000/en/teams/57/ipswich/overview
-  // 중앙정렬이 안됌 trasnfer가 그리고 몇몇 데이터에서 transfer가 두개인 데이터들도 있으니 코드 구성을 다시해봐야할듯
+  // tr이 일정 높이값을 주어도 각각의 높이값이 다르게 나옴 < 이부분 수정
 
   useEffect(() => {
     // squad, transfer 마저 구현하기
@@ -834,7 +834,8 @@ export default function TeamOverView({
                     console.log(v);
                     return (
                       <tr key={i} className="align-middle h-[50px]">
-                        <td className="flex gap-4 items-center h-[50px] align-middle">
+                        <td className="h-[50px]">
+                          <div className="flex gap-4 items-center h-[50px] ">
                           <Image
                             src={`https://media.api-sports.io/football/players/${v?.player?.id}.png`}
                             alt={v?.player?.name}
@@ -843,11 +844,13 @@ export default function TeamOverView({
                             className="rounded-full"
                           />
                           <span>{v?.player?.name}</span>
+                          </div>
                         </td>
                         <td className="h-[50px] align-middle">
                           {v?.transfer?.type}
                         </td>
-                        <td className="flex items-center gap-4 h-[50px] align-middle">
+                        <td className="h-[50px] align-middle">
+                          <div className="flex items-center gap-4 h-[50px]">
                           <Image
                             src={v?.transfer?.teams?.out?.logo}
                             alt={v?.transfer?.teams?.out?.name}
@@ -855,6 +858,7 @@ export default function TeamOverView({
                             height={20}
                           />
                           {v?.transfer?.teams?.out?.name}
+                          </div>
                         </td>
                         <td className="h-[50px] align-middle">
                           {v?.transfer?.date}
