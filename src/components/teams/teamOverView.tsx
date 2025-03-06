@@ -99,7 +99,7 @@ export default function TeamOverView({
 
   // http://localhost:3000/en/teams/47/Tottenham/overview
   // http://localhost:3000/en/teams/57/ipswich/overview
-  // tr이 일정 높이값을 주어도 각각의 높이값이 다르게 나옴 < 이부분 수정
+  // css 에러 수정 완료하였으니 이적 기록 마저 구현하기
 
   useEffect(() => {
     // squad, transfer 마저 구현하기
@@ -814,7 +814,7 @@ export default function TeamOverView({
                 <h1>Players out</h1>
               </button>
             </div>
-            <table className="w-full mt-10">
+            <table className="w-full mt-6 border-separate border-spacing-y-6">
               <thead>
                 <tr className="text-sm">
                   <th className="text-start">Player</th>
