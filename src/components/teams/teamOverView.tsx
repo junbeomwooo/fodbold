@@ -814,7 +814,8 @@ export default function TeamOverView({
                 <h1>Players out</h1>
               </button>
             </div>
-            <table className="w-full mt-6 border-separate border-spacing-y-6">
+            {/* tablet, desk version */}
+            <table className="w-full mt-6 border-separate border-spacing-y-6 hidden md:block">
               <thead>
                 <tr className="text-sm">
                   <th className="text-start">Player</th>
@@ -828,22 +829,21 @@ export default function TeamOverView({
                   <th className="text-start">Date</th>
                 </tr>
               </thead>
-              <tbody className="text-sm">
+              <tbody className="text-xs">
                 {transferFilter === "playerIn" &&
                   transferIn?.map((v: any, i: number) => {
-                    console.log(v);
                     return (
                       <tr key={i} className="align-middle h-[50px]">
                         <td className="h-[50px]">
                           <div className="flex gap-4 items-center h-[50px] ">
-                          <Image
-                            src={`https://media.api-sports.io/football/players/${v?.player?.id}.png`}
-                            alt={v?.player?.name}
-                            width={40}
-                            height={40}
-                            className="rounded-full"
-                          />
-                          <span>{v?.player?.name}</span>
+                            <Image
+                              src={`https://media.api-sports.io/football/players/${v?.player?.id}.png`}
+                              alt={v?.player?.name}
+                              width={40}
+                              height={40}
+                              className="rounded-full"
+                            />
+                            <span>{v?.player?.name}</span>
                           </div>
                         </td>
                         <td className="h-[50px] align-middle">
@@ -851,13 +851,13 @@ export default function TeamOverView({
                         </td>
                         <td className="h-[50px] align-middle">
                           <div className="flex items-center gap-4 h-[50px]">
-                          <Image
-                            src={v?.transfer?.teams?.out?.logo}
-                            alt={v?.transfer?.teams?.out?.name}
-                            width={20}
-                            height={20}
-                          />
-                          {v?.transfer?.teams?.out?.name}
+                            <Image
+                              src={v?.transfer?.teams?.out?.logo}
+                              alt={v?.transfer?.teams?.out?.name}
+                              width={20}
+                              height={20}
+                            />
+                            {v?.transfer?.teams?.out?.name}
                           </div>
                         </td>
                         <td className="h-[50px] align-middle">
@@ -869,30 +869,33 @@ export default function TeamOverView({
 
                 {transferFilter === "playerOut" &&
                   transferOut?.map((v: any, i: number) => {
-                    console.log(v);
                     return (
                       <tr key={i} className="align-middle h-[50px]">
-                        <td className="flex gap-4 items-center h-[50px] align-middle">
-                          <Image
-                            src={`https://media.api-sports.io/football/players/${v?.player?.id}.png`}
-                            alt={v?.player?.name}
-                            width={40}
-                            height={40}
-                            className="rounded-full"
-                          />
-                          <span>{v?.player?.name}</span>
+                        <td className="h-[50px]">
+                          <div className="flex gap-4 items-center h-[50px] ">
+                            <Image
+                              src={`https://media.api-sports.io/football/players/${v?.player?.id}.png`}
+                              alt={v?.player?.name}
+                              width={40}
+                              height={40}
+                              className="rounded-full"
+                            />
+                            <span>{v?.player?.name}</span>
+                          </div>
                         </td>
                         <td className="h-[50px] align-middle">
                           {v?.transfer?.type}
                         </td>
-                        <td className="flex items-center gap-4 h-[50px] align-middle">
-                          <Image
-                            src={v?.transfer?.teams?.in?.logo}
-                            alt={v?.transfer?.teams?.in?.name}
-                            width={20}
-                            height={20}
-                          />
-                          {v?.transfer?.teams?.in?.name}
+                        <td className="h-[50px] align-middle">
+                          <div className="flex items-center gap-4 h-[50px]">
+                            <Image
+                              src={v?.transfer?.teams?.in?.logo}
+                              alt={v?.transfer?.teams?.in?.name}
+                              width={20}
+                              height={20}
+                            />
+                            {v?.transfer?.teams?.in?.name}
+                          </div>
                         </td>
                         <td className="h-[50px] align-middle">
                           {v?.transfer?.date}
@@ -902,6 +905,44 @@ export default function TeamOverView({
                   })}
               </tbody>
             </table>
+            {/* mobile version */}
+            <div className="blcok md:hidden">
+              {transferFilter === "playerIn" &&
+                transferIn?.map((v: any, i: number) => {
+                  console.log(v);
+
+                  return (
+                    <>
+                    <div key={i} className="w-[300px] text-xs m-auto mt-10 mb-6">
+                      <Image
+                        src={`https://media.api-sports.io/football/players/${v?.player?.id}.png`}
+                        alt={v?.player?.name}
+                        width={50}
+                        height={50}
+                        className="rounded-full m-auto"
+                      />
+                      <h2 className="text-center mt-2">{v?.player?.name}</h2>
+                      <div className="flex items-center justify-center w-full">
+                        <span>From</span>
+                        <Image
+                          src={v?.transfer?.teams?.out?.logo}
+                          alt={v?.transfer?.teams?.out?.name}
+                          width={20}
+                          height={20}
+                        />
+                        <h3>{v?.transfer?.teams?.out?.name}</h3>
+                      </div>
+                      <div className="flex gap-4 w-full justify-center">
+                        <h3> {v?.transfer?.type}</h3>
+                        <h3> {v?.transfer?.date}</h3>
+                      </div>
+                    </div>
+                    {transferIn?.length > i + 1 && <hr />}
+                    </>
+                  );
+                })}
+            </div>
+            <div></div>
           </div>
         </div>
         {/* last stratXI, fixture pagenation */}
