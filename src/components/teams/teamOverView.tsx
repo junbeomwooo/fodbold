@@ -815,7 +815,7 @@ export default function TeamOverView({
               </button>
             </div>
             {/* tablet, desk version */}
-            <table className="w-full mt-6 border-separate border-spacing-y-6 hidden md:block">
+            <table className="w-full mt-6 border-separate border-spacing-y-6 hidden md:table">
               <thead>
                 <tr className="text-sm">
                   <th className="text-start">Player</th>
@@ -858,43 +858,6 @@ export default function TeamOverView({
                               height={20}
                             />
                             {v?.transfer?.teams?.out?.name}
-                          </div>
-                        </td>
-                        <td className="h-[50px] align-middle">
-                          {v?.transfer?.date}
-                        </td>
-                      </tr>
-                    );
-                  })}
-
-                {transferFilter === "playerOut" &&
-                  transferOut?.map((v: any, i: number) => {
-                    return (
-                      <tr key={i} className="align-middle h-[50px]">
-                        <td className="h-[50px]">
-                          <div className="flex gap-4 items-center h-[50px] ">
-                            <Image
-                              src={`https://media.api-sports.io/football/players/${v?.player?.id}.png`}
-                              alt={v?.player?.name}
-                              width={40}
-                              height={40}
-                              className="rounded-full"
-                            />
-                            <span>{v?.player?.name}</span>
-                          </div>
-                        </td>
-                        <td className="h-[50px] align-middle">
-                          {v?.transfer?.type}
-                        </td>
-                        <td className="h-[50px] align-middle">
-                          <div className="flex items-center gap-4 h-[50px]">
-                            <Image
-                              src={v?.transfer?.teams?.in?.logo}
-                              alt={v?.transfer?.teams?.in?.name}
-                              width={20}
-                              height={20}
-                            />
-                            {v?.transfer?.teams?.in?.name}
                           </div>
                         </td>
                         <td className="h-[50px] align-middle">
