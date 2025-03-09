@@ -102,7 +102,7 @@ export default function TeamOverView({
   // css 에러 수정 완료하였으니 이적 기록 마저 구현하기
 
   useEffect(() => {
-    // squad, transfer 마저 구현하기
+    // transfer 모바일 버전 구현 후 onClick 시 선수 상세 페이지 이동 함수 구현, 그 후 transfer out 버튼도 구현하기. 그리고 squad 구현 
     const fetchData = async () => {
       try {
         /** 1. Get team squad and all leagues the team is playing in  */
@@ -786,9 +786,10 @@ export default function TeamOverView({
           {/* transfer info */}
           <div className="w-full bg-white rounded-xl mt-6 px-8 py-5 dark:bg-custom-dark max-sm:px-4  border-slate-200 border border-solid dark:border-0">
             {/* transfer header */}
-            <h1 className="text-base">Transfer</h1>
+            {/* <h1 className="text-base mb-5">Transfer</h1> */}
+
             {/* transfer filter */}
-            <div className="flex text-xsm font-medium gap-3 mt-10">
+            <div className="flex text-xsm font-medium gap-3 my-4 items-center">
               <button
                 className={`w-1/2 mlg:w-[110px] h-[34px] border border-solid border-[#E4E7EB] rounded-full
                   dark:border-none
@@ -814,56 +815,66 @@ export default function TeamOverView({
                 <h1>Players out</h1>
               </button>
             </div>
-            {/* tablet, desk version */}
-            <table className="w-full mt-6 border-separate border-spacing-y-6 hidden md:table">
+            <hr className="border-1 border-solid mt-5 dark:border-custom-gray3"/>
+
+            {/* tablet, desk version : 히든과 미디어쿼리값이 문제인듯, 테이블 각 컬럼마다 일정 크기를 가지지않음, hideen과 md:blocka을 지워보기*/}
+            <table className="w-full mt-6 hidden md:table">
               <thead>
                 <tr className="text-sm">
-                  <th className="text-start">Player</th>
-                  <th className="text-start">Fee</th>
+                  <th className="text-start pb-4">Player</th>
+                  <th className="text-start pb-4">Fee</th>
                   {transferFilter === "playerIn" && (
-                    <th className="text-start">From</th>
+                    <th className="text-start pb-4">From</th>
                   )}
                   {transferFilter === "playerOut" && (
-                    <th className="text-start">To</th>
+                    <th className="text-start pb-4">To</th>
                   )}
-                  <th className="text-start">Date</th>
+                  <th className="text-start pb-4">Date</th>
                 </tr>
               </thead>
-              <tbody className="text-xs">
+              <tbody className="text-xs w-full relative">
                 {transferFilter === "playerIn" &&
                   transferIn?.map((v: any, i: number) => {
                     return (
-                      <tr key={i} className="align-middle h-[50px]">
-                        <td className="h-[50px]">
-                          <div className="flex gap-4 items-center h-[50px] ">
-                            <Image
-                              src={`https://media.api-sports.io/football/players/${v?.player?.id}.png`}
-                              alt={v?.player?.name}
-                              width={40}
-                              height={40}
-                              className="rounded-full"
-                            />
-                            <span>{v?.player?.name}</span>
-                          </div>
-                        </td>
-                        <td className="h-[50px] align-middle">
-                          {v?.transfer?.type}
-                        </td>
-                        <td className="h-[50px] align-middle">
-                          <div className="flex items-center gap-4 h-[50px]">
-                            <Image
-                              src={v?.transfer?.teams?.out?.logo}
-                              alt={v?.transfer?.teams?.out?.name}
-                              width={20}
-                              height={20}
-                            />
-                            {v?.transfer?.teams?.out?.name}
-                          </div>
-                        </td>
-                        <td className="h-[50px] align-middle">
-                          {v?.transfer?.date}
-                        </td>
-                      </tr>
+                      <>
+                        <tr
+                          key={i}
+                          className="align-middle h-[50px] cursor-pointer hover:bg-[#F5F5F5]"
+                        >
+                          <td className="h-[50px] py-4">
+                            <div className="flex gap-4 items-center h-[50px] ">
+                              <Image
+                                src={`https://media.api-sports.io/football/players/${v?.player?.id}.png`}
+                                alt={v?.player?.name}
+                                width={40}
+                                height={40}
+                                className="rounded-full"
+                              />
+                              <span>{v?.player?.name}</span>
+                            </div>
+                          </td>
+                          <td className="h-[50px] align-middle py-4">
+                            {v?.transfer?.type}
+                          </td>
+                          <td className="h-[50px] align-middle py-4">
+                            <div className="flex items-center gap-4 h-[50px]">
+                              <Image
+                                src={v?.transfer?.teams?.out?.logo}
+                                alt={v?.transfer?.teams?.out?.name}
+                                width={20}
+                                height={20}
+                              />
+                              {v?.transfer?.teams?.out?.name}
+                            </div>
+                          </td>
+                          <td className="h-[50px] align-middle py-4">
+                            {v?.transfer?.date}
+                          </td>
+                        </tr>
+                        {transferIn?.length > i + 1 && (
+                          <hr className="w-full border-1 border-solid absolute dark:border-custom-gray3" />
+                        )}
+                      </>
                     );
                   })}
               </tbody>
@@ -873,39 +884,40 @@ export default function TeamOverView({
               {transferFilter === "playerIn" &&
                 transferIn?.map((v: any, i: number) => {
                   console.log(v);
-
                   return (
                     <>
-                    <div key={i} className="w-[300px] text-xs m-auto mt-10 mb-6">
-                      <Image
-                        src={`https://media.api-sports.io/football/players/${v?.player?.id}.png`}
-                        alt={v?.player?.name}
-                        width={50}
-                        height={50}
-                        className="rounded-full m-auto"
-                      />
-                      <h2 className="text-center mt-2">{v?.player?.name}</h2>
-                      <div className="flex items-center justify-center w-full">
-                        <span>From</span>
+                      <div
+                        key={i}
+                        className="w-[300px] text-xs m-auto mt-10 mb-6"
+                      >
                         <Image
-                          src={v?.transfer?.teams?.out?.logo}
-                          alt={v?.transfer?.teams?.out?.name}
-                          width={20}
-                          height={20}
+                          src={`https://media.api-sports.io/football/players/${v?.player?.id}.png`}
+                          alt={v?.player?.name}
+                          width={50}
+                          height={50}
+                          className="rounded-full m-auto"
                         />
-                        <h3>{v?.transfer?.teams?.out?.name}</h3>
+                        <h2 className="text-center mt-2 text-xs font-medium">{v?.player?.name}</h2>
+                        <div className="flex items-center justify-center w-full mt-2 gap-3">
+                          <span className="text-custom-gray">From</span>
+                          <Image
+                            src={v?.transfer?.teams?.out?.logo}
+                            alt={v?.transfer?.teams?.out?.name}
+                            width={20}
+                            height={20}
+                          />
+                          <h3>{v?.transfer?.teams?.out?.name}</h3>
+                        </div>
+                        <div className="flex gap-4 w-full justify-center mt-2">
+                          <h3> {v?.transfer?.type}</h3>
+                          <h3> {v?.transfer?.date}</h3>
+                        </div>
                       </div>
-                      <div className="flex gap-4 w-full justify-center">
-                        <h3> {v?.transfer?.type}</h3>
-                        <h3> {v?.transfer?.date}</h3>
-                      </div>
-                    </div>
-                    {transferIn?.length > i + 1 && <hr />}
+                      {transferIn?.length > i + 1 && <hr className="dark:border-custom-gray3" />}
                     </>
                   );
                 })}
             </div>
-            <div></div>
           </div>
         </div>
         {/* last stratXI, fixture pagenation */}
