@@ -274,6 +274,19 @@
   "team": {
     "teamForm": "팀 컨디션",
     "nextMatch": "다음 경기",
-    "onGoing": "진행 중"
+    "onGoing": "진행 중",
+    "noTransfer": "이적 기록이 없습니다",
+    "allTransfer": "모든 이적",
+    "playerIn": "영입 선수",
+    "playerOut": "방출 선수",
+    "player": "선수",
+    "fee": "이적료",
+    "from": "이전 팀",
+    "to":"이적 팀",
+    "date": "날짜",
+
+    "lastXI": "최종 선발",
+    "fixture": "경기 일정",
+    "overview": "개요"
   }
 }

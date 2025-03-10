@@ -274,6 +274,20 @@
   "team": {
     "teamForm": "Holdets form",
     "nextMatch": "Næste kamp",
-    "onGoing": "I gang"
+    "onGoing": "I gang",
+    "noTransfer": "ngen transferdata tilgængelig",
+    "allTransfer": "Alle transfers",
+
+    "playerIn": "Spillere ind",
+    "playerOut": "Spillere ud",
+    "player": "Spiller",
+    "fee": "Overgangssum",
+    "from": "Fra",
+    "to":"Til",
+    "date": "Dato",
+
+    "lastXI": "Sidste startopstilling",
+    "fixture": "Kampplan",
+    "overview": "Oversigt"
   }
 }
