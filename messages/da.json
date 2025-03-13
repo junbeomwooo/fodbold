@@ -277,17 +277,17 @@
     "onGoing": "I gang",
     "noTransfer": "ngen transferdata tilgængelig",
     "allTransfer": "Alle transfers",
-
     "playerIn": "Spillere ind",
     "playerOut": "Spillere ud",
     "player": "Spiller",
     "fee": "Overgangssum",
     "from": "Fra",
-    "to":"Til",
+    "to": "Til",
     "date": "Dato",
-
     "lastXI": "Sidste startopstilling",
     "fixture": "Kampplan",
-    "overview": "Oversigt"
+    "overview": "Oversigt",
+    "transfer": "Overgang",
+    "table": "Stilling"
   }
 }

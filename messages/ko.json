@@ -282,11 +282,12 @@
     "player": "선수",
     "fee": "이적료",
     "from": "이전 팀",
-    "to":"이적 팀",
+    "to": "이적 팀",
     "date": "날짜",
-
     "lastXI": "최종 선발",
     "fixture": "경기 일정",
-    "overview": "개요"
+    "overview": "개요",
+    "transfer": "이적",
+    "table": "순위"
   }
 }

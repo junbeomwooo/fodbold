@@ -283,9 +283,10 @@
     "from":"From",
     "to":"To",
     "date":"Date",
-
     "lastXI":"Last starting XI",
     "fixture":"Fixtures",
-    "overview":"Overview"
+    "overview":"Overview",
+    "transfer": "Transfer",
+    "table": "Table"
   }
 }
