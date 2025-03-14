@@ -285,9 +285,10 @@
     "to": "Til",
     "date": "Dato",
     "lastXI": "Sidste startopstilling",
-    "fixture": "Kampplan",
+    "fixtures": "Kampplan",
     "overview": "Oversigt",
     "transfer": "Overgang",
-    "table": "Stilling"
+    "table": "Stilling",
+    "fixture": "Kampplan"
   }
 }

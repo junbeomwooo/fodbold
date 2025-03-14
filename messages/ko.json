@@ -285,9 +285,10 @@
     "to": "이적 팀",
     "date": "날짜",
     "lastXI": "최종 선발",
-    "fixture": "경기 일정",
+    "fixtures": "경기 일정",
     "overview": "개요",
     "transfer": "이적",
-    "table": "순위"
+    "table": "순위",
+    "fixture": "경기 일정"
   }
 }

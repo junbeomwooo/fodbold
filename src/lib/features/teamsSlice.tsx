@@ -75,12 +75,39 @@ export const getTeamsStatistics = createAsyncThunk(
   }
 );
 
+export const getTeamInfo = createAsyncThunk(
+  "teamsSlice/getTeamInfo",
+  async ({ team}: { team:number }, { rejectWithValue }) => {
+    let result = null;
+
+    try {
+      const response = await axios.get(`${url}/teams?id=${team}`, {
+        headers: {
+          "x-rapidapi-host": "v3.football.api-sports.io",
+          "x-rapidapi-key": `${process.env.NEXT_PUBLIC_FOOTBALL_API_KEY}`,
+        },
+      });
+      console.log(response);
+      result = response?.data?.response[0];
+    } catch (err) {
+      const axiosErr = err as AxiosError;
+      console.group("getTeamInfo Error");
+      result = rejectWithValue(axiosErr.response);
+      console.groupEnd();
+    }
+
+    return result;
+  }
+);
+
+
 export const teamsSlice = createSlice({
   name: "teamsSlice",
   initialState: {
     statics: null,
     squads : null,
     transfer: null,
+    teamInfo: null,
     
   },
   reducers: {
@@ -108,6 +135,13 @@ export const teamsSlice = createSlice({
       getTransferInfoByTeam.fulfilled,
       (state, { payload }: { payload: any }) => {
         state.transfer = payload;
+      }
+    );
+
+    builder.addCase(
+      getTeamInfo.fulfilled,
+      (state, { payload }: { payload: any }) => {
+        state.teamInfo = payload;
       }
     );
   },

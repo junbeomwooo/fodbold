@@ -22,7 +22,6 @@ import { motion, AnimatePresence } from "motion/react";
 import { useTheme } from "next-themes";
 
 // Images
-import undefined from "@/../public/img/undefined.png";
 import { FaArrowCircleLeft } from "react-icons/fa";
 import { PiSoccerBallLight } from "react-icons/pi";
 import MissedPenalty from "@/../public/img/missedPenalty.png";
@@ -92,7 +91,6 @@ export default function TeamOverView({
 
   // http://localhost:3000/en/teams/47/Tottenham/overview
   // http://localhost:3000/en/teams/57/ipswich/overview
-  // css 에러 수정 완료하였으니 이적 기록 마저 구현하기
 
   useEffect(() => {
     const fetchData = async () => {
@@ -1459,7 +1457,7 @@ export default function TeamOverView({
                   />
                 </div>
 
-                <h1 className="text-sm">{t("fixture")}</h1>
+                <h1 className="text-sm">{t("fixtures")}</h1>
 
                 {/* right button */}
                 <div
