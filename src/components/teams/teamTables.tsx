@@ -58,14 +58,17 @@ export default function TeamTables({
 
   // http://localhost:3000/en/teams/47/Tottenham/tables
 
-  // 1.overview페이지 fixture페이지 table페이지 구현해두었으니 적절한 데이터 페칭횟수가 일어나는지 확인하고 새로고침시에도 데이터가 잘 받아오는지 확인하기. 
-  // 2.League 페이지 useEffect 의존성 배열 또한 기입하고 useRef를 사용하여 불필요한 데이터 페칭 방지하기.
-  // 3. sqaud 페이지 만들어 두었으니 위 두가지를 수행한 후 구현하기
-  
+  // 1..League 페이지 useEffect 의존성 배열 또한 기입하고 useRef를 사용하여 불필요한 데이터 페칭 방지하기.
+  // 2. sqaud 페이지 만들어 두었으니 위 두가지를 수행한 후 구현하기
+
   useEffect(() => {
     if (firstRender.current) {
-      if (!fixture || !leagues || !standing) {
+      if (
+        (!leagues || !standing) && // leagues 또는 standing이 없고
+        (!fixture || !teamInfo)
+      ) {
         firstRender.current = false; // after first rendering, it will chagne useRef value as fasle.
+        console.log("fetched!!");
 
         dispatch(getTeamInfo({ team: id }));
         dispatch(getAllLeaguesByTeam({ team: id })).then((payload) => {
@@ -82,7 +85,7 @@ export default function TeamTables({
         });
       }
     }
-  },[dispatch, fixture, id, leagues, standing]);
+  }, [dispatch, fixture, id, leagues, standing, teamInfo]);
 
   return (
     <div className="full">

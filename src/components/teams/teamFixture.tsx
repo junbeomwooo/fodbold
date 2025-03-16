@@ -57,8 +57,12 @@ export default function TeamFixture({
   /** if date can't be recieved through redux global state, it will fetch data */
   useEffect(() => {
     if (firstRender.current) {
-      if (!leagues || !fixtureByTeam || !fixture) {
+      if (
+        (!leagues || !fixtureByTeam) && // leagues 또는 standing이 없고
+        (!fixture || !teamInfo)
+      ) {
         firstRender.current = false; // after first rendering, it will chagne useRef value as fasle.
+        console.log("fetched!!");
 
         dispatch(getTeamInfo({ team: id }));
         dispatch(getAllLeaguesByTeam({ team: id })).then((payload) => {
@@ -79,7 +83,7 @@ export default function TeamFixture({
         });
       }
     }
-  }, [dispatch, fixture, fixtureByTeam, id, leagues, locate]);
+  }, [dispatch, fixture, fixtureByTeam, id, leagues, locate, teamInfo]);
   /** routing */
   const router = useRouter();
 

@@ -87,7 +87,6 @@ export const getTeamInfo = createAsyncThunk(
           "x-rapidapi-key": `${process.env.NEXT_PUBLIC_FOOTBALL_API_KEY}`,
         },
       });
-      console.log(response);
       result = response?.data?.response[0];
     } catch (err) {
       const axiosErr = err as AxiosError;
