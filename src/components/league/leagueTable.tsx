@@ -51,84 +51,89 @@ export default function LeagueTable({
   /** 배열의 첫 인덱스만 가져와서 form이 있는지 길이가 몇인지 확인하는 용도 */
   const form = stands ? stands[0][0]?.form : null;
 
-  // useEffect(() => {
-  //   /** 조회하려는 시즌값이 변경되지 않았으며 season과 selectedYear값이 모두 존재하는 경우 ( 즉 이전 페이지에서 전역 상태값을 잘 받아온 경우 ) */
-  //   if (!selectedYearChanged && season && selectedYear !== 0 && stands) {
-  //     return;
-  //   }
-  //   /** 이전 페이지로부터 seasons을 받아오지 못한 경우에 실행
-  //    * 1.getLeague를 통해 season 정보를 받아온 뒤 가장 최근 리그 데이터를 selectedYear에 저장
-  //    * 2.selectYear이 변경됨으로써 useEffect가 다시 실행 됨으로 else 부분으로 넘어감
-  //    */
-  //   if (!season) {
-  //     // 리그 데이터 받아오기
-  //     dispatch(getLeague({ id })).then(({ payload }) => {
-  //       const season = payload?.seasons;
-
-  //       if (season && season.length > 0) {
-  //         const lastSeason = season[season?.length - 1].year;
-  //         // selectedYear에 저장
-  //         setSelectedYear(lastSeason);
-  //         /** 전역 상태값으로 써 공유를 하기위해 선택한 년도를 상태값으로써 저장 */
-  //         dispatch(setSelectedSeason(selectedYear));
-  //       } else {
-  //         console.error("season error");
-  //       }
-  //     });
-  //     /** 이전 페이지에서 못받아옴으로써 if문 실행 뒤 넘어왔거나 standing이나 seasons을 이전페이지에서 받아온 경우
-  //      * 1. selected가 저장된게 없다면 최근 시즌 정보를 selectedYear 상태값에 저장
-  //      * 2. 그후 useEffect가 다시 실행됨으로써 getStanding을 통한 해당 년도 순위 데이터 조회
-  //      * 3. 이전에 저장된 stands 상태값을 사용하지않고 최신 년도 데이터로 새로 받아오기 고정
-  //      */
-  //   } else {
-  //     // 스탠드와 시즌이 있으면서 초기 상태인 경우
-  //     // 왜 인지는 모르겠지만 selectedYear 관한 조건문을 여기서 안넣으면 새로고침시 league = 0 으로 데이터 통신이 한번더 발생해서 조건문을 추가하였음
-  //     if (selectedYear === 0) {
-  //       const lastSeason = season[season?.length - 1].year;
-  //       setSelectedYear(lastSeason);
-  //       /** 전역 상태값으로 써 공유를 하기위해 선택한 년도를 상태값으로써 저장 */
-  //       dispatch(setSelectedSeason(selectedYear));
-  //     } else {
-  //       // 초기 상태가 아닌 경우(즉 selectedYear의변화가 생긴 경우 재통신)
-  //       dispatch(getStanding({ id: id, year: selectedYear }));
-  //     }
-  //   }
-  //   // 의존성 배열 관련 경고문은 무시해도 좋음
-  // }, [dispatch, id, selectedYear, season, selectedYearChanged]);
-
-  // 1. 시즌 정보가 없을 때 가져오는 useEffect
   useEffect(() => {
+    /** 조회하려는 시즌값이 변경되지 않았으며 season과 selectedYear값이 모두 존재하는 경우 ( 즉 이전 페이지에서 전역 상태값을 잘 받아온 경우 ) */
+    if (!selectedYearChanged && season && selectedYear !== 0 && stands) {
+      return;
+    }
+    /** 이전 페이지로부터 seasons을 받아오지 못한 경우에 실행
+     * 1.getLeague를 통해 season 정보를 받아온 뒤 가장 최근 리그 데이터를 selectedYear에 저장
+     * 2.selectYear이 변경됨으로써 useEffect가 다시 실행 됨으로 else 부분으로 넘어감
+     */
     if (!season) {
+      // 리그 데이터 받아오기
       dispatch(getLeague({ id })).then(({ payload }) => {
         const season = payload?.seasons;
 
         if (season && season.length > 0) {
-          const lastSeason = season[season.length - 1].year;
+          const lastSeason = season[season?.length - 1].year;
+          // selectedYear에 저장
           setSelectedYear(lastSeason);
-          dispatch(setSelectedSeason(lastSeason));
+          /** 전역 상태값으로 써 공유를 하기위해 선택한 년도를 상태값으로써 저장 */
+          dispatch(setSelectedSeason(selectedYear));
         } else {
           console.error("season error");
         }
       });
+      /** 이전 페이지에서 못받아옴으로써 if문 실행 뒤 넘어왔거나 standing이나 seasons을 이전페이지에서 받아온 경우
+       * 1. selected가 저장된게 없다면 최근 시즌 정보를 selectedYear 상태값에 저장
+       * 2. 그후 useEffect가 다시 실행됨으로써 getStanding을 통한 해당 년도 순위 데이터 조회
+       * 3. 이전에 저장된 stands 상태값을 사용하지않고 최신 년도 데이터로 새로 받아오기 고정
+       */
+    } else {
+      // 스탠드와 시즌이 있으면서 초기 상태인 경우
+      // 왜 인지는 모르겠지만 selectedYear 관한 조건문을 여기서 안넣으면 새로고침시 league = 0 으로 데이터 통신이 한번더 발생해서 조건문을 추가하였음
+      if (selectedYear === 0) {
+        const lastSeason = season[season?.length - 1].year;
+        setSelectedYear(lastSeason);
+        /** 전역 상태값으로 써 공유를 하기위해 선택한 년도를 상태값으로써 저장 */
+        dispatch(setSelectedSeason(selectedYear));
+      } else {
+        // 초기 상태가 아닌 경우(즉 selectedYear의변화가 생긴 경우 재통신)
+        dispatch(getStanding({ id: id, year: selectedYear }));
+      }
     }
-  }, [dispatch, id, season]);
+    // 의존성 배열 관련 경고문은 무시해도 좋음
+  }, [dispatch, id, selectedYear, season, selectedYearChanged]);
 
-  // 2. selectedYear가 0이면 최신 시즌을 설정하는 useEffect
-  useEffect(() => {
-    if (season && selectedYear === 0) {
-      const lastSeason = season[season.length - 1].year;
-      setSelectedYear(lastSeason);
-      dispatch(setSelectedSeason(lastSeason));
-      dispatch(getStanding({ id, year: lastSeason }));
-    }
-  }, [season, selectedYear, dispatch, id]);
+  /** 이 코드 말고 전에 썼던 코드 사용시 년도 값이 바뀌는지 확인하기. 
+   * 만약 년도값이 바뀐다면 해당 기능을 그대로 구현하기 위해 아래 코드를 수정하기
+   * 만약 년도값이 바뀌지않는다면 헤더에 년도값 전역상태값으로써 공유하고 수정할수있는 메서드 전달해서 구현할지 고민하기
+   */
+  
+  // 1. 시즌 정보가 없을 때 가져오는 useEffect
+  // useEffect(() => {
+  //   if (!season) {
+  //     dispatch(getLeague({ id })).then(({ payload }) => {
+  //       const season = payload?.seasons;
 
-  // 3. selectedYear이 변경될 때 순위 데이터를 가져오는 useEffect
-  useEffect(() => {
-    if (selectedYear !== 0 && selectedYearChanged) {
-      dispatch(getStanding({ id, year: selectedYear }));
-    }
-  }, [dispatch, id, selectedYear, selectedYearChanged]);
+  //       if (season && season.length > 0) {
+  //         const lastSeason = season[season.length - 1].year;
+  //         setSelectedYear(lastSeason);
+  //         dispatch(setSelectedSeason(lastSeason));
+  //       } else {
+  //         console.error("season error");
+  //       }
+  //     });
+  //   }
+  // }, [dispatch, id, season]);
+
+  // // 2. selectedYear가 0이면 최신 시즌을 설정하는 useEffect
+  // useEffect(() => {
+  //   if (season && selectedYear === 0) {
+  //     const lastSeason = season[season.length - 1].year;
+  //     setSelectedYear(lastSeason);
+  //     dispatch(setSelectedSeason(lastSeason));
+  //     dispatch(getStanding({ id, year: lastSeason }));
+  //   }
+  // }, [season, selectedYear, dispatch, id]);
+
+  // // 3. selectedYear이 변경될 때 순위 데이터를 가져오는 useEffect
+  // useEffect(() => {
+  //   if (selectedYear !== 0 && selectedYearChanged) {
+  //     dispatch(getStanding({ id, year: selectedYear }));
+  //   }
+  // }, [dispatch, id, selectedYear, selectedYearChanged]);
 
   return (
     <>

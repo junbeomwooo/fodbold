@@ -65,98 +65,98 @@ export default function LeagueMatches({
 
   const router = useRouter();
 
-  // useEffect(() => {
-  //   /** 조회하려는 시즌값이 변경되지 않았으며 season과 selectedYear값이 모두 존재하는 경우 ( 즉 이전 페이지에서 전역 상태값을 잘 받아온 경우 ) */
-  //   if (!selectedYearChanged && season && selectedYear !== 0 && match) {
-  //     return;
-  //   }
-  //   /** 이전 페이지로부터 seasons을 받아오지 못한 경우에 실행
-  //    * 1.getLeague를 통해 season 정보를 받아온 뒤 가장 최근 리그 데이터를 selectedYear에 저장
-  //    * 2.selectYear이 변경됨으로써 useEffect가 다시 실행 됨으로 else 부분으로 넘어감
-  //    */
-  //   if (!season) {
-  //     // 리그 데이터 받아오기
-  //     dispatch(getLeague({ id })).then(({ payload }) => {
-  //       const season = payload?.seasons;
-
-  //       if (season && season.length > 0) {
-  //         const lastSeason = season[season?.length - 1].year;
-  //         // selectedYear에 저장
-  //         setSelectedYear(lastSeason);
-  //         /** 전역 상태값으로 써 공유를 하기위해 선택한 년도를 상태값으로써 저장 */
-  //         dispatch(setSelectedSeason(selectedYear));
-  //       } else {
-  //         console.error("season error");
-  //       }
-  //     });
-  //     /** 이전 페이지에서 못받아옴으로써 if문 실행 뒤 넘어왔거나 standing이나 seasons을 이전페이지에서 받아온 경우
-  //      * 1. selected가 저장된게 없다면 최근 시즌 정보를 selectedYear 상태값에 저장
-  //      * 2. 그후 useEffect가 다시 실행됨으로써 getStanding을 통한 해당 년도 순위 데이터 조회
-  //      * 3. 이전에 저장된 stands 상태값을 사용하지않고 최신 년도 데이터로 새로 받아오기 고정
-  //      */
-  //   } else {
-  //     // 스탠드와 시즌이 있으면서 초기 상태인 경우
-  //     // 왜 인지는 모르겠지만 selectedYear 관한 조건문을 여기서 안넣으면 새로고침시 league = 0 으로 데이터 통신이 한번더 발생해서 조건문을 추가하였음
-  //     if (selectedYear === 0) {
-  //       const lastSeason = season[season?.length - 1].year;
-  //       setSelectedYear(lastSeason);
-  //       /** 전역 상태값으로 써 공유를 하기위해 선택한 년도를 상태값으로써 저장 */
-  //       dispatch(setSelectedSeason(selectedYear));
-  //     } else {
-  //       // 초기 상태가 아닌 경우(즉 selectedYear의변화가 생긴 경우 재통신)
-  //       dispatch(
-  //         getMatches({ leagueID: id, season: selectedYear, timezone: location })
-  //       ).then(({ payload }) => {
-  //         /** 현재년도와 검색할 년도가 같다면 현재 해당하는 Month의 데이터를 보여주고
-  //          * 현재년도와 검색할 년도가 다르다면 첫번째 경기 날짜의 Month를 보여줌
-  //          */
-  //         const nowYear = new Date().getFullYear();
-  //         const firstMatchYear = payload[0]?.fixture?.date;
-
-  //         if (nowYear === parseInt(firstMatchYear.substring(0, 4))) {
-  //           setFilterMonth(new Date());
-  //         } else {
-  //           setFilterMonth(new Date(firstMatchYear));
-  //         }
-  //       });
-  //     }
-  //   }
-  //   // 의존성 배열 관련 경고문은 무시해도 좋음
-  // }, [dispatch, id, selectedYear, season, selectedYearChanged, location]);
-
-  // 1. 시즌 정보가 없을 때 가져오는 useEffect
   useEffect(() => {
+    /** 조회하려는 시즌값이 변경되지 않았으며 season과 selectedYear값이 모두 존재하는 경우 ( 즉 이전 페이지에서 전역 상태값을 잘 받아온 경우 ) */
+    if (!selectedYearChanged && season && selectedYear !== 0 && match) {
+      return;
+    }
+    /** 이전 페이지로부터 seasons을 받아오지 못한 경우에 실행
+     * 1.getLeague를 통해 season 정보를 받아온 뒤 가장 최근 리그 데이터를 selectedYear에 저장
+     * 2.selectYear이 변경됨으로써 useEffect가 다시 실행 됨으로 else 부분으로 넘어감
+     */
     if (!season) {
+      // 리그 데이터 받아오기
       dispatch(getLeague({ id })).then(({ payload }) => {
         const season = payload?.seasons;
 
         if (season && season.length > 0) {
-          const lastSeason = season[season.length - 1].year;
+          const lastSeason = season[season?.length - 1].year;
+          // selectedYear에 저장
           setSelectedYear(lastSeason);
-          dispatch(setSelectedSeason(lastSeason));
+          /** 전역 상태값으로 써 공유를 하기위해 선택한 년도를 상태값으로써 저장 */
+          dispatch(setSelectedSeason(selectedYear));
         } else {
           console.error("season error");
         }
       });
-    }
-  }, [dispatch, id, season]);
+      /** 이전 페이지에서 못받아옴으로써 if문 실행 뒤 넘어왔거나 standing이나 seasons을 이전페이지에서 받아온 경우
+       * 1. selected가 저장된게 없다면 최근 시즌 정보를 selectedYear 상태값에 저장
+       * 2. 그후 useEffect가 다시 실행됨으로써 getStanding을 통한 해당 년도 순위 데이터 조회
+       * 3. 이전에 저장된 stands 상태값을 사용하지않고 최신 년도 데이터로 새로 받아오기 고정
+       */
+    } else {
+      // 스탠드와 시즌이 있으면서 초기 상태인 경우
+      // 왜 인지는 모르겠지만 selectedYear 관한 조건문을 여기서 안넣으면 새로고침시 league = 0 으로 데이터 통신이 한번더 발생해서 조건문을 추가하였음
+      if (selectedYear === 0) {
+        const lastSeason = season[season?.length - 1].year;
+        setSelectedYear(lastSeason);
+        /** 전역 상태값으로 써 공유를 하기위해 선택한 년도를 상태값으로써 저장 */
+        dispatch(setSelectedSeason(selectedYear));
+      } else {
+        // 초기 상태가 아닌 경우(즉 selectedYear의변화가 생긴 경우 재통신)
+        dispatch(
+          getMatches({ leagueID: id, season: selectedYear, timezone: location })
+        ).then(({ payload }) => {
+          /** 현재년도와 검색할 년도가 같다면 현재 해당하는 Month의 데이터를 보여주고
+           * 현재년도와 검색할 년도가 다르다면 첫번째 경기 날짜의 Month를 보여줌
+           */
+          const nowYear = new Date().getFullYear();
+          const firstMatchYear = payload[0]?.fixture?.date;
 
-  // 2. selectedYear가 0이면 최신 시즌을 설정하는 useEffect
-  useEffect(() => {
-    if (season && selectedYear === 0) {
-      const lastSeason = season[season.length - 1].year;
-      setSelectedYear(lastSeason);
-      dispatch(setSelectedSeason(lastSeason));
-      dispatch(getMatches({ leagueID: id, season: lastSeason, timezone: location }));
-    }
-  }, [season, selectedYear, dispatch, id, location]);
-
-    // 3. selectedYear이 변경될 때 순위 데이터를 가져오는 useEffect
-    useEffect(() => {
-      if (selectedYear !== 0 && selectedYearChanged) {
-        dispatch(getMatches({ leagueID: id, season: selectedYear, timezone: location }));
+          if (nowYear === parseInt(firstMatchYear.substring(0, 4))) {
+            setFilterMonth(new Date());
+          } else {
+            setFilterMonth(new Date(firstMatchYear));
+          }
+        });
       }
-    }, [dispatch, id, selectedYear, selectedYearChanged,location]);
+    }
+    // 의존성 배열 관련 경고문은 무시해도 좋음
+  }, [dispatch, id, selectedYear, season, selectedYearChanged, location]);
+
+  // 1. 시즌 정보가 없을 때 가져오는 useEffect
+  // useEffect(() => {
+  //   if (!season) {
+  //     dispatch(getLeague({ id })).then(({ payload }) => {
+  //       const season = payload?.seasons;
+
+  //       if (season && season.length > 0) {
+  //         const lastSeason = season[season.length - 1].year;
+  //         setSelectedYear(lastSeason);
+  //         dispatch(setSelectedSeason(lastSeason));
+  //       } else {
+  //         console.error("season error");
+  //       }
+  //     });
+  //   }
+  // }, [dispatch, id, season]);
+
+  // // 2. selectedYear가 0이면 최신 시즌을 설정하는 useEffect
+  // useEffect(() => {
+  //   if (season && selectedYear === 0) {
+  //     const lastSeason = season[season.length - 1].year;
+  //     setSelectedYear(lastSeason);
+  //     dispatch(setSelectedSeason(lastSeason));
+  //     dispatch(getMatches({ leagueID: id, season: lastSeason, timezone: location }));
+  //   }
+  // }, [season, selectedYear, dispatch, id, location]);
+
+  //   // 3. selectedYear이 변경될 때 순위 데이터를 가져오는 useEffect
+  //   useEffect(() => {
+  //     if (selectedYear !== 0 && selectedYearChanged) {
+  //       dispatch(getMatches({ leagueID: id, season: selectedYear, timezone: location }));
+  //     }
+  //   }, [dispatch, id, selectedYear, selectedYearChanged,location]);
   
 
 
