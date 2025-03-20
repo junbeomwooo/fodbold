@@ -125,41 +125,38 @@ export default function LeagueMatches({
   // }, [dispatch, id, selectedYear, season, selectedYearChanged, location]);
 
   // 1. 시즌 정보가 없을 때 가져오는 useEffect
-  
-   useEffect(() => {
-    if (!season) {
-      dispatch(getLeague({ id })).then(({ payload }) => {
-        const season = payload?.seasons;
 
-        if (season && season.length > 0) {
-          const lastSeason = season[season.length - 1].year;
-          setSelectedYear(lastSeason);
-          dispatch(setSelectedSeason(lastSeason));
-        } else {
-          console.error("season error");
-        }
-      });
+  useEffect(() => {
+    if (!season) {
+      dispatch(getLeague({ id }));
     }
   }, [dispatch, id, season]);
 
   // 2. selectedYear가 0이면 최신 시즌을 설정하는 useEffect
   useEffect(() => {
+    console.log(selectedYear);
     if (season && selectedYear === 0) {
       const lastSeason = season[season.length - 1].year;
       setSelectedYear(lastSeason);
-      dispatch(setSelectedSeason(lastSeason));
-      dispatch(getMatches({ leagueID: id, season: lastSeason, timezone: location }));
-    }
-  }, [season, selectedYear, dispatch, id, location]);
+      // dispatch(setSelectedSeason(lastSeason));
 
-    // 3. selectedYear이 변경될 때 순위 데이터를 가져오는 useEffect
-    useEffect(() => {
-      if (selectedYear !== 0 && selectedYearChanged) {
-        dispatch(getMatches({ leagueID: id, season: selectedYear, timezone: location }));
+      if (!match) {
+        dispatch(
+          getMatches({ leagueID: id, season: lastSeason, timezone: location })
+        );
       }
-    }, [dispatch, id, selectedYear, selectedYearChanged,location]);
-  
+    }
+  }, [season, selectedYear, dispatch, id, location, match]);
 
+  // 3. selectedYear이 변경될 때 순위 데이터를 가져오는 useEffect
+  useEffect(() => {
+    if (selectedYear !== 0 && selectedYearChanged) {
+      dispatch(setSelectedSeason(selectedYear));
+      dispatch(
+        getMatches({ leagueID: id, season: selectedYear, timezone: location })
+      );
+    }
+  }, [dispatch, id, selectedYear, selectedYearChanged, location]);
 
   /** 받아온 데이터를 시간순으로 정렬 */
   const sortedMatch = Array.isArray(match)

@@ -96,9 +96,10 @@ export default function LeagueTable({
   //   // 의존성 배열 관련 경고문은 무시해도 좋음
   // }, [dispatch, id, selectedYear, season, selectedYearChanged]);
 
-  /** 이 코드 말고 전에 썼던 코드 사용시 년도 값이 바뀌는지 확인하기. 
-   * 만약 년도값이 바뀐다면 해당 기능을 그대로 구현하기 위해 아래 코드를 수정하기
-   * 만약 년도값이 바뀌지않는다면 헤더에 년도값 전역상태값으로써 공유하고 수정할수있는 메서드 전달해서 구현할지 고민하기
+  /** 
+   * 새로 고침시 시즌값, 스탠딩 값을 구하는 데이터 페칭 2번 일어나야함
+   * 다른 탭에서 시즌 값을 바꾸고 이번년도로 이동시 그 시즌에 해당하는 데이터를 구해와야함
+   * 이미 데이터 값이 있을 경우 그대로 사용하지만 이전 탭에서 시즌값이 변경되었을 경우 그 시즌값에 해당하는 값을 가져와야함
    */
   
   // 1. 시즌 정보가 없을 때 가져오는 useEffect
@@ -108,12 +109,12 @@ export default function LeagueTable({
     }
   }, [dispatch, id, season]);
 
-  // 2. selectedYear가 0이면 최신 시즌을 설정하는 useEffect
+  // 2. selectedYear가 0이면 최신 시즌을 설정하는 useEffect , stadning이 없을 경우 stadning fetch
   useEffect(() => {
     if (season && selectedYear === 0) {
       const lastSeason = season[season.length - 1].year;
       setSelectedYear(lastSeason);
-      dispatch(setSelectedSeason(lastSeason));
+      // dispatch(setSelectedSeason(lastSeason));
 
       if (!standing) {
         dispatch(getStanding({ id, year: lastSeason }));
@@ -124,6 +125,9 @@ export default function LeagueTable({
   // 3. selectedYear이 변경될 때 순위 데이터를 가져오는 useEffect
   useEffect(() => {
     if (selectedYear !== 0 && selectedYearChanged) {
+
+      // 시즌 값이 변경되었을 경우 다른 탭페이지와 공유하기 위해 상태값 업데이트
+      dispatch(setSelectedSeason(selectedYear));
       dispatch(getStanding({ id, year: selectedYear }));
     }
   }, [dispatch, id, selectedYear, selectedYearChanged]);
