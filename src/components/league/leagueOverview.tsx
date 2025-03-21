@@ -32,11 +32,11 @@ import LeagueHeader from "./header/leagueHeader";
 export default function LeagueOverview({
   id,
   league,
-  locale
+  locale,
 }: {
   id: number;
   league: string;
-  locale:string;
+  locale: string;
 }) {
   const c = useTranslations("countries");
   const l = useTranslations("league");
@@ -52,7 +52,6 @@ export default function LeagueOverview({
 
   /** 접속 해당 위치의 전역 상태값 가져오기 */
   const { location }: any = useAppSelector((state) => state.locationSlice);
-
 
   /** 년도 상태값 */
   const [selectedYear, setSelectedYear] = useState<number>(0);
@@ -109,6 +108,11 @@ export default function LeagueOverview({
   /** 배열의 첫 인덱스만 가져와서 form이 있는지 길이가 몇인지 확인하는 용도 */
   const form = stands ? stands[0][0]?.form : null;
 
+  // overview에서는 이 함수가 필요없음. 다른 탭에서 사용하는 디스패칭 함수인데 이걸 파라미터로 헤더에 전달하지않으면 오류가 생겨서 일시적으로 넣어둠
+  const OnHandleSeasonChange = (value: boolean) => {
+    return;
+  };
+
   return (
     <>
       {/** header */}
@@ -119,6 +123,7 @@ export default function LeagueOverview({
         selectedYear={selectedYear}
         locale={locale}
         league={league}
+        onHandleSeasonChange={OnHandleSeasonChange}
       />
 
       {/** match slide */}
@@ -129,7 +134,7 @@ export default function LeagueOverview({
             {l("allmatches")}
           </h3>
         </div>
-        <LeagueSwiper match={match} today={currentDate} locale={locale}/>
+        <LeagueSwiper match={match} today={currentDate} locale={locale} />
       </div>
 
       {/*standing, top score and assist */}

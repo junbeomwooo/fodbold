@@ -9,7 +9,7 @@ import Link from "next/link";
 
 import { usePathname } from "next/navigation";
 
-export default function LeagueHeader({id, seasons ,setSelectedYear, selectedYear ,locale, league, setSelectedYearChanged }:{id:number , seasons:any, setSelectedYear:any, selectedYear:number, locale:string, league:string, setSelectedYearChanged?:any}) {
+export default function LeagueHeader({id, seasons ,setSelectedYear, selectedYear ,locale, league, setSelectedYearChanged, onHandleSeasonChange }:{id:number , seasons:any, setSelectedYear:any, selectedYear:number, locale:string, league:string, setSelectedYearChanged?:any ,onHandleSeasonChange?:any}) {
   
   /** 번역 */
   const c = useTranslations("countries");
@@ -22,18 +22,6 @@ export default function LeagueHeader({id, seasons ,setSelectedYear, selectedYear
   const leagueName = seasons?.league?.name;
   const leageCountry = seasons?.country?.name?.toString();
   const totalYears = seasons?.seasons;
-
-  /** 지울 데이터 */
-  // const totalYears = [
-  //   { year: 2000 },
-  //   { year: 2001 },
-  //   { year: 2003 },
-  //   { year: 2004 },
-  //   { year: 2005 },
-  //   { year: 2024 },
-  // ];
-  // const leagueName = "Premier League";
-  // const leageCountry = "England";
 
   return (
    <>
@@ -60,6 +48,7 @@ export default function LeagueHeader({id, seasons ,setSelectedYear, selectedYear
               className="border border-black rounded-full text-xsm p-1.5 font-medium appearance-none pr-5 pl-3 dark:bg-custom-dark dark:border-custom-gray2"
               onChange={(e) => {
                 setSelectedYear(parseInt(e.currentTarget.value));
+                onHandleSeasonChange(true)
                 if(setSelectedYearChanged) {
                   setSelectedYearChanged(true)
                 }

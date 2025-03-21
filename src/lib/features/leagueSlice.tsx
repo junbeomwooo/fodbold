@@ -219,15 +219,23 @@ export const leagueSlice = createSlice({
     error: null,
     topScoreAssist: null,
     topYellowRed: null,
-    leagues:null
+    leagues:null,
+    seasonChange: null
   },
   reducers: {
     // 현재 상태값 불러오기
     getCurrentData: (state) => {
       return state;
     },
+
+    // 하나의 탭에서 저장한 년도
     setSelectedSeason: (state, {payload}: {payload: any}) => {
       state.selectedSeason = payload;
+    },
+
+    // 하나의 탭에서 년도값이 변경되었는지
+    setSeasonChanged: (state, {payload}: {payload: any}) => {
+      state.seasonChange = payload;
     }
   },
   extraReducers: (builder) => {
@@ -277,6 +285,6 @@ export const leagueSlice = createSlice({
 });
 
 // Action creators are generated for each case reducer function
-export const { getCurrentData, setSelectedSeason } = leagueSlice.actions;
+export const { getCurrentData, setSelectedSeason, setSeasonChanged} = leagueSlice.actions;
 
 export default leagueSlice.reducer;
