@@ -70,7 +70,7 @@ export default function LeagueStats({
       setSelectedYear(lastSeason);
 
       if (!topScoreAssist) {
-        dispatch(getTopScoreAssist({ season: selectedYear, leagueID: id }));
+        dispatch(getTopScoreAssist({ season: lastSeason, leagueID: id }));
       }
     }
   }, [season, selectedYear, dispatch, id, topScoreAssist]);

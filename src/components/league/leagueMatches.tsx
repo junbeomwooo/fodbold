@@ -72,6 +72,11 @@ export default function LeagueMatches({
     dispatch(setSeasonChanged(value));
   };
 
+  /** 
+   * 년도 값이 현재 시즌이 아닐 경우 
+   * 필터링 부분에 문제가있음 (항상 이번년도를 기준으로 움직임) < 이 문제를 해결할것.
+   * overView 페이지에서도 같은 문제가 있는지 확인 후 문제가 있다면 똑같이 해결할것
+   */
   // 1. 시즌 정보가 없을 때 가져오는 useEffect
   useEffect(() => {
     if (!season) {
