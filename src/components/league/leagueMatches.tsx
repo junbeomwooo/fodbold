@@ -72,11 +72,6 @@ export default function LeagueMatches({
     dispatch(setSeasonChanged(value));
   };
 
-  /** 
-   * 년도 값이 현재 시즌이 아닐 경우 
-   * 필터링 부분에 문제가있음 (항상 이번년도를 기준으로 움직임) < 이 문제를 해결할것.
-   * overView 페이지에서도 같은 문제가 있는지 확인 후 문제가 있다면 똑같이 해결할것
-   */
   // 1. 시즌 정보가 없을 때 가져오는 useEffect
   useEffect(() => {
     if (!season) {
@@ -86,7 +81,6 @@ export default function LeagueMatches({
 
   // 2. selectedYear가 0이면 최신 시즌을 설정하는 useEffect
   useEffect(() => {
-    console.log(selectedYear);
     if (season && selectedYear === 0) {
       const lastSeason = season[season.length - 1].year;
       setSelectedYear(lastSeason);
@@ -99,15 +93,26 @@ export default function LeagueMatches({
     }
   }, [season, selectedYear, dispatch, id, location, match]);
 
-  // 3. selectedYear이 변경될 때 순위 데이터를 가져오는 useEffect
+  // 3. selectedYear이 변경될 때 데이터를 가져오는 useEffect
   useEffect(() => {
-    console.log(selectedYearChanged);
     if (selectedYear !== 0 && selectedYearChanged) {
       // 시즌 값이 변경되었을 경우 다른 탭페이지와 공유하기 위해 상태값 업데이트
       dispatch(setSelectedSeason(selectedYear));
       dispatch(
         getMatches({ leagueID: id, season: selectedYear, timezone: location })
-      );
+        // 시즌 값이 변경되면서 페이지네이션을 위한 filterMonth 상태값을 해당 시즌의 첫경기로 고정시키기 위해
+      ).then((payload) => {
+        const match = payload?.payload;
+        const sortedMatch = Array.isArray(match)
+          ? [...match].sort((a: any, b: any) => {
+              return a.fixture.timestamp - b.fixture.timestamp;
+            })
+          : null;
+        if (sortedMatch) {
+          const newFilterMonth = new Date(sortedMatch[0]?.fixture?.date);
+          setFilterMonth(newFilterMonth);
+        }
+      });
     }
   }, [dispatch, id, selectedYear, selectedYearChanged, location]);
 
@@ -223,6 +228,14 @@ export default function LeagueMatches({
     router.push(url);
   };
 
+  const isPrevMonthDisabled =
+    new Date(filterMonth.getFullYear(), filterMonth.getMonth(), 1) <=
+    new Date(startedDate.getFullYear(), startedDate.getMonth(), 1);
+
+  const isNextMonthDisabled =
+    new Date(filterMonth.getFullYear(), filterMonth.getMonth(), 1) >=
+    new Date(endDate.getFullYear(), endDate.getMonth(), 1);
+
   return (
     <>
       <LeagueHeader
@@ -241,7 +254,11 @@ export default function LeagueMatches({
         <div className="h-16 flex justify-between items-center max-msm:mx-4">
           <div>
             <div
-              className="w-7 h-7 rounded-full bg-slate-200 flex justify-center items-center hover:cursor-pointer hover:bg-slate-400 dark:bg-custom-gray3 dark:hover:bg-custom-gray"
+              className={`w-7 h-7 rounded-full bg-slate-200 flex justify-center items-center dark:bg-custom-gray3 ${
+                isPrevMonthDisabled
+                  ? "opacity-30"
+                  : "opacity-100 hover:cursor-pointer hover:bg-slate-400 dark:hover:bg-custom-gray"
+              }`}
               onClick={onClickPrevMonth}
             >
               <Image
@@ -269,7 +286,11 @@ export default function LeagueMatches({
             </div>
           </div>
           <div
-            className="w-7 h-7 rounded-full bg-slate-200 flex justify-center items-center hover:cursor-pointer  hover:bg-slate-400 dark:bg-custom-gray3 dark:hover:bg-custom-gray"
+            className={`w-7 h-7 rounded-full bg-slate-200 flex justify-center items-center dark:bg-custom-gray3 ${
+              isNextMonthDisabled
+                ? "opacity-30"
+                : "opacity-100 hover:cursor-pointer hover:bg-slate-400 dark:hover:bg-custom-gray"
+            }`}
             onClick={onClickNextMonth}
           >
             <Image
@@ -314,7 +335,7 @@ export default function LeagueMatches({
 
             return (
               <div key={dateIndex}>
-                <div className="w-full h-10 bg-slate-100 rounded-xl flex items-center px-5 max-sm:rounded-none">
+                <div className="w-full h-10 bg-slate-100 dark:bg-[#333333] rounded-xl flex items-center px-5 max-sm:rounded-none">
                   <h1 className="text-base font-medium">{dateform}</h1>
                 </div>
 
