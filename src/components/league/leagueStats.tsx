@@ -56,41 +56,41 @@ export default function LeagueStats({
     dispatch(setSeasonChanged(value));
   };
 
-  // 1. 시즌 정보가 없을 때 가져오는 useEffect
-  useEffect(() => {
-    if (!season) {
-      dispatch(getLeague({ id }));
-    }
-  }, [dispatch, id, season]);
+  // // 1. 시즌 정보가 없을 때 가져오는 useEffect
+  // useEffect(() => {
+  //   if (!season) {
+  //     dispatch(getLeague({ id }));
+  //   }
+  // }, [dispatch, id, season]);
 
-  // 2. selectedYear가 0이면 최신 시즌을 설정하는 useEffect , 데이터가 없을 경우 데이터 fetch
-  useEffect(() => {
-    if (season && selectedYear === 0) {
-      const lastSeason = season[season.length - 1].year;
-      setSelectedYear(lastSeason);
+  // // 2. selectedYear가 0이면 최신 시즌을 설정하는 useEffect , 데이터가 없을 경우 데이터 fetch
+  // useEffect(() => {
+  //   if (season && selectedYear === 0) {
+  //     const lastSeason = season[season.length - 1].year;
+  //     setSelectedYear(lastSeason);
 
-      if (!topScoreAssist) {
-        dispatch(getTopScoreAssist({ season: lastSeason, leagueID: id }));
-      }
-    }
-  }, [season, selectedYear, dispatch, id, topScoreAssist]);
+  //     if (!topScoreAssist) {
+  //       dispatch(getTopScoreAssist({ season: lastSeason, leagueID: id }));
+  //     }
+  //   }
+  // }, [season, selectedYear, dispatch, id, topScoreAssist]);
 
-  useEffect(() => {
-    if (!selectedYearChanged && selectedYear && !topYellowRed) {
-      dispatch(getTopYellowRed({ season: selectedYear, leagueID: id }));
-    }
-  }, [dispatch, id, selectedYear, topYellowRed, selectedYearChanged]);
+  // useEffect(() => {
+  //   if (!selectedYearChanged && selectedYear && !topYellowRed) {
+  //     dispatch(getTopYellowRed({ season: selectedYear, leagueID: id }));
+  //   }
+  // }, [dispatch, id, selectedYear, topYellowRed, selectedYearChanged]);
 
-  // 3. selectedYear이 변경될 때 순위 데이터를 가져오는 useEffect
-  useEffect(() => {
-    console.log(selectedYearChanged);
-    if (selectedYear !== 0 && selectedYearChanged) {
-      // 시즌 값이 변경되었을 경우 다른 탭페이지와 공유하기 위해 상태값 업데이트
-      dispatch(setSelectedSeason(selectedYear));
-      dispatch(getTopScoreAssist({ season: selectedYear, leagueID: id }));
-      dispatch(getTopYellowRed({ season: selectedYear, leagueID: id }));
-    }
-  }, [dispatch, id, selectedYear, selectedYearChanged]);
+  // // 3. selectedYear이 변경될 때 순위 데이터를 가져오는 useEffect
+  // useEffect(() => {
+  //   console.log(selectedYearChanged);
+  //   if (selectedYear !== 0 && selectedYearChanged) {
+  //     // 시즌 값이 변경되었을 경우 다른 탭페이지와 공유하기 위해 상태값 업데이트
+  //     dispatch(setSelectedSeason(selectedYear));
+  //     dispatch(getTopScoreAssist({ season: selectedYear, leagueID: id }));
+  //     dispatch(getTopYellowRed({ season: selectedYear, leagueID: id }));
+  //   }
+  // }, [dispatch, id, selectedYear, selectedYearChanged]);
 
   return (
     <>
@@ -145,18 +145,23 @@ export default function LeagueStats({
                               </div>
                             </div>
                           </div>
-                          <div>
+         
+                          <div className="justify-center flex">
                             {/* 가장 많은 골을 넣었을 경우 (인덱스가 0일 경우) 테두리 효과 추가 */}
-                            <h1
-                              className={`font-normal text-sm w-5 ${
-                                i === 0 &&
-                                "bg-green-600 text-white rounded-full text-center mr-2"
-                              }`}
-                            >
-                              {v.statistics[0].goals.total}
-                            </h1>
+                            {i === 0 ? (
+                              <div className="bg-green-600 rounded-full p-[3px] flex justify-center items-center">
+                              <h1 className="font-normal text-sm w-5 text-center text-white">
+                                {v.statistics[0].goals.total}
+                              </h1>
+                              </div>
+                            ) : (
+                              <h1 className="font-normal text-sm w-5">
+                                {v.statistics[0].goals.total}
+                              </h1>
+                            )}
                           </div>
                         </div>
+
                         {/* 마지막 인덱스가 아니라면 border표시 */}
                         {i !== goal.length - 1 && (
                           <hr className="border-solid border-1 border-slate-200 dark:border-custom-gray3" />
