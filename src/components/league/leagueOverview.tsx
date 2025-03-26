@@ -50,6 +50,8 @@ export default function LeagueOverview({
     (state) => state.leagueSlice
   );
 
+  console.log(match);
+
   /** 접속 해당 위치의 전역 상태값 가져오기 */
   const { location }: any = useAppSelector((state) => state.locationSlice);
 

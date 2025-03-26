@@ -111,7 +111,7 @@ export default function LeagueHeader({id, seasons ,setSelectedYear, selectedYear
               >
                 {l("knockout")}
               </Link>
-              {pathname === `/${locale}/leagues/${id}/${league}/tables` ? (
+              {pathname === `/${locale}/leagues/${id}/${league}/playoff` ? (
                 <div className="bg-green-600 w-auto h-1 mt-6 rounded-full ml-6"></div>
               ) : (
                 <></>
