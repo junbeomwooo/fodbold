@@ -463,16 +463,19 @@ export default function LeagueOverview({
                               </div>
                             </div>
                           </div>
-                          <div>
+                          <div className="justify-center flex">
                             {/* 가장 많은 골을 넣었을 경우 (인덱스가 0일 경우) 테두리 효과 추가 */}
-                            <h1
-                              className={`font-normal text-sm w-5 ${
-                                i === 0 &&
-                                "bg-green-600 text-white rounded-full text-center mr-2"
-                              }`}
-                            >
-                              {v.statistics[0].goals.total}
-                            </h1>
+                            {i === 0 ? (
+                              <div className="bg-green-600 rounded-full p-[3px] flex justify-center items-center">
+                                <h1 className="font-normal text-sm w-5 text-center text-white">
+                                  {v.statistics[0].goals.total}
+                                </h1>
+                              </div>
+                            ) : (
+                              <h1 className="font-normal text-sm w-5">
+                                {v.statistics[0].goals.total}
+                              </h1>
+                            )}
                           </div>
                         </div>
                         {/* 마지막 인덱스가 아니라면 border표시 */}
@@ -527,16 +530,19 @@ export default function LeagueOverview({
                               </div>
                             </div>
                           </div>
-                          <div>
-                            {/* 가장 많은 골을 넣었을 경우 (인덱스가 0일 경우) 테두리 효과 추가 */}
-                            <h1
-                              className={`font-normal text-sm w-5 ${
-                                i === 0 &&
-                                "bg-green-600 text-white rounded-full text-center mr-2"
-                              }`}
-                            >
-                              {v.statistics[0].goals.assists}
-                            </h1>
+                          <div className="justify-center flex">
+                            {/* 가장 많은 어시스트 (인덱스가 0일 경우) 테두리 효과 추가 */}
+                            {i === 0 ? (
+                              <div className="bg-blue-600 rounded-full p-[3px] flex justify-center items-center">
+                                <h1 className="font-normal text-sm w-5 text-center text-white">
+                                  {v.statistics[0].goals.assists}
+                                </h1>
+                              </div>
+                            ) : (
+                              <h1 className="font-normal text-sm w-5">
+                                {v.statistics[0].goals.assists}
+                              </h1>
+                            )}
                           </div>
                         </div>
                         {/* 마지막 인덱스가 아니라면 border표시 */}

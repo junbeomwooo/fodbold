@@ -57,40 +57,40 @@ export default function LeagueStats({
   };
 
   // // 1. 시즌 정보가 없을 때 가져오는 useEffect
-  // useEffect(() => {
-  //   if (!season) {
-  //     dispatch(getLeague({ id }));
-  //   }
-  // }, [dispatch, id, season]);
+  useEffect(() => {
+    if (!season) {
+      dispatch(getLeague({ id }));
+    }
+  }, [dispatch, id, season]);
 
-  // // 2. selectedYear가 0이면 최신 시즌을 설정하는 useEffect , 데이터가 없을 경우 데이터 fetch
-  // useEffect(() => {
-  //   if (season && selectedYear === 0) {
-  //     const lastSeason = season[season.length - 1].year;
-  //     setSelectedYear(lastSeason);
+  // 2. selectedYear가 0이면 최신 시즌을 설정하는 useEffect , 데이터가 없을 경우 데이터 fetch
+  useEffect(() => {
+    if (season && selectedYear === 0) {
+      const lastSeason = season[season.length - 1].year;
+      setSelectedYear(lastSeason);
 
-  //     if (!topScoreAssist) {
-  //       dispatch(getTopScoreAssist({ season: lastSeason, leagueID: id }));
-  //     }
-  //   }
-  // }, [season, selectedYear, dispatch, id, topScoreAssist]);
+      if (!topScoreAssist) {
+        dispatch(getTopScoreAssist({ season: lastSeason, leagueID: id }));
+      }
+    }
+  }, [season, selectedYear, dispatch, id, topScoreAssist]);
 
-  // useEffect(() => {
-  //   if (!selectedYearChanged && selectedYear && !topYellowRed) {
-  //     dispatch(getTopYellowRed({ season: selectedYear, leagueID: id }));
-  //   }
-  // }, [dispatch, id, selectedYear, topYellowRed, selectedYearChanged]);
+  useEffect(() => {
+    if (!selectedYearChanged && selectedYear && !topYellowRed) {
+      dispatch(getTopYellowRed({ season: selectedYear, leagueID: id }));
+    }
+  }, [dispatch, id, selectedYear, topYellowRed, selectedYearChanged]);
 
-  // // 3. selectedYear이 변경될 때 순위 데이터를 가져오는 useEffect
-  // useEffect(() => {
-  //   console.log(selectedYearChanged);
-  //   if (selectedYear !== 0 && selectedYearChanged) {
-  //     // 시즌 값이 변경되었을 경우 다른 탭페이지와 공유하기 위해 상태값 업데이트
-  //     dispatch(setSelectedSeason(selectedYear));
-  //     dispatch(getTopScoreAssist({ season: selectedYear, leagueID: id }));
-  //     dispatch(getTopYellowRed({ season: selectedYear, leagueID: id }));
-  //   }
-  // }, [dispatch, id, selectedYear, selectedYearChanged]);
+  // 3. selectedYear이 변경될 때 순위 데이터를 가져오는 useEffect
+  useEffect(() => {
+    console.log(selectedYearChanged);
+    if (selectedYear !== 0 && selectedYearChanged) {
+      // 시즌 값이 변경되었을 경우 다른 탭페이지와 공유하기 위해 상태값 업데이트
+      dispatch(setSelectedSeason(selectedYear));
+      dispatch(getTopScoreAssist({ season: selectedYear, leagueID: id }));
+      dispatch(getTopYellowRed({ season: selectedYear, leagueID: id }));
+    }
+  }, [dispatch, id, selectedYear, selectedYearChanged]);
 
   return (
     <>
@@ -104,6 +104,10 @@ export default function LeagueStats({
         setSelectedYearChanged={setSelectedYearChanged}
         onHandleSeasonChange={OnHandleSeasonChange}
       />
+
+      {/* 탑스어 부ㄴ 수정했으니 같은 방식으로 어시스트,레드,옐로우 카드 css 수정
+          이후 오버뷰 부분도 수정      
+      */}
 
       {/* top score and assist and yellow and red */}
       <div className="w-full mt-6 max-xl:w-full max-xl:ml-0">
@@ -145,14 +149,14 @@ export default function LeagueStats({
                               </div>
                             </div>
                           </div>
-         
+
                           <div className="justify-center flex">
                             {/* 가장 많은 골을 넣었을 경우 (인덱스가 0일 경우) 테두리 효과 추가 */}
                             {i === 0 ? (
                               <div className="bg-green-600 rounded-full p-[3px] flex justify-center items-center">
-                              <h1 className="font-normal text-sm w-5 text-center text-white">
-                                {v.statistics[0].goals.total}
-                              </h1>
+                                <h1 className="font-normal text-sm w-5 text-center text-white">
+                                  {v.statistics[0].goals.total}
+                                </h1>
                               </div>
                             ) : (
                               <h1 className="font-normal text-sm w-5">
@@ -215,16 +219,19 @@ export default function LeagueStats({
                               </div>
                             </div>
                           </div>
-                          <div>
-                            {/* 가장 많은 골을 넣었을 경우 (인덱스가 0일 경우) 테두리 효과 추가 */}
-                            <h1
-                              className={`font-normal text-sm w-5 ${
-                                i === 0 &&
-                                "bg-blue-600 text-white rounded-full text-center mr-2"
-                              }`}
-                            >
-                              {v.statistics[0].goals.assists}
-                            </h1>
+                          <div className="justify-center flex">
+                            {/* 가장 많은 어시스트 (인덱스가 0일 경우) 테두리 효과 추가 */}
+                            {i === 0 ? (
+                              <div className="bg-blue-600 rounded-full p-[3px] flex justify-center items-center">
+                                <h1 className="font-normal text-sm w-5 text-center text-white">
+                                  {v.statistics[0].goals.assists}
+                                </h1>
+                              </div>
+                            ) : (
+                              <h1 className="font-normal text-sm w-5">
+                                {v.statistics[0].goals.assists}
+                              </h1>
+                            )}
                           </div>
                         </div>
                         {/* 마지막 인덱스가 아니라면 border표시 */}
@@ -277,16 +284,19 @@ export default function LeagueStats({
                               </div>
                             </div>
                           </div>
-                          <div>
-                            {/* 가장 많은 레드카드를 받았을 경우 경우 (인덱스가 0일 경우) 테두리 효과 추가 */}
-                            <h1
-                              className={`font-normal text-sm w-5 ${
-                                i === 0 &&
-                                "bg-red-600 text-white rounded-full text-center mr-2"
-                              }`}
-                            >
-                              {v.statistics[0].cards.red}
-                            </h1>
+                          <div className="justify-center flex">
+                            {/* 가장 많은 레드카드 (인덱스가 0일 경우) 테두리 효과 추가 */}
+                            {i === 0 ? (
+                              <div className="bg-red-600 rounded-full p-[3px] flex justify-center items-center">
+                                <h1 className="font-normal text-sm w-5 text-center text-white">
+                                  {v.statistics[0].cards.red}
+                                </h1>
+                              </div>
+                            ) : (
+                              <h1 className="font-normal text-sm w-5">
+                                {v.statistics[0].cards.red}
+                              </h1>
+                            )}
                           </div>
                         </div>
                         {/* 마지막 인덱스가 아니라면 border표시 */}
@@ -339,16 +349,19 @@ export default function LeagueStats({
                               </div>
                             </div>
                           </div>
-                          <div>
-                            {/* 가장 많은 옐로 카드를 받았을 경우 경우 (인덱스가 0일 경우) 테두리 효과 추가 */}
-                            <h1
-                              className={`font-normal text-sm w-5 ${
-                                i === 0 &&
-                                "bg-yellow-600 text-white rounded-full text-center mr-2"
-                              }`}
-                            >
-                              {v.statistics[0].cards.yellow}
-                            </h1>
+                          <div className="justify-center flex">
+                            {/* 가장 많은 옐로카드 (인덱스가 0일 경우) 테두리 효과 추가 */}
+                            {i === 0 ? (
+                              <div className="bg-yellow-600 rounded-full p-[3px] flex justify-center items-center">
+                                <h1 className="font-normal text-sm w-5 text-center text-white">
+                                  {v.statistics[0].cards.yellow}
+                                </h1>
+                              </div>
+                            ) : (
+                              <h1 className="font-normal text-sm w-5">
+                                {v.statistics[0].cards.yellow}
+                              </h1>
+                            )}
                           </div>
                         </div>
                         {/* 마지막 인덱스가 아니라면 border표시 */}
