@@ -1,7 +1,6 @@
 "use client";
 
 import moment from "moment-timezone";
-import { useTranslations } from "next-intl";
 
 export default function FormatMatchDate(matchDate: string, locale: string, d:any) {
   
