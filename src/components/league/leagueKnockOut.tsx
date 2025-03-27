@@ -29,6 +29,7 @@ export default function LeagueKnockOut({
    * Quarter-finals
    * Semi-finals
    * Final
+   * 3rd Place Final
    */
 
   /** data for location state value */
@@ -98,6 +99,8 @@ export default function LeagueKnockOut({
 
   /**
    * 1. 월드컵 페이지에서도 잘작동하는지 확인하기 (왜냐하면 1차전 2차전이 없는 단독 데이터)
+   * http://localhost:3000/en/leagues/1/world-cup/playoff
+   * http://localhost:3000/en/leagues/2/champions-league/playoff
    */
 
   useEffect(() => {
@@ -115,33 +118,165 @@ export default function LeagueKnockOut({
     return (
       v?.league?.round === "Round of 16" || v?.league?.round === "8th Finals"
     );
-  })
-  
-  const groupdByRound16 = round16.reduce((acc: any, v: any) => {
+  });
+
+  const groupdByRound16 = round16?.reduce((acc: any, v: any) => {
     console.log(v);
     const key = [v?.teams?.home?.name, v?.teams?.away?.name].sort().join(" - ");
     if (!acc[key]) {
       acc[key] = {
         team1: v?.teams?.home?.name,
         team2: v?.teams?.away?.name,
-        team1ID : v?.teams?.home?.id,
-        team2ID : v?.teams?.away?.id,
+        team1ID: v?.teams?.home?.id,
+        team2ID: v?.teams?.away?.id,
         team1Score: v?.goals?.home || 0,
         team2Score: v?.goals?.away || 0,
+        team1Penalty: v?.score?.penalty?.home || 0,
+        team2Penalty: v?.score?.penalty?.away || 0,
+        status: [v?.fixture?.status?.short],
+        date: [v?.fixture?.date]
       };
     } else {
       // 이미 해당 팀 간 경기가 존재하면 스코어 합산
       acc[key].team1Score += v?.goals?.away || 0;
       acc[key].team2Score += v?.goals?.home || 0;
+      acc[key].team1Penalty += v?.score?.penalty?.away || 0;
+      acc[key].team2Penalty += v?.score?.penalty?.home || 0;
+      acc[key].status.push(v?.fixture?.status?.short),
+      acc[key].date.push(v?.fixture?.date);
+      
     }
     return acc;
   }, []);
 
   const roundOf16 = round16 && Object.values(groupdByRound16);
 
-  console.log(round16);
-  console.log(groupdByRound16);
+  console.group("Round of 16");
   console.log(roundOf16);
+  console.groupEnd();
+
+  /** Find Quarter-finals data */
+  const quarter = match?.filter((v: any) => {
+    return v?.league?.round === "Quarter-finals";
+  });
+
+  const groupdByquarter = quarter?.reduce((acc: any, v: any) => {
+    const key = [v?.teams?.home?.name, v?.teams?.away?.name].sort().join(" - ");
+    if (!acc[key]) {
+      acc[key] = {
+        team1: v?.teams?.home?.name,
+        team2: v?.teams?.away?.name,
+        team1ID: v?.teams?.home?.id,
+        team2ID: v?.teams?.away?.id,
+        team1Score: v?.goals?.home || 0,
+        team2Score: v?.goals?.away || 0,
+        team1Penalty: v?.score?.penalty?.home || 0,
+        team2Penalty: v?.score?.penalty?.away || 0,
+        status: [v?.fixture?.status?.short],
+        date: [v?.fixture?.date]
+      };
+    } else {
+      // 이미 해당 팀 간 경기가 존재하면 스코어 합산
+      acc[key].team1Score += v?.goals?.away || 0;
+      acc[key].team2Score += v?.goals?.home || 0;
+      acc[key].team1Penalty += v?.score?.penalty?.away || 0;
+      acc[key].team2Penalty += v?.score?.penalty?.home || 0;
+      acc[key].status.push(v?.fixture?.status?.short),
+      acc[key].date.push(v?.fixture?.date);
+    }
+    return acc;
+  }, []);
+
+  const quarterFinals = groupdByquarter && Object.values(groupdByquarter);
+
+  console.group("Quarter-finals");
+  console.log(quarterFinals);
+  console.groupEnd();
+
+  /** Find Semi-finals data */
+  const semi = match?.filter((v: any) => {
+    return v?.league?.round === "Semi-finals";
+  });
+
+  const groupdBySemi = semi?.reduce((acc: any, v: any) => {
+    const key = [v?.teams?.home?.name, v?.teams?.away?.name].sort().join(" - ");
+    if (!acc[key]) {
+      acc[key] = {
+        team1: v?.teams?.home?.name,
+        team2: v?.teams?.away?.name,
+        team1ID: v?.teams?.home?.id,
+        team2ID: v?.teams?.away?.id,
+        team1Score: v?.goals?.home || 0,
+        team2Score: v?.goals?.away || 0,
+        team1Penalty: v?.score?.penalty?.home || 0,
+        team2Penalty: v?.score?.penalty?.away || 0,
+        status: [v?.fixture?.status?.short],
+        date: [v?.fixture?.date]
+      };
+    } else {
+      // 이미 해당 팀 간 경기가 존재하면 스코어 합산
+      acc[key].team1Score += v?.goals?.away || 0;
+      acc[key].team2Score += v?.goals?.home || 0;
+      acc[key].team1Penalty += v?.score?.penalty?.away || 0;
+      acc[key].team2Penalty += v?.score?.penalty?.home || 0;
+      acc[key].status.push(v?.fixture?.status?.short),
+      acc[key].date.push(v?.fixture?.date);
+    }
+    return acc;
+  }, []);
+
+  const semiFinals = groupdBySemi && Object.values(groupdBySemi);
+
+  console.group("Semi-finals");
+  console.log(semiFinals);
+  console.groupEnd();
+
+  /** Find Final data */
+  const lastStage = match?.filter((v: any) => {
+    return v?.league?.round === "Final";
+  });
+
+  const groupdByLastStage = lastStage?.reduce((acc: any, v: any) => {
+    const key = [v?.teams?.home?.name, v?.teams?.away?.name].sort().join(" - ");
+    if (!acc[key]) {
+      acc[key] = {
+        team1: v?.teams?.home?.name,
+        team2: v?.teams?.away?.name,
+        team1ID: v?.teams?.home?.id,
+        team2ID: v?.teams?.away?.id,
+        team1Score: v?.goals?.home || 0,
+        team2Score: v?.goals?.away || 0,
+        team1Penalty: v?.score?.penalty?.home || 0,
+        team2Penalty: v?.score?.penalty?.away || 0,
+        status: [v?.fixture?.status?.short],
+        date: [v?.fixture?.date]
+      };
+    } else {
+      // 이미 해당 팀 간 경기가 존재하면 스코어 합산
+      acc[key].team1Score += v?.goals?.away || 0;
+      acc[key].team2Score += v?.goals?.home || 0;
+      acc[key].team1Penalty += v?.score?.penalty?.away || 0;
+      acc[key].team2Penalty += v?.score?.penalty?.home || 0;
+      acc[key].status.push(v?.fixture?.status?.short),
+      acc[key].date.push(v?.fixture?.date);
+    }
+    return acc;
+  }, []);
+
+  const final = groupdByLastStage && Object.values(groupdByLastStage);
+
+  console.group("Final");
+  console.log(final);
+  console.groupEnd();
+
+  // /** Find 3rd Place Final data */
+  // const thirdPlace = match?.filter((v: any) => {
+  //   return v?.league?.round === "3rd Place Final";
+  // });
+
+  // console.group("3rd Place Final");
+  // console.log(thirdPlace);
+  // console.groupEnd();
 
   return (
     <>
