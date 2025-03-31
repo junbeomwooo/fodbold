@@ -13,10 +13,12 @@ import {
   setSeasonChanged,
 } from "@/lib/features/leagueSlice";
 import Image from "next/image";
-import FormatMatchDate from "@/lib/formatMatchDate";
 import { useTranslations } from "next-intl";
 import { MdOutlineShield } from "react-icons/md";
 import { AnimatePresence, motion } from "framer-motion";
+
+import FormatMatchDate from "@/lib/formatMatchDate";
+import FormatLeagueOrTeamName from "@/lib/formatLeagueOrTeamName";
 
 export default function LeagueKnockOut({
   id,
@@ -48,6 +50,7 @@ export default function LeagueKnockOut({
 
   /** translate */
   const d = useTranslations("date");
+  const l = useTranslations("league");
 
   /** match data state value */
   const {
@@ -85,6 +88,12 @@ export default function LeagueKnockOut({
   // State value to change between match time and match points when the game is ongoing
   const [isPoint, setIsPoint] = useState(true);
 
+  // State value for popup
+  const [isPopupOpen, setIsPopupOpen] = useState<boolean>(false);
+
+  // State value for match data to display when the popup opens
+  const [isPopupData, setIsPopupData] = useState<any>(null);
+
   // Match status
 
   // scehduled
@@ -102,44 +111,44 @@ export default function LeagueKnockOut({
 
   /**
    * 1. 원하는 데이터 잘추출했고 모든 페이지에서 잘 작동하는거 확인했으니 넉아웃 페이지 구현하기\
-   * 클릭시 팝업 구현
+   * 팝업까지 구현완료하였으니 다음 라운드 구현하기
    * http://localhost:3000/en/leagues/1/world-cup/playoff
    * http://localhost:3000/en/leagues/2/champions-league/playoff
    */
 
   // 1. if there is no season data, fetch season data
-  // useEffect(() => {
-  //   if (!season) {
-  //     dispatch(getLeague({ id }));
-  //   }
-  // }, [dispatch, id, season]);
+  useEffect(() => {
+    if (!season) {
+      dispatch(getLeague({ id }));
+    }
+  }, [dispatch, id, season]);
 
-  // // 2 if selectedYear has no value, set lastest season
-  // useEffect(() => {
-  //   if (season && selectedYear === 0) {
-  //     const lastSeason = season[season.length - 1].year;
-  //     setSelectedYear(lastSeason);
+  // 2 if selectedYear has no value, set lastest season
+  useEffect(() => {
+    if (season && selectedYear === 0) {
+      const lastSeason = season[season.length - 1].year;
+      setSelectedYear(lastSeason);
 
-  //     if (!match) {
-  //       dispatch(
-  //         getMatches({ leagueID: id, season: lastSeason, timezone: location })
-  //       );
-  //     }
-  //   }
-  // }, [season, selectedYear, dispatch, id, location, match]);
+      if (!match) {
+        dispatch(
+          getMatches({ leagueID: id, season: lastSeason, timezone: location })
+        );
+      }
+    }
+  }, [season, selectedYear, dispatch, id, location, match]);
 
-  // // 3. When selected year has been changed, fetch new data for chnaged month
-  // useEffect(() => {
-  //   if (selectedYear !== 0 && selectedYearChanged) {
-  //     // 시즌 값이 변경되었을 경우 다른 탭페이지와 공유하기 위해 상태값 업데이트
-  //     dispatch(setSelectedSeason(selectedYear));
-  //     dispatch(
-  //       getMatches({ leagueID: id, season: selectedYear, timezone: location })
-  //     );
-  //   }
-  // }, [dispatch, id, selectedYear, selectedYearChanged, location]);
+  // 3. When selected year has been changed, fetch new data for chnaged month
+  useEffect(() => {
+    if (selectedYear !== 0 && selectedYearChanged) {
+      // 시즌 값이 변경되었을 경우 다른 탭페이지와 공유하기 위해 상태값 업데이트
+      dispatch(setSelectedSeason(selectedYear));
+      dispatch(
+        getMatches({ leagueID: id, season: selectedYear, timezone: location })
+      );
+    }
+  }, [dispatch, id, selectedYear, selectedYearChanged, location]);
 
-  // Show match scores and game time alternately every 2.5 seconds.
+  // // Show match scores and game time alternately every 2.5 seconds.
   useEffect(() => {
     const interval = setInterval(() => {
       setIsPoint((prev) => !prev); // match goals <-> match time
@@ -178,6 +187,7 @@ export default function LeagueKnockOut({
         status: [v?.fixture?.status?.short],
         date: [v?.fixture?.date],
         roundScore: [v?.goals],
+        matches: [v],
         elapsed: liveElapsed !== null ? [liveElapsed] : [],
       };
     } else {
@@ -186,9 +196,10 @@ export default function LeagueKnockOut({
       acc[key].team2Score += v?.goals?.home || 0;
       acc[key].team1Penalty += v?.score?.penalty?.away || 0;
       acc[key].team2Penalty += v?.score?.penalty?.home || 0;
-      acc[key].status.push(v?.fixture?.status?.short),
-        acc[key].date.push(v?.fixture?.date),
-        acc[key].roundScore.push(v?.goals);
+      acc[key].status.push(v?.fixture?.status?.short);
+      acc[key].date.push(v?.fixture?.date);
+      acc[key].roundScore.push(v?.goals);
+      acc[key].matches.push(v);
       if (liveElapsed !== null) {
         acc[key].elapsed.push(liveElapsed);
       }
@@ -196,83 +207,557 @@ export default function LeagueKnockOut({
     return acc;
   }, []);
 
-  // const roundOf16 = round16 && Object.values(groupdByRound16);
-  const roundOf16 = [
-    {
-      date: ["2025-03-04T17:45:00+00:00", "2025-03-12T20:00:00+00:00"],
-      roundScore: [
-        { home: 1, away: 3 },
-        { home: 3, away: 0 },
-      ],
-      status: ["LIVE", "FT"],
-      team1: "Club Brugge KV",
-      team1ID: 569,
-      team1Logo: "https://media.api-sports.io/football/teams/569.png",
-      team1Penalty: 0,
-      team1Score: 1,
-      team2: "Aston Villa",
-      team2ID: 66,
-      team2Logo: "https://media.api-sports.io/football/teams/66.png",
-      team2Penalty: 0,
-      team2Score: 6,
-      elapsed: [65],
-    },
-    {
-      date: ["2025-03-04T17:45:00+00:00", "2025-03-12T20:00:00+00:00"],
-      roundScore: [
-        { home: 1, away: 3 },
-        { home: 3, away: 0 },
-      ],
-      status: ["FT", "FT"],
-      team1: "Club Brugge KV",
-      team1ID: 569,
-      team1Logo: "https://media.api-sports.io/football/teams/569.png",
-      team1Penalty: 0,
-      team1Score: 1,
-      team2: "Aston Villa",
-      team2ID: 66,
-      team2Logo: "https://media.api-sports.io/football/teams/66.png",
-      team2Penalty: 0,
-      team2Score: 6,
-      elapsed: [65],
-    },
-    {
-      date: ["2025-03-04T17:45:00+00:00", "2025-03-12T20:00:00+00:00"],
-      roundScore: [
-        { home: 1, away: 3 },
-        { home: 3, away: 0 },
-      ],
-      status: ["FT", "FT"],
-      team1: "Club Brugge KV",
-      team1ID: 569,
-      team1Logo: "https://media.api-sports.io/football/teams/569.png",
-      team1Penalty: 0,
-      team1Score: 1,
-      team2: "Aston Villa",
-      team2ID: 66,
-      team2Logo: "https://media.api-sports.io/football/teams/66.png",
-      team2Penalty: 0,
-      team2Score: 6,
-    },
-    {
-      date: ["2025-03-04T17:45:00+00:00", "2025-03-12T20:00:00+00:00"],
-      roundScore: [
-        { home: 1, away: 3 },
-        { home: 3, away: 0 },
-      ],
-      status: ["FT", "FT"],
-      team1: "Club Brugge KV",
-      team1ID: 569,
-      team1Logo: "https://media.api-sports.io/football/teams/569.png",
-      team1Penalty: 0,
-      team1Score: 1,
-      team2: "Aston Villa",
-      team2ID: 66,
-      team2Logo: "https://media.api-sports.io/football/teams/66.png",
-      team2Penalty: 0,
-      team2Score: 6,
-    },
-  ];
+  const roundOf16 = round16 && Object.values(groupdByRound16);
+  // const roundOf16 = [
+  //   {
+  //     date: ["2025-03-04T17:45:00+00:00", "2025-03-12T20:00:00+00:00"],
+  //     elapsed: [],
+  //     matches: [
+  //       {
+  //         fixture: {
+  //           date: "2025-03-04T17:45:00+00:00",
+  //           id: 1353166,
+  //           periods: {
+  //             first: 1741110300,
+  //             second: 1741113900,
+  //           },
+  //           referee: "João Pedro Pinheiro",
+  //           status: {
+  //             elapsed: 40,
+  //             extra: 5,
+  //             long: "Match Finished",
+  //             short: "LIVE",
+  //           },
+  //           timestamp: 1741110300,
+  //           timezone: "UTC",
+  //           venue: {
+  //             id: 176,
+  //             name: "Jan Breydelstadion",
+  //             city: "Brugge",
+  //           },
+  //         },
+  //         goals: {
+  //           home: 1,
+  //           away: 3,
+  //         },
+  //         league: {
+  //           country: "World",
+  //           flag: null,
+  //           id: 2,
+  //           logo: "https://media.api-sports.io/football/leagues/2.png",
+  //           name: "UEFA Champions League",
+  //           round: "Round of 16",
+  //           season: 2024,
+  //           standings: true,
+  //         },
+  //         score: {
+  //           extratime: { home: null, away: null },
+  //           fulltime: { home: 1, away: 3 },
+  //           halftime: { home: 1, away: 1 },
+  //           penalty: { home: null, away: null },
+  //         },
+  //         teams: {
+  //           home: {
+  //             id: 569,
+  //             name: "Club Brugge KV",
+  //             logo: "https://media.api-sports.io/football/teams/569.png",
+  //             winner: false,
+  //           },
+  //           away: {
+  //             id: 66,
+  //             name: "Aston Villa",
+  //             logo: "https://media.api-sports.io/football/teams/66.png",
+  //             winner: true,
+  //           },
+  //         },
+  //       },
+  //       {
+  //         fixture: {
+  //           date: "2025-03-12T20:00:00+00:00",
+  //           id: 1353167,
+  //           periods: {
+  //             first: 1741809600,
+  //             second: 1741813200,
+  //           },
+  //           referee: "D. Siebert",
+  //           status: {
+  //             elapsed: 90,
+  //             extra: 1,
+  //             long: "Match Finished",
+  //             short: "FT",
+  //           },
+  //           timestamp: 1741809600,
+  //           timezone: "UTC",
+  //           venue: {
+  //             id: 495,
+  //             name: "Villa Park",
+  //             city: "Birmingham",
+  //           },
+  //         },
+  //         goals: {
+  //           home: 3,
+  //           away: 0,
+  //         },
+  //         league: {
+  //           country: "World",
+  //           flag: null,
+  //           id: 2,
+  //           logo: "https://media.api-sports.io/football/leagues/2.png",
+  //           name: "UEFA Champions League",
+  //           round: "Round of 16",
+  //           season: 2024,
+  //           standings: true,
+  //         },
+  //         score: {
+  //           extratime: { home: null, away: null },
+  //           fulltime: { home: 3, away: 0 },
+  //           halftime: { home: 0, away: 0 },
+  //           penalty: { home: null, away: null },
+  //         },
+  //         teams: {
+  //           home: {
+  //             id: 66,
+  //             name: "Aston Villa",
+  //             logo: "https://media.api-sports.io/football/teams/66.png",
+  //             winner: true,
+  //           },
+  //           away: {
+  //             id: 569,
+  //             name: "Club Brugge KV",
+  //             logo: "https://media.api-sports.io/football/teams/569.png",
+  //             winner: false,
+  //           },
+  //         },
+  //       },
+  //     ],
+  //     roundScore: [
+  //       { home: 1, away: 3 },
+  //       { home: 3, away: 0 },
+  //     ],
+  //     status: ["FT", "FT"],
+  //     team1: "Club Brugge KV",
+  //     team1ID: 569,
+  //     team1Logo: "https://media.api-sports.io/football/teams/569.png",
+  //     team1Penalty: 0,
+  //     team1Score: 1,
+  //     team2: "Aston Villa",
+  //     team2ID: 66,
+  //     team2Logo: "https://media.api-sports.io/football/teams/66.png",
+  //     team2Penalty: 0,
+  //     team2Score: 6,
+  //   },
+  //   {
+  //     date: ["2025-03-04T17:45:00+00:00", "2025-03-12T20:00:00+00:00"],
+  //     elapsed: [],
+  //     matches: [
+  //       {
+  //         fixture: {
+  //           date: "2025-03-04T17:45:00+00:00",
+  //           id: 1353166,
+  //           periods: {
+  //             first: 1741110300,
+  //             second: 1741113900,
+  //           },
+  //           referee: "João Pedro Pinheiro",
+  //           status: {
+  //             elapsed: 90,
+  //             extra: 5,
+  //             long: "Match Finished",
+  //             short: "FT",
+  //           },
+  //           timestamp: 1741110300,
+  //           timezone: "UTC",
+  //           venue: {
+  //             id: 176,
+  //             name: "Jan Breydelstadion",
+  //             city: "Brugge",
+  //           },
+  //         },
+  //         goals: {
+  //           home: 1,
+  //           away: 3,
+  //         },
+  //         league: {
+  //           country: "World",
+  //           flag: null,
+  //           id: 2,
+  //           logo: "https://media.api-sports.io/football/leagues/2.png",
+  //           name: "UEFA Champions League",
+  //           round: "Round of 16",
+  //           season: 2024,
+  //           standings: true,
+  //         },
+  //         score: {
+  //           extratime: { home: null, away: null },
+  //           fulltime: { home: 1, away: 3 },
+  //           halftime: { home: 1, away: 1 },
+  //           penalty: { home: null, away: null },
+  //         },
+  //         teams: {
+  //           home: {
+  //             id: 569,
+  //             name: "Club Brugge KV",
+  //             logo: "https://media.api-sports.io/football/teams/569.png",
+  //             winner: false,
+  //           },
+  //           away: {
+  //             id: 66,
+  //             name: "Aston Villa",
+  //             logo: "https://media.api-sports.io/football/teams/66.png",
+  //             winner: true,
+  //           },
+  //         },
+  //       },
+  //       {
+  //         fixture: {
+  //           date: "2025-03-12T20:00:00+00:00",
+  //           id: 1353167,
+  //           periods: {
+  //             first: 1741809600,
+  //             second: 1741813200,
+  //           },
+  //           referee: "D. Siebert",
+  //           status: {
+  //             elapsed: 90,
+  //             extra: 1,
+  //             long: "Match Finished",
+  //             short: "FT",
+  //           },
+  //           timestamp: 1741809600,
+  //           timezone: "UTC",
+  //           venue: {
+  //             id: 495,
+  //             name: "Villa Park",
+  //             city: "Birmingham",
+  //           },
+  //         },
+  //         goals: {
+  //           home: 3,
+  //           away: 0,
+  //         },
+  //         league: {
+  //           country: "World",
+  //           flag: null,
+  //           id: 2,
+  //           logo: "https://media.api-sports.io/football/leagues/2.png",
+  //           name: "UEFA Champions League",
+  //           round: "Round of 16",
+  //           season: 2024,
+  //           standings: true,
+  //         },
+  //         score: {
+  //           extratime: { home: null, away: null },
+  //           fulltime: { home: 3, away: 0 },
+  //           halftime: { home: 0, away: 0 },
+  //           penalty: { home: null, away: null },
+  //         },
+  //         teams: {
+  //           home: {
+  //             id: 66,
+  //             name: "Aston Villa",
+  //             logo: "https://media.api-sports.io/football/teams/66.png",
+  //             winner: true,
+  //           },
+  //           away: {
+  //             id: 569,
+  //             name: "Club Brugge KV",
+  //             logo: "https://media.api-sports.io/football/teams/569.png",
+  //             winner: false,
+  //           },
+  //         },
+  //       },
+  //     ],
+  //     roundScore: [
+  //       { home: 1, away: 3 },
+  //       { home: 3, away: 0 },
+  //     ],
+  //     status: ["FT", "FT"],
+  //     team1: "Club Brugge KV",
+  //     team1ID: 569,
+  //     team1Logo: "https://media.api-sports.io/football/teams/569.png",
+  //     team1Penalty: 0,
+  //     team1Score: 1,
+  //     team2: "Aston Villa",
+  //     team2ID: 66,
+  //     team2Logo: "https://media.api-sports.io/football/teams/66.png",
+  //     team2Penalty: 0,
+  //     team2Score: 6,
+  //   },
+  //   {
+  //     date: ["2025-03-04T17:45:00+00:00", "2025-03-12T20:00:00+00:00"],
+  //     elapsed: [],
+  //     matches: [
+  //       {
+  //         fixture: {
+  //           date: "2025-03-04T17:45:00+00:00",
+  //           id: 1353166,
+  //           periods: {
+  //             first: 1741110300,
+  //             second: 1741113900,
+  //           },
+  //           referee: "João Pedro Pinheiro",
+  //           status: {
+  //             elapsed: 90,
+  //             extra: 5,
+  //             long: "Match Finished",
+  //             short: "FT",
+  //           },
+  //           timestamp: 1741110300,
+  //           timezone: "UTC",
+  //           venue: {
+  //             id: 176,
+  //             name: "Jan Breydelstadion",
+  //             city: "Brugge",
+  //           },
+  //         },
+  //         goals: {
+  //           home: 1,
+  //           away: 3,
+  //         },
+  //         league: {
+  //           country: "World",
+  //           flag: null,
+  //           id: 2,
+  //           logo: "https://media.api-sports.io/football/leagues/2.png",
+  //           name: "UEFA Champions League",
+  //           round: "Round of 16",
+  //           season: 2024,
+  //           standings: true,
+  //         },
+  //         score: {
+  //           extratime: { home: null, away: null },
+  //           fulltime: { home: 1, away: 3 },
+  //           halftime: { home: 1, away: 1 },
+  //           penalty: { home: null, away: null },
+  //         },
+  //         teams: {
+  //           home: {
+  //             id: 569,
+  //             name: "Club Brugge KV",
+  //             logo: "https://media.api-sports.io/football/teams/569.png",
+  //             winner: false,
+  //           },
+  //           away: {
+  //             id: 66,
+  //             name: "Aston Villa",
+  //             logo: "https://media.api-sports.io/football/teams/66.png",
+  //             winner: true,
+  //           },
+  //         },
+  //       },
+  //       {
+  //         fixture: {
+  //           date: "2025-03-12T20:00:00+00:00",
+  //           id: 1353167,
+  //           periods: {
+  //             first: 1741809600,
+  //             second: 1741813200,
+  //           },
+  //           referee: "D. Siebert",
+  //           status: {
+  //             elapsed: 90,
+  //             extra: 1,
+  //             long: "Match Finished",
+  //             short: "FT",
+  //           },
+  //           timestamp: 1741809600,
+  //           timezone: "UTC",
+  //           venue: {
+  //             id: 495,
+  //             name: "Villa Park",
+  //             city: "Birmingham",
+  //           },
+  //         },
+  //         goals: {
+  //           home: 3,
+  //           away: 0,
+  //         },
+  //         league: {
+  //           country: "World",
+  //           flag: null,
+  //           id: 2,
+  //           logo: "https://media.api-sports.io/football/leagues/2.png",
+  //           name: "UEFA Champions League",
+  //           round: "Round of 16",
+  //           season: 2024,
+  //           standings: true,
+  //         },
+  //         score: {
+  //           extratime: { home: null, away: null },
+  //           fulltime: { home: 3, away: 0 },
+  //           halftime: { home: 0, away: 0 },
+  //           penalty: { home: null, away: null },
+  //         },
+  //         teams: {
+  //           home: {
+  //             id: 66,
+  //             name: "Aston Villa",
+  //             logo: "https://media.api-sports.io/football/teams/66.png",
+  //             winner: true,
+  //           },
+  //           away: {
+  //             id: 569,
+  //             name: "Club Brugge KV",
+  //             logo: "https://media.api-sports.io/football/teams/569.png",
+  //             winner: false,
+  //           },
+  //         },
+  //       },
+  //     ],
+  //     roundScore: [
+  //       { home: 1, away: 3 },
+  //       { home: 3, away: 0 },
+  //     ],
+  //     status: ["FT", "FT"],
+  //     team1: "Club Brugge KV",
+  //     team1ID: 569,
+  //     team1Logo: "https://media.api-sports.io/football/teams/569.png",
+  //     team1Penalty: 0,
+  //     team1Score: 1,
+  //     team2: "Aston Villa",
+  //     team2ID: 66,
+  //     team2Logo: "https://media.api-sports.io/football/teams/66.png",
+  //     team2Penalty: 0,
+  //     team2Score: 6,
+  //   },
+  //   {
+  //     date: ["2025-03-04T17:45:00+00:00", "2025-03-12T20:00:00+00:00"],
+  //     elapsed: [],
+  //     matches: [
+  //       {
+  //         fixture: {
+  //           date: "2025-03-04T17:45:00+00:00",
+  //           id: 1353166,
+  //           periods: {
+  //             first: 1741110300,
+  //             second: 1741113900,
+  //           },
+  //           referee: "João Pedro Pinheiro",
+  //           status: {
+  //             elapsed: 90,
+  //             extra: 5,
+  //             long: "Match Finished",
+  //             short: "FT",
+  //           },
+  //           timestamp: 1741110300,
+  //           timezone: "UTC",
+  //           venue: {
+  //             id: 176,
+  //             name: "Jan Breydelstadion",
+  //             city: "Brugge",
+  //           },
+  //         },
+  //         goals: {
+  //           home: 1,
+  //           away: 3,
+  //         },
+  //         league: {
+  //           country: "World",
+  //           flag: null,
+  //           id: 2,
+  //           logo: "https://media.api-sports.io/football/leagues/2.png",
+  //           name: "UEFA Champions League",
+  //           round: "Round of 16",
+  //           season: 2024,
+  //           standings: true,
+  //         },
+  //         score: {
+  //           extratime: { home: null, away: null },
+  //           fulltime: { home: 1, away: 3 },
+  //           halftime: { home: 1, away: 1 },
+  //           penalty: { home: null, away: null },
+  //         },
+  //         teams: {
+  //           home: {
+  //             id: 569,
+  //             name: "Club Brugge KV",
+  //             logo: "https://media.api-sports.io/football/teams/569.png",
+  //             winner: false,
+  //           },
+  //           away: {
+  //             id: 66,
+  //             name: "Aston Villa",
+  //             logo: "https://media.api-sports.io/football/teams/66.png",
+  //             winner: true,
+  //           },
+  //         },
+  //       },
+  //       {
+  //         fixture: {
+  //           date: "2025-03-12T20:00:00+00:00",
+  //           id: 1353167,
+  //           periods: {
+  //             first: 1741809600,
+  //             second: 1741813200,
+  //           },
+  //           referee: "D. Siebert",
+  //           status: {
+  //             elapsed: 90,
+  //             extra: 1,
+  //             long: "Match Finished",
+  //             short: "FT",
+  //           },
+  //           timestamp: 1741809600,
+  //           timezone: "UTC",
+  //           venue: {
+  //             id: 495,
+  //             name: "Villa Park",
+  //             city: "Birmingham",
+  //           },
+  //         },
+  //         goals: {
+  //           home: 3,
+  //           away: 0,
+  //         },
+  //         league: {
+  //           country: "World",
+  //           flag: null,
+  //           id: 2,
+  //           logo: "https://media.api-sports.io/football/leagues/2.png",
+  //           name: "UEFA Champions League",
+  //           round: "Round of 16",
+  //           season: 2024,
+  //           standings: true,
+  //         },
+  //         score: {
+  //           extratime: { home: null, away: null },
+  //           fulltime: { home: 3, away: 0 },
+  //           halftime: { home: 0, away: 0 },
+  //           penalty: { home: null, away: null },
+  //         },
+  //         teams: {
+  //           home: {
+  //             id: 66,
+  //             name: "Aston Villa",
+  //             logo: "https://media.api-sports.io/football/teams/66.png",
+  //             winner: true,
+  //           },
+  //           away: {
+  //             id: 569,
+  //             name: "Club Brugge KV",
+  //             logo: "https://media.api-sports.io/football/teams/569.png",
+  //             winner: false,
+  //           },
+  //         },
+  //       },
+  //     ],
+  //     roundScore: [
+  //       { home: 1, away: 3 },
+  //       { home: 3, away: 0 },
+  //     ],
+  //     status: ["FT", "FT"],
+  //     team1: "Club Brugge KV",
+  //     team1ID: 569,
+  //     team1Logo: "https://media.api-sports.io/football/teams/569.png",
+  //     team1Penalty: 0,
+  //     team1Score: 1,
+  //     team2: "Aston Villa",
+  //     team2ID: 66,
+  //     team2Logo: "https://media.api-sports.io/football/teams/66.png",
+  //     team2Penalty: 0,
+  //     team2Score: 6,
+  //   },
+  // ];
 
   console.group("Round of 16");
   console.log(roundOf16);
@@ -285,6 +770,12 @@ export default function LeagueKnockOut({
 
   const groupdByquarter = quarter?.reduce((acc: any, v: any) => {
     const key = [v?.teams?.home?.name, v?.teams?.away?.name].sort().join(" - ");
+
+    // if match is ongoing add data for match elapsed
+    const liveElapsed = live.includes(v?.fixture?.status?.short)
+      ? v?.fixture?.status?.elapsed
+      : null;
+
     if (!acc[key]) {
       acc[key] = {
         team1: v?.teams?.home?.name,
@@ -300,6 +791,8 @@ export default function LeagueKnockOut({
         status: [v?.fixture?.status?.short],
         date: [v?.fixture?.date],
         roundScore: [v?.goals],
+        matches: [v],
+        elapsed: liveElapsed !== null ? [liveElapsed] : [],
       };
     } else {
       // 이미 해당 팀 간 경기가 존재하면 스코어 합산
@@ -307,9 +800,13 @@ export default function LeagueKnockOut({
       acc[key].team2Score += v?.goals?.home || 0;
       acc[key].team1Penalty += v?.score?.penalty?.away || 0;
       acc[key].team2Penalty += v?.score?.penalty?.home || 0;
-      acc[key].status.push(v?.fixture?.status?.short),
-        acc[key].date.push(v?.fixture?.date);
+      acc[key].status.push(v?.fixture?.status?.short);
+      acc[key].date.push(v?.fixture?.date);
       acc[key].roundScore.push(v?.goals);
+      acc[key].matches.push(v);
+      if (liveElapsed !== null) {
+        acc[key].elapsed.push(liveElapsed);
+      }
     }
     return acc;
   }, []);
@@ -327,6 +824,12 @@ export default function LeagueKnockOut({
 
   const groupdBySemi = semi?.reduce((acc: any, v: any) => {
     const key = [v?.teams?.home?.name, v?.teams?.away?.name].sort().join(" - ");
+
+    // if match is ongoing add data for match elapsed
+    const liveElapsed = live.includes(v?.fixture?.status?.short)
+      ? v?.fixture?.status?.elapsed
+      : null;
+
     if (!acc[key]) {
       acc[key] = {
         team1: v?.teams?.home?.name,
@@ -342,6 +845,8 @@ export default function LeagueKnockOut({
         status: [v?.fixture?.status?.short],
         date: [v?.fixture?.date],
         roundScore: [v?.goals],
+        matches: [v],
+        elapsed: liveElapsed !== null ? [liveElapsed] : [],
       };
     } else {
       // 이미 해당 팀 간 경기가 존재하면 스코어 합산
@@ -349,9 +854,13 @@ export default function LeagueKnockOut({
       acc[key].team2Score += v?.goals?.home || 0;
       acc[key].team1Penalty += v?.score?.penalty?.away || 0;
       acc[key].team2Penalty += v?.score?.penalty?.home || 0;
-      acc[key].status.push(v?.fixture?.status?.short),
-        acc[key].date.push(v?.fixture?.date);
+      acc[key].status.push(v?.fixture?.status?.short);
+      acc[key].date.push(v?.fixture?.date);
       acc[key].roundScore.push(v?.goals);
+      acc[key].matches.push(v);
+      if (liveElapsed !== null) {
+        acc[key].elapsed.push(liveElapsed);
+      }
     }
     return acc;
   }, []);
@@ -369,6 +878,12 @@ export default function LeagueKnockOut({
 
   const groupdByLastStage = lastStage?.reduce((acc: any, v: any) => {
     const key = [v?.teams?.home?.name, v?.teams?.away?.name].sort().join(" - ");
+
+    // if match is ongoing add data for match elapsed
+    const liveElapsed = live.includes(v?.fixture?.status?.short)
+      ? v?.fixture?.status?.elapsed
+      : null;
+
     if (!acc[key]) {
       acc[key] = {
         team1: v?.teams?.home?.name,
@@ -384,6 +899,8 @@ export default function LeagueKnockOut({
         status: [v?.fixture?.status?.short],
         date: [v?.fixture?.date],
         roundScore: [v?.goals],
+        matches: [v],
+        elapsed: liveElapsed !== null ? [liveElapsed] : [],
       };
     } else {
       // 이미 해당 팀 간 경기가 존재하면 스코어 합산
@@ -391,9 +908,13 @@ export default function LeagueKnockOut({
       acc[key].team2Score += v?.goals?.home || 0;
       acc[key].team1Penalty += v?.score?.penalty?.away || 0;
       acc[key].team2Penalty += v?.score?.penalty?.home || 0;
-      acc[key].status.push(v?.fixture?.status?.short),
-        acc[key].date.push(v?.fixture?.date);
+      acc[key].status.push(v?.fixture?.status?.short);
+      acc[key].date.push(v?.fixture?.date);
       acc[key].roundScore.push(v?.goals);
+      acc[key].matches.push(v);
+      if (liveElapsed !== null) {
+        acc[key].elapsed.push(liveElapsed);
+      }
     }
     return acc;
   }, []);
@@ -413,6 +934,14 @@ export default function LeagueKnockOut({
   // console.log(thirdPlace);
   // console.groupEnd();
 
+  const onClickViewMatch = (matchData: any) => {
+    setIsPopupOpen(true);
+    setIsPopupData(matchData);
+    console.group("Click Evnet");
+    console.log(matchData);
+    console.groupEnd();
+  };
+
   return (
     <>
       <LeagueHeader
@@ -425,6 +954,7 @@ export default function LeagueKnockOut({
         setSelectedYearChanged={setSelectedYearChanged}
         onHandleSeasonChange={OnHandleSeasonChange}
       />
+      {/* Knock out page */}
       <div className="w-full h-[600px] mt-6 max-xl:w-full border-slate-200 border border-solid bg-white p-7 max-sm:px-0 rounded-xl dark:bg-custom-dark dark:border-0 flex">
         {/* left */}
         <div className="h-full w-4/12 flex">
@@ -462,11 +992,14 @@ export default function LeagueKnockOut({
                     d
                   );
 
-                  console.log(v);
-
                   return (
                     <div key={i} className="w-full h-1/4 flex items-center">
-                      <div className="w-[80px] h-[80px] border-slate-500 border border-solid rounded-[6px] px-[6px] py-[8px]">
+                      <div
+                        className="w-[80px] h-[80px] border-[#E8E8E8] border border-solid rounded-[6px] px-[6px] py-[8px] cursor-pointer hover:bg-[#EDEDED] hover:border-[#EDEDED] dark:border-[#464646] dark:hover:bg-[#2B2B2B]"
+                        onClick={() => {
+                          onClickViewMatch(v);
+                        }}
+                      >
                         <div className="flex justify-between">
                           {/* Home */}
                           <div className="flex-col">
@@ -566,15 +1099,15 @@ export default function LeagueKnockOut({
                       </div>
 
                       <div className="flex items-center flex-1">
-                        <hr className="border-l border-solid border-slate-500 w-full" />
+                        <hr className="border-l border-[1.2px] border-solid border-[#E8E8E8] w-full dark:border-[#464646]" />
                       </div>
 
                       {i % 2 !== 0 && (
-                        <div className="absolute right-0 top-[68px] h-1/4 border-l border-solid border-slate-500"></div>
+                        <div className="absolute right-0 top-[68px] h-1/4 border-l border-solid border-[#E8E8E8] border-[1.2px] dark:border-[#464646]"></div>
                       )}
 
                       {i % 2 === 0 && i < roundOf16.length - 1 && (
-                        <div className="absolute right-[0px] bottom-[68px] h-1/4 border-l border-solid border-slate-500"></div>
+                        <div className="absolute right-[0px] bottom-[68px] h-1/4 border-l border-solid border-[#E8E8E8] dark:border-[#464646] border-[1.2px]"></div>
                       )}
                     </div>
                   );
@@ -618,6 +1151,120 @@ export default function LeagueKnockOut({
         {/* right */}
         <div className="h-full w-4/12 flex"></div>
       </div>
+
+      {/** Display it if state value for popup is true */}
+      {isPopupOpen && (
+        <div className="fixed w-full h-full inset-0 flex items-center justify-center z-50">
+          {/* dark background */}
+          <div
+            className="absolute inset-0 bg-black opacity-50"
+            onClick={() => setIsPopupOpen(false)}
+          ></div>
+
+          {/* contents */}
+          <div className="relative bg-white dark:bg-[#272727] w-[350px] sm:w-[450px] pt-6 rounded-[20px] shadow-lg z-50">
+            {/* title */}
+            <div className="flex justify-center items-center w-full pb-3 text-base font-medium">
+              <h1>{l("matches")}</h1>
+            </div>
+            {isPopupData &&
+              isPopupData?.matches?.map((v: any, i: number) => {
+                console.log(v);
+                const formattedDate = FormatMatchDate(
+                  v?.fixture?.date,
+                  locale,
+                  d
+                );
+                return (
+                  <div key={i}>
+                    <hr className="w-full border-[0.5px] border-solid dark:border-[#323232]" />
+                    <div className="cursor-pointer hover:bg-[#F6F6F6] dark:hover:bg-[#323232]" onClick={() => {
+                      router.push(`/${locale}/matches/${FormatLeagueOrTeamName(v?.teams?.home?.name)}-vs-${FormatLeagueOrTeamName(v?.teams?.away?.name)}/${v?.fixture?.id}`)
+                    }}>
+                      {/* Date */}
+                      <h4 className="text-xs text-[#8F8F8F] pt-4 px-4">
+                        {formattedDate?.date}
+                      </h4>
+
+                      {/* Match */}
+                      <div className="flex w-full pt-2 pb-4 cursor-pointer hover:bg-[#F6F6F6] px-4 dark:hover:bg-[#323232]">
+                        {/* Home */}
+                        <div className="flex items-center w-6/12 justify-end gap-2">
+                          <h1 className="text-xs">{v?.teams?.home?.name}</h1>
+                          <Image
+                            src={v?.teams?.home?.logo}
+                            alt={v?.teams?.home?.name}
+                            width={24}
+                            height={24}
+                            className="object-contain w-[24px] h-[24px]"
+                          />
+                        </div>
+                        {/* Score || Match Time || elapsed */}
+                        <div className="w-[140px]">
+                          {live?.includes(v?.fixture?.status?.short) ? (
+                            <AnimatePresence>
+                              <div className="bg-[#00985F] text-white text-sm w-[50px] h-[20px] rounded-[0.4vw] flex items-center justify-center m-auto mt-[7px] text-[11px]">
+                                <motion.h3
+                                  key={isPoint ? "score" : "time"}
+                                  initial={{ opacity: 0 }}
+                                  animate={{ opacity: 1 }}
+                                  exit={{ opacity: 0 }}
+                                  transition={{
+                                    duration: 0.5,
+                                    ease: "easeInOut",
+                                  }}
+                                >
+                                  {isPoint
+                                    ? `${v?.goals?.home}
+                          -
+                          ${v?.goals?.away}`
+                                    : `${v?.fixture?.status?.elapsed || 0}'`}
+                                </motion.h3>
+                              </div>
+                            </AnimatePresence>
+                          ) : finish?.includes(v?.fixture?.status?.short) ? (
+                            <div className="flex justify-center text-[13px] text-center gap-2 items-center h-full">
+                              <h2 className="text-[13px]">{v?.goals?.home}</h2>
+                              <h2>-</h2>
+                              <h2 className="text-[13px]">{v?.goals?.away}</h2>
+                            </div>
+                          ) : formattedDate?.time ? (
+                            <div className="text-[13px] text-center flex h-full items-center justify-center">
+                              {formattedDate?.time}
+                            </div>
+                          ) : (
+                            <h1 className="text-[13px] text-center font-medium">
+                              TBD
+                            </h1>
+                          )}
+                        </div>
+                        {/* Away */}
+                        <div className="flex items-center w-6/12 gap-2">
+                          <Image
+                            src={v?.teams?.away?.logo}
+                            alt={v?.teams?.away?.name}
+                            width={24}
+                            height={24}
+                            className="object-contain w-[24px] h-[24px]"
+                          />
+                          <h1 className="text-xs">{v?.teams?.away?.name}</h1>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+
+            {/* close */}
+            <div
+              className="bg-[#F9F9FA] py-4 rounded-b-[20px] flex justify-center items-center cursor-pointer dark:bg-[#232323]"
+              onClick={() => setIsPopupOpen(false)}
+            >
+              <h3 className="text-sm text-green-600">{l("close")}</h3>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 }

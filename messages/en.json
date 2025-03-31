@@ -194,7 +194,8 @@
     "assists": "Assists",
     "viewall": "View All",
     "redcards": "Red Cards",
-    "yellowcards": "Yellow Cards"
+    "yellowcards": "Yellow Cards",
+    "close": "Close"
   },
   "fixture": {
     "back": "Back",

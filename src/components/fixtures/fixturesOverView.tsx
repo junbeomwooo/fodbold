@@ -2530,9 +2530,11 @@ const FixturesOverView = ({ id, locale }: { id: number; locale: string }) => {
                       options
                     ).format(date);
 
-                    const formattedTime = date
+                    const formattedTime = locale === "en" || locale === "da" ? date
                       .toLocaleTimeString(localeInfo)
-                      .slice(0, 5);
+                      .slice(0, 5) : date
+                      .toLocaleTimeString(localeInfo)
+                      .slice(0, 7);
 
                     return (
                       <div key={i}>
