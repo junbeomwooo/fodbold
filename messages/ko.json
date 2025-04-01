@@ -269,7 +269,9 @@
     "Yellow Cards": "옐로 카드",
     "secondH2H": "역대전적",
     "wins": "승리",
-    "draws": "무승부"
+    "draws": "무승부",
+
+    "viewAll": "전체 보기"
   },
 
   "team": {

@@ -2386,7 +2386,7 @@ const FixturesOverView = ({ id, locale }: { id: number; locale: string }) => {
 
             {/* h2h */}
             {h2h?.length && sortedH2H?.length > 0 && (
-              <div className=" border border-solid border-slate-200 bg-white dark:bg-[#1D1D1D] rounded-xl px-7 py-7 dark:border-0 max-xl:px-4 mt-4">
+              <div className=" border border-solid border-slate-200 bg-white dark:bg-[#1D1D1D] rounded-xl px-7 pt-7 dark:border-0 max-xl:px-4 mt-4">
                 {/* h2h Title */}
                 <div className="w-full flex justify-center items-center mb-10">
                   <h2 className="text-base font-medium mb-6">
@@ -2506,7 +2506,7 @@ const FixturesOverView = ({ id, locale }: { id: number; locale: string }) => {
 
                 {/* h2h data */}
                 <ul>
-                  {sortedH2H.map((v: any, i: number) => {
+                  {sortedH2H.slice(0, 10).map((v: any, i: number) => {
                     /** For Formatted date */
                     const date = new Date(v?.fixture.date);
 
@@ -2530,11 +2530,10 @@ const FixturesOverView = ({ id, locale }: { id: number; locale: string }) => {
                       options
                     ).format(date);
 
-                    const formattedTime = locale === "en" || locale === "da" ? date
-                      .toLocaleTimeString(localeInfo)
-                      .slice(0, 5) : date
-                      .toLocaleTimeString(localeInfo)
-                      .slice(0, 7);
+                    const formattedTime =
+                      locale === "en" || locale === "da"
+                        ? date.toLocaleTimeString(localeInfo).slice(0, 5)
+                        : date.toLocaleTimeString(localeInfo).slice(0, 7);
 
                     return (
                       <div key={i}>
@@ -2608,13 +2607,24 @@ const FixturesOverView = ({ id, locale }: { id: number; locale: string }) => {
                           </div>
                         </li>
 
-                        {i < sortedH2H.length - 1 && (
-                          <hr className="dark:border-[#333333]" />
-                        )}
+                        {i < 9 && <hr className="dark:border-[#333333]" />}
                       </div>
                     );
                   })}
                 </ul>
+                {/* move to all h2h */}
+                <hr className="mt-10 dark:border-custom-gray3" />
+                <div
+                  className="flex justify-center items-center p-3 py-5 cursor-pointer hover:opacity-50 hover:underline"
+                  onClick={() => setTabPage("h2h")}
+                >
+                  <h1
+                    className="text-xsm font-medium"
+                    onClick={() => setTabPage("h2h")}
+                  >
+                    {f("viewAll")}
+                  </h1>
+                </div>
               </div>
             )}
           </>

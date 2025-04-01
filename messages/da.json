@@ -269,7 +269,9 @@
     "Yellow Cards": "Gule Kort",
     "secondH2H": "Indbyrdes opgør",
     "wins": "Sejre",
-    "draws": "Uafgjorte"
+    "draws": "Uafgjorte",
+
+    "viewAll": "Vis alle"
   },
 
   "team": {
