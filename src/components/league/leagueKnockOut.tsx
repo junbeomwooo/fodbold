@@ -110,8 +110,8 @@ export default function LeagueKnockOut({
   const unearned = ["AWD", "WO"];
 
   /**
-   * 1. 원하는 데이터 잘추출했고 모든 페이지에서 잘 작동하는거 확인했으니 넉아웃 페이지 구현하기\
-   * 팝업까지 구현완료하였으니 다음 라운드 구현하기
+   * 1. 원하는 데이터 잘추출했고 모든 페이지에서 잘 작동하는거 확인했으니 넉아웃 페이지 구현하기
+   * 8강까지 완료했으니 다음 4강 결승까지 구현후 오른쪽 8강 16강 구현하기
    * http://localhost:3000/en/leagues/1/world-cup/playoff
    * http://localhost:3000/en/leagues/2/champions-league/playoff
    */
@@ -162,7 +162,7 @@ export default function LeagueKnockOut({
     return (
       v?.league?.round === "Round of 16" || v?.league?.round === "8th Finals"
     );
-  })
+  });
 
   const groupdByRound16 = round16?.reduce((acc: any, v: any) => {
     const key = [v?.teams?.home?.name, v?.teams?.away?.name].sort().join(" - ");
@@ -1218,27 +1218,70 @@ export default function LeagueKnockOut({
     console.groupEnd();
   };
 
-  const findRound16BasedOnQuaterL = roundOf16?.filter((roundMatch: any) => {
-    return quarterFinals
-      ?.slice(0, 2)
-      ?.some(
-        (quarterMatch: any) =>
-          quarterMatch.team1ID === roundMatch.team1ID ||
-          quarterMatch.team2ID === roundMatch.team1ID ||
-          quarterMatch.team1ID === roundMatch.team2ID ||
-          quarterMatch.team2ID === roundMatch.team2ID
-      );
-  }).sort((a: any, b: any) => {
-    // The round of 16 matches are checked against the positions in the quarterfinals, and by returning a negative value through indexA - indexB, they are arranged in order closest to the quarterfinals.
-    const indexA = quarterFinals?.findIndex((v: any) => 
-      v.team1ID === a.team1ID || v.team2ID === a.team1ID || v.team1ID === a.team2ID || v.team2ID === a.team2ID
-    );
-    const indexB = quarterFinals?.findIndex((v: any) => 
-      v.team1ID === b.team1ID || v.team2ID === b.team1ID || v.team1ID === b.team2ID || v.team2ID === b.team2ID
-    );
-  
-    return indexA - indexB
-  });
+  // const findRound16BasedOnQuaterL = roundOf16?.filter((roundMatch: any) => {
+  //   return quarterFinals
+  //     ?.slice(0, 2)
+  //     ?.some(
+  //       (quarterMatch: any) =>
+  //         quarterMatch.team1ID === roundMatch.team1ID ||
+  //         quarterMatch.team2ID === roundMatch.team1ID ||
+  //         quarterMatch.team1ID === roundMatch.team2ID ||
+  //         quarterMatch.team2ID === roundMatch.team2ID
+  //     );
+  // }).sort((a: any, b: any) => {
+  //   // The round of 16 matches are checked against the positions in the quarterfinals, and by returning a negative value through indexA - indexB, they are arranged in order closest to the quarterfinals.
+  //   const indexA = quarterFinals?.findIndex((v: any) =>
+  //     v.team1ID === a.team1ID || v.team2ID === a.team1ID || v.team1ID === a.team2ID || v.team2ID === a.team2ID
+  //   );
+  //   const indexB = quarterFinals?.findIndex((v: any) =>
+  //     v.team1ID === b.team1ID || v.team2ID === b.team1ID || v.team1ID === b.team2ID || v.team2ID === b.team2ID
+  //   );
+
+  //   return indexA - indexB
+  // });
+
+  /**  A function to find the current round's data based on the next round's data
+   *
+   *   The function finds the current round’s data based on the next round’s position. The next round’s data is
+   *   determined by the current round’s results, so the current round’s position should change accordingly.
+   */
+  const getSortedMatchesBasedOnNextRound = (
+    nowRounds: any[],
+    nextRounds: any[],
+    indexRange: [number, number]
+  ) => {
+    return nowRounds
+      ?.filter((nowRound: any) => {
+        return nextRounds
+          ?.slice(indexRange[0], indexRange[1])
+          ?.some(
+            (nextRound: any) =>
+              nextRound.team1ID === nowRound.team1ID ||
+              nextRound.team2ID === nowRound.team1ID ||
+              nextRound.team1ID === nowRound.team2ID ||
+              nextRound.team2ID === nowRound.team2ID
+          );
+      })
+      .sort((a: any, b: any) => {
+        // The round of 16 matches are checked against the positions in the quarterfinals, and by returning a negative value through indexA - indexB, they are arranged in order closest to the quarterfinals.
+        const indexA = quarterFinals?.findIndex(
+          (v: any) =>
+            v.team1ID === a.team1ID ||
+            v.team2ID === a.team1ID ||
+            v.team1ID === a.team2ID ||
+            v.team2ID === a.team2ID
+        );
+        const indexB = quarterFinals?.findIndex(
+          (v: any) =>
+            v.team1ID === b.team1ID ||
+            v.team2ID === b.team1ID ||
+            v.team1ID === b.team2ID ||
+            v.team2ID === b.team2ID
+        );
+
+        return indexA - indexB;
+      });
+  };
 
   return (
     <>
@@ -1261,7 +1304,11 @@ export default function LeagueKnockOut({
             {roundOf16?.length > 0
               ? quarterFinals?.length > 0
                 ? // if there are quarterFinal and roundOf16 data, show this
-                  findRound16BasedOnQuaterL?.map((v: any, i: number) => {
+                  getSortedMatchesBasedOnNextRound(
+                    roundOf16,
+                    quarterFinals,
+                    [0, 2]
+                  )?.map((v: any, i: number) => {
                     // Check all matces are ongoing
                     const isLive = v?.status?.some((status: any) =>
                       live?.includes(status)
@@ -1815,7 +1862,561 @@ export default function LeagueKnockOut({
         {/* center */}
         <div className="h-full w-4/12 flex"></div>
         {/* right */}
-        <div className="h-full w-4/12 flex"></div>
+        <div className="h-full w-4/12 flex">
+          {/* Quarter-finals */}
+          <div className="w-1/2 h-full flex flex-col relative">
+            {quarterFinals?.length > 0
+              ? // if there is data, show this
+                quarterFinals?.slice(2, 4).map((v: any, i: number) => {
+                  // Check all matces are ongoing
+                  const isLive = v?.status?.some((status: any) =>
+                    live?.includes(status)
+                  );
+                  console.log(isLive);
+
+                  // Check all matchs are already done
+                  const isAllFT = v?.status.every(
+                    (v: any) => v === "FT" || v === "PEN"
+                  );
+
+                  // Check whether team 1 is winner or not
+                  const team1Winner =
+                    v?.team1Score !== v?.team2Score
+                      ? v?.team1Score > v?.team2Score
+                      : v?.team1Penalty > v?.team2Penalty;
+
+                  // Check whether team 2 is winner or not
+                  const team2Winner =
+                    v?.team2Score !== v?.team1Score
+                      ? v?.team2Score > v?.team1Score
+                      : v?.team2Penalty > v?.team1Penalty;
+
+                  // format match date based on location
+                  const formattedMatchDate = FormatMatchDate(
+                    v?.date[0],
+                    locale,
+                    d
+                  );
+
+                  return (
+                    <div key={i} className="w-full h-1/2 flex items-center">
+                      {/* hr */}
+                      {i % 2 !== 0 && (
+                        <div className="absolute left-0 top-[135px] h-1/2 border-l border-solid border-[#E8E8E8] border-[1.2px] dark:border-[#464646]"></div>
+                      )}
+                      <div className="flex items-center flex-1">
+                        <hr className="border-l border-[1.2px] border-solid border-[#E8E8E8] w-full dark:border-[#464646]" />
+                      </div>
+                      {/* contents */}
+                      <div
+                        className="w-[80px] h-[80px] border-[#E8E8E8] border-[1.5px] border-solid rounded-[6px] px-[6px] py-[8px] cursor-pointer hover:bg-[#EDEDED] hover:border-[#EDEDED] dark:border-[#464646] dark:hover:bg-[#2B2B2B]"
+                        onClick={() => {
+                          onClickViewMatch(v);
+                        }}
+                      >
+                        <div className="flex justify-between">
+                          {/* Home */}
+                          <div className="flex-col">
+                            {v?.team1Logo ? (
+                              <Image
+                                src={v?.team1Logo}
+                                alt={v?.team1}
+                                width={20}
+                                height={20}
+                                className="w-[20px] h-[20px] m-auto object-contain"
+                              />
+                            ) : (
+                              <MdOutlineShield className="w-[20px] h-[20px] m-auto object-contain" />
+                            )}
+
+                            <h1
+                              className={`text-[13px] font-medium text-center pt-[4px] ${
+                                isAllFT &&
+                                (team1Winner
+                                  ? ""
+                                  : "line-through text-[#9F9F9F]")
+                              }`}
+                            >
+                              {v?.team1?.substr(0, 3)?.toUpperCase()}
+                            </h1>
+                          </div>
+
+                          <div></div>
+
+                          {/* Away */}
+                          <div className="flex-col">
+                            {v?.team2Logo ? (
+                              <Image
+                                src={v?.team2Logo}
+                                alt={v?.team2}
+                                width={20}
+                                height={20}
+                                className="w-[20px] h-[20px] m-auto object-contain"
+                              />
+                            ) : (
+                              <MdOutlineShield className="w-[20px] h-[20px] m-auto object-contain" />
+                            )}
+                            <h1
+                              className={`text-[13px] font-medium text-center pt-[4px] ${
+                                isAllFT &&
+                                (team2Winner
+                                  ? ""
+                                  : "line-through text-[#9F9F9F]")
+                              }`}
+                            >
+                              {v?.team2?.substr(0, 3)?.toUpperCase()}
+                            </h1>
+                          </div>
+                        </div>
+
+                        {/* Score or Date */}
+                        {isLive && v?.elapsed?.length > 0 ? (
+                          <AnimatePresence>
+                            <div className="bg-[#00985F] text-white text-sm w-[50px] h-[20px] rounded-[0.4vw] flex items-center justify-center m-auto mt-[7px] text-[11px]">
+                              <motion.h3
+                                key={isPoint ? "score" : "time"}
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                exit={{ opacity: 0 }}
+                                transition={{
+                                  duration: 0.5,
+                                  ease: "easeInOut",
+                                }}
+                              >
+                                {isPoint
+                                  ? `${v?.team1Score}
+                          -
+                          ${v?.team2Score}`
+                                  : `${v?.elapsed[0] || 0}'`}
+                              </motion.h3>
+                            </div>
+                          </AnimatePresence>
+                        ) : v?.team1Score || v?.team2Score ? (
+                          <div className="flex justify-between text-[13px] text-center pt-[9px]">
+                            <h2 className="text-[13px] w-[26.11px]">
+                              {v?.team1Score}
+                            </h2>
+                            <h2>-</h2>
+                            <h2 className="text-[13px] w-[26.11px]">
+                              {v?.team2Score}
+                            </h2>
+                          </div>
+                        ) : formattedMatchDate?.date ? (
+                          <div className="text-[13px] text-center pt-[9px]">
+                            {formattedMatchDate?.date}
+                          </div>
+                        ) : (
+                          <h1 className="text-[13px] text-center pt-[9px] font-medium">
+                            TBD
+                          </h1>
+                        )}
+                      </div>
+
+                      {/* hr */}
+                      <div className="flex items-center flex-1">
+                        <hr className="border-l border-[1.2px] border-solid border-[#E8E8E8] w-full dark:border-[#464646]" />
+                      </div>
+                    </div>
+                  );
+                })
+              : // if there is no data, show this
+                Array.from({ length: 2 }).map((_, i) => {
+                  return (
+                    <div key={i} className="w-full h-1/2 flex items-center">
+                      {/* hr */}
+                      <div className="flex items-center flex-1">
+                        <hr className="border-l border-[1.2px] border-solid border-[#E8E8E8] w-full dark:border-[#464646]" />
+                      </div>
+
+                      {/* contents */}
+                      <div className="w-[80px] h-[80px] border-[#E8E8E8]  dark:border-[#464646] border-[1.5px] border-solid rounded-[6px] px-[6px] py-[8px] ">
+                        <div className="flex justify-between">
+                          {/* Home */}
+                          <div className="flex-col">
+                            <MdOutlineShield className="w-[20px] h-[20px] m-auto object-contain" />
+                            <h1 className="text-[13px] font-medium text-center pt-[4px]">
+                              TBD
+                            </h1>
+                          </div>
+                          {/* Away */}
+                          <div className="flex-col">
+                            <MdOutlineShield className="w-[20px] h-[20px] m-auto object-contain" />
+                            <h1 className="text-[13px] font-medium text-center pt-[4px]">
+                              TBD
+                            </h1>
+                          </div>
+                        </div>
+                        {/* Match Date */}
+                        <div className="text-[13px] text-center pt-[9px] font-medium">
+                          TBD
+                        </div>
+                      </div>
+
+                      {/* hr */}
+                      <div className="flex items-center flex-1">
+                        <hr className="border-l border-[1.2px] border-solid border-[#E8E8E8] w-full dark:border-[#464646]" />
+                      </div>
+                      {i % 2 !== 0 && (
+                        <div className="absolute left-0 top-[135px] h-1/2 border-l border-solid border-[#E8E8E8] border-[1.2px] dark:border-[#464646]"></div>
+                      )}
+                    </div>
+                  );
+                })}
+          </div>
+          {/* Round of 16 */}
+          <div className="w-1/2 h-full flex flex-col relative">
+            {roundOf16?.length > 0
+              ? quarterFinals?.length > 0
+                ? // if there are quarterFinal and roundOf16 data, show this
+                  getSortedMatchesBasedOnNextRound(
+                    roundOf16,
+                    quarterFinals,
+                    [2, 4]
+                  )?.map((v: any, i: number) => {
+                    // Check all matces are ongoing
+                    const isLive = v?.status?.some((status: any) =>
+                      live?.includes(status)
+                    );
+                    console.log(isLive);
+
+                    // Check all matchs are already done
+                    const isAllFT = v?.status.every(
+                      (v: any) => v === "FT" || v === "PEN"
+                    );
+
+                    // Check whether team 1 is winner or not
+                    const team1Winner =
+                      v?.team1Score !== v?.team2Score
+                        ? v?.team1Score > v?.team2Score
+                        : v?.team1Penalty > v?.team2Penalty;
+
+                    // Check whether team 2 is winner or not
+                    const team2Winner =
+                      v?.team2Score !== v?.team1Score
+                        ? v?.team2Score > v?.team1Score
+                        : v?.team2Penalty > v?.team1Penalty;
+
+                    // format match date based on location
+                    const formattedMatchDate = FormatMatchDate(
+                      v?.date[0],
+                      locale,
+                      d
+                    );
+
+                    return (
+                      <div key={i} className="w-full h-1/4 flex items-center">
+                        {/* hr */}
+                        <div className="flex items-center flex-1">
+                          <hr className="border-l border-[1.2px] border-solid border-[#E8E8E8] w-full dark:border-[#464646]" />
+                          {i % 2 !== 0 && (
+                            <div className="absolute left-0 top-[68px] h-1/4 border-l border-solid border-[#E8E8E8] border-[1.2px] dark:border-[#464646]"></div>
+                          )}
+
+                          {i % 2 === 0 && i < roundOf16.length - 1 && (
+                            <div className="absolute left-[0px] bottom-[68px] h-1/4 border-l border-solid border-[#E8E8E8] dark:border-[#464646] border-[1.2px]"></div>
+                          )}
+                        </div>
+                        {/* contents */}
+                        <div
+                          className="w-[80px] h-[80px] border-[#E8E8E8] border-[1.5px] border-solid rounded-[6px] px-[6px] py-[8px] cursor-pointer hover:bg-[#EDEDED] hover:border-[#EDEDED] dark:border-[#464646] dark:hover:bg-[#2B2B2B]"
+                          onClick={() => {
+                            onClickViewMatch(v);
+                          }}
+                        >
+                          <div className="flex justify-between">
+                            {/* Home */}
+                            <div className="flex-col">
+                              {v?.team1Logo ? (
+                                <Image
+                                  src={v?.team1Logo}
+                                  alt={v?.team1}
+                                  width={20}
+                                  height={20}
+                                  className="w-[20px] h-[20px] m-auto object-contain"
+                                />
+                              ) : (
+                                <MdOutlineShield className="w-[20px] h-[20px] m-auto object-contain" />
+                              )}
+
+                              <h1
+                                className={`text-[13px] font-medium text-center pt-[4px] ${
+                                  isAllFT &&
+                                  (team1Winner
+                                    ? ""
+                                    : "line-through text-[#9F9F9F]")
+                                }`}
+                              >
+                                {v?.team1?.substr(0, 3)?.toUpperCase()}
+                              </h1>
+                            </div>
+
+                            <div></div>
+
+                            {/* Away */}
+                            <div className="flex-col">
+                              {v?.team2Logo ? (
+                                <Image
+                                  src={v?.team2Logo}
+                                  alt={v?.team2}
+                                  width={20}
+                                  height={20}
+                                  className="w-[20px] h-[20px] m-auto object-contain"
+                                />
+                              ) : (
+                                <MdOutlineShield className="w-[20px] h-[20px] m-auto object-contain" />
+                              )}
+                              <h1
+                                className={`text-[13px] font-medium text-center pt-[4px] ${
+                                  isAllFT &&
+                                  (team2Winner
+                                    ? ""
+                                    : "line-through text-[#9F9F9F]")
+                                }`}
+                              >
+                                {v?.team2?.substr(0, 3)?.toUpperCase()}
+                              </h1>
+                            </div>
+                          </div>
+
+                          {/* Score or Date */}
+                          {isLive && v?.elapsed?.length > 0 ? (
+                            <AnimatePresence>
+                              <div className="bg-[#00985F] text-white text-sm w-[50px] h-[20px] rounded-[0.4vw] flex items-center justify-center m-auto mt-[7px] text-[11px]">
+                                <motion.h3
+                                  key={isPoint ? "score" : "time"}
+                                  initial={{ opacity: 0 }}
+                                  animate={{ opacity: 1 }}
+                                  exit={{ opacity: 0 }}
+                                  transition={{
+                                    duration: 0.5,
+                                    ease: "easeInOut",
+                                  }}
+                                >
+                                  {isPoint
+                                    ? `${v?.team1Score}
+                          -
+                          ${v?.team2Score}`
+                                    : `${v?.elapsed[0] || 0}'`}
+                                </motion.h3>
+                              </div>
+                            </AnimatePresence>
+                          ) : v?.team1Score || v?.team2Score ? (
+                            <div className="flex justify-between text-[13px] text-center pt-[9px]">
+                              <h2 className="text-[13px] w-[26.11px]">
+                                {v?.team1Score}
+                              </h2>
+                              <h2>-</h2>
+                              <h2 className="text-[13px] w-[26.11px]">
+                                {v?.team2Score}
+                              </h2>
+                            </div>
+                          ) : formattedMatchDate?.date ? (
+                            <div className="text-[13px] text-center pt-[9px]">
+                              {formattedMatchDate?.date}
+                            </div>
+                          ) : (
+                            <h1 className="text-[13px] text-center pt-[9px] font-medium">
+                              TBD
+                            </h1>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })
+                : // if there is no quarterFinal Data, But there is roundOf16 Data.
+                  roundOf16?.slice(0, 4).map((v: any, i: number) => {
+                    // Check all matces are ongoing
+                    const isLive = v?.status?.some((status: any) =>
+                      live?.includes(status)
+                    );
+                    console.log(isLive);
+
+                    // Check all matchs are already done
+                    const isAllFT = v?.status.every(
+                      (v: any) => v === "FT" || v === "PEN"
+                    );
+
+                    // Check whether team 1 is winner or not
+                    const team1Winner =
+                      v?.team1Score !== v?.team2Score
+                        ? v?.team1Score > v?.team2Score
+                        : v?.team1Penalty > v?.team2Penalty;
+
+                    // Check whether team 2 is winner or not
+                    const team2Winner =
+                      v?.team2Score !== v?.team1Score
+                        ? v?.team2Score > v?.team1Score
+                        : v?.team2Penalty > v?.team1Penalty;
+
+                    // format match date based on location
+                    const formattedMatchDate = FormatMatchDate(
+                      v?.date[0],
+                      locale,
+                      d
+                    );
+
+                    return (
+                      <div key={i} className="w-full h-1/4 flex items-center">
+                        {/* hr */}
+                        <div className="flex items-center flex-1">
+                          <hr className="border-l border-[1.2px] border-solid border-[#E8E8E8] w-full dark:border-[#464646]" />
+                          {i % 2 !== 0 && (
+                            <div className="absolute left-0 top-[68px] h-1/4 border-l border-solid border-[#E8E8E8] border-[1.2px] dark:border-[#464646]"></div>
+                          )}
+
+                          {i % 2 === 0 && i < roundOf16.length - 1 && (
+                            <div className="absolute left-[0px] bottom-[68px] h-1/4 border-l border-solid border-[#E8E8E8] dark:border-[#464646] border-[1.2px]"></div>
+                          )}
+                        </div>
+                        {/* contents */}
+                        <div
+                          className="w-[80px] h-[80px] border-[#E8E8E8] border-[1.5px] border-solid rounded-[6px] px-[6px] py-[8px] cursor-pointer hover:bg-[#EDEDED] hover:border-[#EDEDED] dark:border-[#464646] dark:hover:bg-[#2B2B2B]"
+                          onClick={() => {
+                            onClickViewMatch(v);
+                          }}
+                        >
+                          <div className="flex justify-between">
+                            {/* Home */}
+                            <div className="flex-col">
+                              {v?.team1Logo ? (
+                                <Image
+                                  src={v?.team1Logo}
+                                  alt={v?.team1}
+                                  width={20}
+                                  height={20}
+                                  className="w-[20px] h-[20px] m-auto object-contain"
+                                />
+                              ) : (
+                                <MdOutlineShield className="w-[20px] h-[20px] m-auto object-contain" />
+                              )}
+
+                              <h1
+                                className={`text-[13px] font-medium text-center pt-[4px] ${
+                                  isAllFT &&
+                                  (team1Winner
+                                    ? ""
+                                    : "line-through text-[#9F9F9F]")
+                                }`}
+                              >
+                                {v?.team1?.substr(0, 3)?.toUpperCase()}
+                              </h1>
+                            </div>
+
+                            <div></div>
+
+                            {/* Away */}
+                            <div className="flex-col">
+                              {v?.team2Logo ? (
+                                <Image
+                                  src={v?.team2Logo}
+                                  alt={v?.team2}
+                                  width={20}
+                                  height={20}
+                                  className="w-[20px] h-[20px] m-auto object-contain"
+                                />
+                              ) : (
+                                <MdOutlineShield className="w-[20px] h-[20px] m-auto object-contain" />
+                              )}
+                              <h1
+                                className={`text-[13px] font-medium text-center pt-[4px] ${
+                                  isAllFT &&
+                                  (team2Winner
+                                    ? ""
+                                    : "line-through text-[#9F9F9F]")
+                                }`}
+                              >
+                                {v?.team2?.substr(0, 3)?.toUpperCase()}
+                              </h1>
+                            </div>
+                          </div>
+
+                          {/* Score or Date */}
+                          {isLive && v?.elapsed?.length > 0 ? (
+                            <AnimatePresence>
+                              <div className="bg-[#00985F] text-white text-sm w-[50px] h-[20px] rounded-[0.4vw] flex items-center justify-center m-auto mt-[7px] text-[11px]">
+                                <motion.h3
+                                  key={isPoint ? "score" : "time"}
+                                  initial={{ opacity: 0 }}
+                                  animate={{ opacity: 1 }}
+                                  exit={{ opacity: 0 }}
+                                  transition={{
+                                    duration: 0.5,
+                                    ease: "easeInOut",
+                                  }}
+                                >
+                                  {isPoint
+                                    ? `${v?.team1Score}
+                          -
+                          ${v?.team2Score}`
+                                    : `${v?.elapsed[0] || 0}'`}
+                                </motion.h3>
+                              </div>
+                            </AnimatePresence>
+                          ) : v?.team1Score || v?.team2Score ? (
+                            <div className="flex justify-between text-[13px] text-center pt-[9px]">
+                              <h2 className="text-[13px] w-[26.11px]">
+                                {v?.team1Score}
+                              </h2>
+                              <h2>-</h2>
+                              <h2 className="text-[13px] w-[26.11px]">
+                                {v?.team2Score}
+                              </h2>
+                            </div>
+                          ) : formattedMatchDate?.date ? (
+                            <div className="text-[13px] text-center pt-[9px]">
+                              {formattedMatchDate?.date}
+                            </div>
+                          ) : (
+                            <h1 className="text-[13px] text-center pt-[9px] font-medium">
+                              TBD
+                            </h1>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })
+              : // if there  no data, show this
+                Array.from({ length: 4 }).map((_, i) => {
+                  return (
+                    <div key={i} className="w-full h-1/4 flex items-center">
+                      <div className="flex items-center flex-1">
+
+                      {i % 2 !== 0 && (
+                        <div className="absolute left-0 top-[68px] h-1/4 border-l border-solid border-[#E8E8E8] border-[1.2px] dark:border-[#464646]"></div>
+                      )}
+
+                      {i % 2 === 0 && (
+                        <div className="absolute left-[0px] bottom-[68px] h-1/4 border-l border-solid border-[#E8E8E8] dark:border-[#464646] border-[1.2px]"></div>
+                      )}
+                        <hr className="border-l border-[1.2px] border-solid border-[#E8E8E8] w-full dark:border-[#464646]" />
+                      </div>
+                      <div className="w-[80px] h-[80px] border-[#E8E8E8]  dark:border-[#464646] border-[1.5px] border-solid rounded-[6px] px-[6px] py-[8px] ">
+                        <div className="flex justify-between">
+                          {/* Home */}
+                          <div className="flex-col">
+                            <MdOutlineShield className="w-[20px] h-[20px] m-auto object-contain" />
+                            <h1 className="text-[13px] font-medium text-center pt-[4px]">
+                              TBD
+                            </h1>
+                          </div>
+                          {/* Away */}
+                          <div className="flex-col">
+                            <MdOutlineShield className="w-[20px] h-[20px] m-auto object-contain" />
+                            <h1 className="text-[13px] font-medium text-center pt-[4px]">
+                              TBD
+                            </h1>
+                          </div>
+                        </div>
+                        {/* Match Date */}
+                        <div className="text-[13px] text-center pt-[9px] font-medium">
+                          TBD
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+          </div>
+        </div>
       </div>
 
       {/** Display it if state value for popup is true */}
