@@ -463,11 +463,14 @@ export default function LeagueKnockOut({
       : v?.team2Penalty > v?.team1Penalty;
   };
 
+  // State for 
+  const [confettiColor,setConfettiColor] = useState<string[]>([]);
+
   // Ref for champion image 
   const imgRef = useRef<HTMLImageElement | null>(null);
 
   // from RGB value to Hex
-  const rgbToHex = (rgb: number[]): string => {
+  const rgbToHex = (rgb: any[]): string => {
     return (
       "#" +
       rgb
@@ -477,18 +480,6 @@ export default function LeagueKnockOut({
     );
   };
 
-  // useEffect(() => {
-  //   if (
-  //     final &&
-  //     final?.length > 0 &&
-  //     imgRef.current &&
-  //     imgRef.current.complete
-  //   ) {
-  //     const colorThief = new ColorThief();
-  //     const palette = colorThief?.getPalette(imgRef.current);
-  //     console.log(palette);
-  //   }
-  // }, [final]);
 
   return (
     <>
@@ -1266,6 +1257,7 @@ export default function LeagueKnockOut({
                 particleCount={180}
                 width={1000}
                 height="80vh"
+                colors={confettiColor}
               />
             </div>
           )}
@@ -1300,8 +1292,12 @@ export default function LeagueKnockOut({
                     console.log("hahahaha");
                     if (imgRef.current) {
                       const colorThief = new ColorThief();
-                      const palette = colorThief.getPalette(imgRef.current);
-                      console.log(palette);
+                      const palette = colorThief.getPalette(imgRef.current).slice(0,3);
+                      const colors = palette.map((v) => {
+                        return rgbToHex(v);
+                      });
+
+                      setConfettiColor(colors);
                     }
                   }}
                 />
