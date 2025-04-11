@@ -117,10 +117,10 @@ export default function LeagueKnockOut({
   const unearned = ["AWD", "WO"];
 
   /**
-   * 1. 모든 라운드 구현 완료했으니 ColorTheif 를 통해 우승팀의 색상을 추출한후 confettie를 해당 색상으로 변경해주기
+   * 1. 월드컵 국가팀들도 팀페이지가 잘 렌더링되는지 확인
    * 2. 데이터 통신이 적절히 일어나는지 확인 후 모바일 타블렛 버전도 구현하기
    * 3. fixtureOverview에서도 ColorThief를 사용할지 생각해보기
-   * 
+   *
    * http://localhost:3000/en/leagues/1/world-cup/playoff
    * http://localhost:3000/en/leagues/2/champions-league/playoff
    */
@@ -463,10 +463,10 @@ export default function LeagueKnockOut({
       : v?.team2Penalty > v?.team1Penalty;
   };
 
-  // State for 
-  const [confettiColor,setConfettiColor] = useState<string[]>([]);
+  // State for
+  const [confettiColor, setConfettiColor] = useState<string[]>([]);
 
-  // Ref for champion image 
+  // Ref for champion image
   const imgRef = useRef<HTMLImageElement | null>(null);
 
   // from RGB value to Hex
@@ -479,7 +479,6 @@ export default function LeagueKnockOut({
         .toUpperCase()
     );
   };
-
 
   return (
     <>
@@ -1263,12 +1262,24 @@ export default function LeagueKnockOut({
           )}
           {/* trophy */}
           <div
-            className="absolute left-1/2 top-1/3 -translate-x-1/2 -translate-y-1/2 flex flex-col items-center cursor-pointer hover:opacity-70"
+            className={`absolute left-1/2 top-1/3 -translate-x-1/2 -translate-y-1/2 flex flex-col items-center ${
+              finish.includes(final && final[0]?.status[0])
+                ? "cursor-pointer hover:opacity-70"
+                : ""
+            }`}
             onMouseEnter={() => {
               setIsExploding(true);
               setTimeout(() => {
                 setIsExploding(false);
               }, 3000);
+            }}
+            onClick={() => {
+              const finalMatch = final[0]
+              finish.includes(final && finalMatch?.status[0])
+                ? router.push(
+                    checkTeam1IsWinner(finalMatch) ? `/${locale}/teams/${finalMatch?.team1ID}/${FormatLeagueOrTeamName(finalMatch?.team1)}/overview`:`/${locale}/teams/${finalMatch?.team2ID}/${FormatLeagueOrTeamName(finalMatch?.team2)}/overview`
+                  )
+                : null;
             }}
           >
             <GiLaurelsTrophy className="text-[#CCCCCC] scale-[5]" />
@@ -1292,7 +1303,9 @@ export default function LeagueKnockOut({
                     console.log("hahahaha");
                     if (imgRef.current) {
                       const colorThief = new ColorThief();
-                      const palette = colorThief.getPalette(imgRef.current).slice(0,3);
+                      const palette = colorThief
+                        .getPalette(imgRef.current)
+                        .slice(0, 3);
                       const colors = palette.map((v) => {
                         return rgbToHex(v);
                       });
