@@ -117,7 +117,6 @@ export default function LeagueKnockOut({
   const unearned = ["AWD", "WO"];
 
   /**
-   * 1. 월드컵 국가팀들도 팀페이지가 잘 렌더링되는지 확인
    * 2. 데이터 통신이 적절히 일어나는지 확인 후 모바일 타블렛 버전도 구현하기
    * 3. fixtureOverview에서도 ColorThief를 사용할지 생각해보기
    *
@@ -157,14 +156,14 @@ export default function LeagueKnockOut({
     }
   }, [dispatch, id, selectedYear, selectedYearChanged, location]);
 
-  // // // Show match scores and game time alternately every 2.5 seconds.
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setIsPoint((prev) => !prev); // match goals <-> match time
-    }, 2500);
+  // // // // Show match scores and game time alternately every 2.5 seconds.
+  // useEffect(() => {
+  //   const interval = setInterval(() => {
+  //     setIsPoint((prev) => !prev); // match goals <-> match time
+  //   }, 2500);
 
-    return () => clearInterval(interval); // clear Interval when componets is unmounted
-  }, []);
+  //   return () => clearInterval(interval); // clear Interval when componets is unmounted
+  // }, []);
 
   /** Find 'Round of 16' data */
   const round16 = match?.filter((v: any) => {
@@ -383,13 +382,58 @@ export default function LeagueKnockOut({
   console.groupEnd();
 
   // /** Find 3rd Place Final data */
-  // const thirdPlace = match?.filter((v: any) => {
-  //   return v?.league?.round === "3rd Place Final";
-  // });
+  const third = match?.filter((v: any) => {
+    return v?.league?.round === "3rd Place Final";
+  });
 
-  // console.group("3rd Place Final");
-  // console.log(thirdPlace);
-  // console.groupEnd();
+  const groupByThird = third?.reduce((acc: any, v: any) => {
+    const key = [v?.teams?.home?.name, v?.teams?.away?.name].sort().join(" - ");
+
+    // if match is ongoing add data for match elapsed
+    const liveElapsed = live.includes(v?.fixture?.status?.short)
+      ? v?.fixture?.status?.elapsed
+      : null;
+
+    if (!acc[key]) {
+      acc[key] = {
+        team1: v?.teams?.home?.name,
+        team2: v?.teams?.away?.name,
+        team1ID: v?.teams?.home?.id,
+        team2ID: v?.teams?.away?.id,
+        team1Score: v?.goals?.home || 0,
+        team2Score: v?.goals?.away || 0,
+        team1Penalty: v?.score?.penalty?.home || 0,
+        team2Penalty: v?.score?.penalty?.away || 0,
+        team1Logo: v?.teams?.home?.logo,
+        team2Logo: v?.teams?.away?.logo,
+        status: [v?.fixture?.status?.short],
+        date: [v?.fixture?.date],
+        roundScore: [v?.goals],
+        matches: [v],
+        elapsed: liveElapsed !== null ? [liveElapsed] : [],
+      };
+    } else {
+      // 이미 해당 팀 간 경기가 존재하면 스코어 합산
+      acc[key].team1Score += v?.goals?.away || 0;
+      acc[key].team2Score += v?.goals?.home || 0;
+      acc[key].team1Penalty += v?.score?.penalty?.away || 0;
+      acc[key].team2Penalty += v?.score?.penalty?.home || 0;
+      acc[key].status.push(v?.fixture?.status?.short);
+      acc[key].date.push(v?.fixture?.date);
+      acc[key].roundScore.push(v?.goals);
+      acc[key].matches.push(v);
+      if (liveElapsed !== null) {
+        acc[key].elapsed.push(liveElapsed);
+      }
+    }
+    return acc;
+  }, []);
+
+  const thirdPlace = groupByThird && Object.values(groupByThird);
+
+  console.group("3rd Place Final");
+  console.log(thirdPlace);
+  console.groupEnd();
 
   const onClickViewMatch = (matchData: any) => {
     setIsPopupOpen(true);
@@ -493,11 +537,11 @@ export default function LeagueKnockOut({
         onHandleSeasonChange={OnHandleSeasonChange}
       />
       {/* Knock out page */}
-      <div className="w-full h-[600px] mt-6 max-xl:w-full border-slate-200 border border-solid bg-white p-7 max-sm:px-0 rounded-xl dark:bg-custom-dark dark:border-0 flex">
+      <div className="w-full h-[600px] mt-6 max-xl:w-full border-slate-200 border border-solid bg-white p-7 max-sm:px-0 rounded-xl dark:bg-custom-dark dark:border-0 flex max-lg:flex-col max-lg:h-full">
         {/* left */}
-        <div className="h-full w-4/12 flex">
+        <div className="h-full w-4/12 flex max-lg:flex-col max-lg:w-full">
           {/* Round of 16 */}
-          <div className="w-1/2 h-full flex flex-col relative">
+          <div className="w-1/2 h-full flex flex-col relative max-lg:flex-row max-lg:w-full">
             {roundOf16?.length > 0
               ? quarterFinals?.length > 0
                 ? // if there are quarterFinal and roundOf16 data, show this
@@ -542,7 +586,10 @@ export default function LeagueKnockOut({
                     );
 
                     return (
-                      <div key={i} className="w-full h-1/4 flex items-center">
+                      <div
+                        key={i}
+                        className="w-full h-1/4 flex items-center max-lg:flex-col max-lg:h-[110px]"
+                      >
                         {/* contents */}
                         <div
                           className="w-[80px] h-[80px] border-[#E8E8E8] border-[1.5px] border-solid rounded-[6px] px-[6px] py-[8px] cursor-pointer hover:bg-[#EDEDED] hover:border-[#EDEDED] dark:border-[#464646] dark:hover:bg-[#2B2B2B]"
@@ -656,16 +703,25 @@ export default function LeagueKnockOut({
                         </div>
 
                         {/* hr */}
-                        <div className="flex items-center flex-1">
-                          <hr className="border-l border-[1.2px] border-solid border-[#E8E8E8] w-full dark:border-[#464646]" />
+                        <div className="flex items-center flex-1 max-lg:h-full">
+                          <hr className="border-l border-[1.2px] border-solid border-[#E8E8E8] w-full dark:border-[#464646] max-lg:h-full" />
                         </div>
 
                         {i % 2 !== 0 && (
-                          <div className="absolute right-0 top-[68px] h-1/4 border-l border-solid border-[#E8E8E8] border-[1.2px] dark:border-[#464646]"></div>
+                          <>
+                            {/* computer */}
+                            <div className="absolute right-0 top-[68px] h-1/4 border-l border-solid border-[#E8E8E8] border-[1.2px] dark:border-[#464646] max-lg:hidden"></div>
+
+                            {/* mobile */}
+                            <div className="w-full mr-[99%] border-l border-solid border-[#E8E8E8] border-[1.2px] dark:border-[#464646] lg:hidden"></div>
+                          </>
                         )}
 
                         {i % 2 === 0 && i < roundOf16.length - 1 && (
-                          <div className="absolute right-[0px] bottom-[68px] h-1/4 border-l border-solid border-[#E8E8E8] dark:border-[#464646] border-[1.2px]"></div>
+                          <>
+                            {/* computer */}
+                            <div className="absolute right-[0px] bottom-[68px] h-1/4 border-l border-solid border-[#E8E8E8] dark:border-[#464646] border-[1.2px] max-lg:hidden"></div>
+                          </>
                         )}
                       </div>
                     );
@@ -703,7 +759,10 @@ export default function LeagueKnockOut({
                     );
 
                     return (
-                      <div key={i} className="w-full h-1/4 flex items-center">
+                      <div
+                        key={i}
+                        className="w-full h-1/4 flex items-center max-lg:flex-col max-lg:h-[110px]"
+                      >
                         {/* contents */}
                         <div
                           className="w-[80px] h-[80px] border-[#E8E8E8] border-[1.5px] border-solid rounded-[6px] px-[6px] py-[8px] cursor-pointer hover:bg-[#EDEDED] hover:border-[#EDEDED] dark:border-[#464646] dark:hover:bg-[#2B2B2B]"
@@ -817,16 +876,25 @@ export default function LeagueKnockOut({
                         </div>
 
                         {/* hr */}
-                        <div className="flex items-center flex-1">
-                          <hr className="border-l border-[1.2px] border-solid border-[#E8E8E8] w-full dark:border-[#464646]" />
+                        <div className="flex items-center flex-1 max-lg:h-full">
+                          <hr className="border-l border-[1.2px] border-solid border-[#E8E8E8] w-full dark:border-[#464646] max-lg:h-full" />
                         </div>
 
                         {i % 2 !== 0 && (
-                          <div className="absolute right-0 top-[68px] h-1/4 border-l border-solid border-[#E8E8E8] border-[1.2px] dark:border-[#464646]"></div>
+                          <>
+                            {/* computer */}
+                            <div className="absolute right-0 top-[68px] h-1/4 border-l border-solid border-[#E8E8E8] border-[1.2px] dark:border-[#464646] max-lg:hidden"></div>
+
+                            {/* mobile */}
+                            <div className="w-full mr-[99%] border-l border-solid border-[#E8E8E8] border-[1.2px] dark:border-[#464646] lg:hidden"></div>
+                          </>
                         )}
 
                         {i % 2 === 0 && i < roundOf16.length - 1 && (
-                          <div className="absolute right-[0px] bottom-[68px] h-1/4 border-l border-solid border-[#E8E8E8] dark:border-[#464646] border-[1.2px]"></div>
+                          <>
+                            {/* computer */}
+                            <div className="absolute right-[0px] bottom-[68px] h-1/4 border-l border-solid border-[#E8E8E8] dark:border-[#464646] border-[1.2px] max-lg:hidden"></div>
+                          </>
                         )}
                       </div>
                     );
@@ -834,7 +902,10 @@ export default function LeagueKnockOut({
               : // if there  no data, show this
                 Array.from({ length: 4 }).map((_, i) => {
                   return (
-                    <div key={i} className="w-full h-1/4 flex items-center">
+                    <div
+                      key={i}
+                      className="w-full h-1/4 flex items-center max-lg:flex-col max-lg:h-[110px]"
+                    >
                       <div className="w-[80px] h-[80px] border-[#E8E8E8]  dark:border-[#464646] border-[1.5px] border-solid rounded-[6px] px-[6px] py-[8px] ">
                         <div className="flex justify-between">
                           {/* Home */}
@@ -857,16 +928,25 @@ export default function LeagueKnockOut({
                           TBD
                         </div>
                       </div>
-                      <div className="flex items-center flex-1">
-                        <hr className="border-l border-[1.2px] border-solid border-[#E8E8E8] w-full dark:border-[#464646]" />
+                      <div className="flex items-center flex-1 max-lg:h-full">
+                        <hr className="border-l border-[1.2px] border-solid border-[#E8E8E8] w-full dark:border-[#464646] max-lg:h-full" />
                       </div>
 
                       {i % 2 !== 0 && (
-                        <div className="absolute right-0 top-[68px] h-1/4 border-l border-solid border-[#E8E8E8] border-[1.2px] dark:border-[#464646]"></div>
+                        <>
+                          {/* computer */}
+                          <div className="absolute right-0 top-[68px] h-1/4 border-l border-solid border-[#E8E8E8] border-[1.2px] dark:border-[#464646] max-lg:hidden"></div>
+
+                          {/* mobile */}
+                          <div className="w-full mr-[99%] border-l border-solid border-[#E8E8E8] border-[1.2px] dark:border-[#464646] lg:hidden"></div>
+                        </>
                       )}
 
-                      {i % 2 === 0 && (
-                        <div className="absolute right-[0px] bottom-[68px] h-1/4 border-l border-solid border-[#E8E8E8] dark:border-[#464646] border-[1.2px]"></div>
+                      {i % 2 === 0 && i < roundOf16?.length - 1 && (
+                        <>
+                          {/* computer */}
+                          <div className="absolute right-[0px] bottom-[68px] h-1/4 border-l border-solid border-[#E8E8E8] dark:border-[#464646] border-[1.2px] max-lg:hidden"></div>
+                        </>
                       )}
                     </div>
                   );
@@ -874,7 +954,7 @@ export default function LeagueKnockOut({
           </div>
 
           {/* Quarter-finals */}
-          <div className="w-1/2 h-full flex flex-col relative">
+          <div className="w-1/2 h-full flex flex-col relative max-lg:flex-row max-lg:w-full">
             {quarterFinals?.length > 0
               ? semiFinals?.length > 0
                 ? // if there are quarterFinal and semiFinals data, show this
@@ -914,10 +994,13 @@ export default function LeagueKnockOut({
                     );
 
                     return (
-                      <div key={i} className="w-full h-1/2 flex items-center">
+                      <div
+                        key={i}
+                        className="w-full h-1/2 flex items-center  max-lg:flex-col max-lg:h-[110px]"
+                      >
                         {/* hr */}
-                        <div className="flex items-center flex-1">
-                          <hr className="border-l border-[1.2px] border-solid border-[#E8E8E8] w-full dark:border-[#464646]" />
+                        <div className="flex items-center flex-1 max-lg:h-full">
+                          <hr className="border-l border-[1.2px] border-solid border-[#E8E8E8] w-full dark:border-[#464646] max-lg:h-full" />
                         </div>
                         {/* contents */}
                         <div
@@ -1032,12 +1115,17 @@ export default function LeagueKnockOut({
                         </div>
 
                         {/* hr */}
-                        <div className="flex items-center flex-1">
-                          <hr className="border-l border-[1.2px] border-solid border-[#E8E8E8] w-full dark:border-[#464646]" />
+                        <div className="flex items-center flex-1 max-lg:h-full">
+                          <hr className="border-l border-[1.2px] border-solid border-[#E8E8E8] w-full dark:border-[#464646] max-lg:h-full" />
                         </div>
 
                         {i % 2 !== 0 && (
-                          <div className="absolute right-0 top-[135px] h-1/2 border-l border-solid border-[#E8E8E8] border-[1.2px] dark:border-[#464646]"></div>
+                          <>
+                            {/* computer */}
+                            <div className="absolute right-0 top-[135px] h-1/2 border-l border-solid border-[#E8E8E8] border-[1.2px] dark:border-[#464646] max-lg:hidden"></div>
+                            {/* mobile */}
+                            <div className="w-full mr-[99%] border-l border-solid border-[#E8E8E8] border-[1.2px] dark:border-[#464646] lg:hidden"></div>
+                          </>
                         )}
                       </div>
                     );
@@ -1075,10 +1163,13 @@ export default function LeagueKnockOut({
                     );
 
                     return (
-                      <div key={i} className="w-full h-1/2 flex items-center">
+                      <div
+                        key={i}
+                        className="w-full h-1/2 flex items-center  max-lg:flex-col max-lg:h-[110px]"
+                      >
                         {/* hr */}
-                        <div className="flex items-center flex-1">
-                          <hr className="border-l border-[1.2px] border-solid border-[#E8E8E8] w-full dark:border-[#464646]" />
+                        <div className="flex items-center flex-1 ">
+                          <hr className="border-l border-[1.2px] border-solid border-[#E8E8E8] w-full dark:border-[#464646] max-lg:h-full" />
                         </div>
                         {/* contents */}
                         <div
@@ -1193,12 +1284,17 @@ export default function LeagueKnockOut({
                         </div>
 
                         {/* hr */}
-                        <div className="flex items-center flex-1">
-                          <hr className="border-l border-[1.2px] border-solid border-[#E8E8E8] w-full dark:border-[#464646]" />
+                        <div className="flex items-center flex-1 max-lg:h-full">
+                          <hr className="border-l border-[1.2px] border-solid border-[#E8E8E8] w-full dark:border-[#464646] max-lg:h-full" />
                         </div>
 
                         {i % 2 !== 0 && (
-                          <div className="absolute right-0 top-[135px] h-1/2 border-l border-solid border-[#E8E8E8] border-[1.2px] dark:border-[#464646]"></div>
+                          <>
+                            {/* computer */}
+                            <div className="absolute right-0 top-[135px] h-1/2 border-l border-solid border-[#E8E8E8] border-[1.2px] dark:border-[#464646] max-lg:hidden"></div>
+                            {/* mobile */}
+                            <div className="w-full mr-[99%] border-l border-solid border-[#E8E8E8] border-[1.2px] dark:border-[#464646] lg:hidden"></div>
+                          </>
                         )}
                       </div>
                     );
@@ -1206,10 +1302,16 @@ export default function LeagueKnockOut({
               : // if there  no data, show this
                 Array.from({ length: 2 }).map((_, i) => {
                   return (
-                    <div key={i} className="w-full h-1/2 flex items-center">
-                      <div className="flex items-center flex-1">
-                        <hr className="border-l border-[1.2px] border-solid border-[#E8E8E8] w-full dark:border-[#464646]" />
+                    <div
+                      key={i}
+                      className="w-full h-1/2 flex items-center max-lg:flex-col max-lg:h-[110px]"
+                    >
+                      {/* hr */}
+                      <div className="flex items-center flex-1 max-lg:h-full">
+                        <hr className="border-l border-[1.2px] border-solid border-[#E8E8E8] w-full dark:border-[#464646] max-lg:h-full" />
                       </div>
+
+                      {/* contents */}
                       <div className="w-[80px] h-[80px] border-[#E8E8E8]  dark:border-[#464646] border-[1.5px] border-solid rounded-[6px] px-[6px] py-[8px] ">
                         <div className="flex justify-between">
                           {/* Home */}
@@ -1232,12 +1334,19 @@ export default function LeagueKnockOut({
                           TBD
                         </div>
                       </div>
-                      <div className="flex items-center flex-1">
-                        <hr className="border-l border-[1.2px] border-solid border-[#E8E8E8] w-full dark:border-[#464646]" />
+
+                      {/* hr */}
+                      <div className="flex items-center flex-1 max-lg:h-full">
+                        <hr className="border-l border-[1.2px] border-solid border-[#E8E8E8] w-full dark:border-[#464646] max-lg:h-full" />
                       </div>
 
                       {i % 2 !== 0 && (
-                        <div className="absolute right-0 top-[135px] h-1/2 border-l border-solid border-[#E8E8E8] border-[1.2px] dark:border-[#464646]"></div>
+                        <>
+                          {/* computer */}
+                          <div className="absolute right-0 top-[135px] h-1/2 border-l border-solid border-[#E8E8E8] border-[1.2px] dark:border-[#464646] max-lg:hidden"></div>
+                          {/* mobile */}
+                          <div className="w-full mr-[99%] border-l border-solid border-[#E8E8E8] border-[1.2px] dark:border-[#464646] lg:hidden"></div>
+                        </>
                       )}
                     </div>
                   );
@@ -1246,7 +1355,7 @@ export default function LeagueKnockOut({
         </div>
 
         {/* center */}
-        <div className="h-full w-4/12 relative">
+        <div className="h-full w-4/12 relative max-lg:w-full">
           {/* confetti */}
           {isExploding && (
             <div className="absolute inset-0 flex justify-center">
@@ -1260,211 +1369,106 @@ export default function LeagueKnockOut({
               />
             </div>
           )}
-          {/* trophy */}
-          <div
-            className={`absolute left-1/2 top-1/3 -translate-x-1/2 -translate-y-1/2 flex flex-col items-center ${
-              finish.includes(final && final[0]?.status[0])
-                ? "cursor-pointer hover:opacity-70"
-                : ""
-            }`}
-            onMouseEnter={() => {
-              setIsExploding(true);
-              setTimeout(() => {
-                setIsExploding(false);
-              }, 3000);
-            }}
-            onClick={() => {
-              const finalMatch = final[0]
-              finish.includes(final && finalMatch?.status[0])
-                ? router.push(
-                    checkTeam1IsWinner(finalMatch) ? `/${locale}/teams/${finalMatch?.team1ID}/${FormatLeagueOrTeamName(finalMatch?.team1)}/overview`:`/${locale}/teams/${finalMatch?.team2ID}/${FormatLeagueOrTeamName(finalMatch?.team2)}/overview`
-                  )
-                : null;
-            }}
-          >
-            <GiLaurelsTrophy className="text-[#CCCCCC] scale-[5]" />
-            {finish.includes(final && final[0]?.status[0]) && (
-              <div className=" w-[30px] h-[30px] rounded-full overflow-hidden z-10 absolute top-[-10px] ">
-                <Image
-                  src={
-                    checkTeam1IsWinner(final[0])
-                      ? final[0]?.team1Logo
-                      : final[0]?.team2Logo
-                  }
-                  alt={
-                    checkTeam1IsWinner(final[0])
+
+          <div className="flex flex-col h-full max-lg:flex-row max-lg:w-full max-lg:items-center max-lg:justify-center">
+            {/* trophy */}
+            <div
+              className={`flex flex-col items-center justify-end h-1/3 max-lg:h-full max-lg:w-1/3 max-lg:mt-10 ${
+                finish.includes(final && final[0]?.status[0])
+                  ? "cursor-pointer hover:opacity-70"
+                  : ""
+              }`}
+              onMouseEnter={() => {
+                setIsExploding(true);
+                setTimeout(() => {
+                  setIsExploding(false);
+                }, 3000);
+              }}
+              onClick={() => {
+                const finalMatch = final && final[0];
+                finish.includes(final && finalMatch?.status[0])
+                  ? router.push(
+                      checkTeam1IsWinner(finalMatch)
+                        ? `/${locale}/teams/${
+                            finalMatch?.team1ID
+                          }/${FormatLeagueOrTeamName(
+                            finalMatch?.team1
+                          )}/overview`
+                        : `/${locale}/teams/${
+                            finalMatch?.team2ID
+                          }/${FormatLeagueOrTeamName(
+                            finalMatch?.team2
+                          )}/overview`
+                    )
+                  : null;
+              }}
+            >
+              <GiLaurelsTrophy className="text-[#CCCCCC] scale-[5]" />
+              {finish.includes(final && final[0]?.status[0]) && (
+                <div className=" w-[30px] h-[30px] rounded-full overflow-hidden z-10 absolute top-[65px] max-lg:top-[110px]">
+                  <Image
+                    src={
+                      checkTeam1IsWinner(final[0])
+                        ? final[0]?.team1Logo
+                        : final[0]?.team2Logo
+                    }
+                    alt={
+                      checkTeam1IsWinner(final[0])
+                        ? final[0]?.team1
+                        : final[0]?.team2
+                    }
+                    fill
+                    className="object-cover"
+                    ref={imgRef}
+                    onLoad={() => {
+                      if (imgRef.current) {
+                        const colorThief = new ColorThief();
+                        const palette = colorThief
+                          .getPalette(imgRef.current)
+                          .slice(0, 3);
+                        const colors = palette.map((v) => {
+                          return rgbToHex(v);
+                        });
+
+                        setConfettiColor(colors);
+                      }
+                    }}
+                  />
+                </div>
+              )}
+              <div className="text-xs mt-[42px]  text-[#9F9F9F] tracking-widest font-medium flex flex-col items-center">
+                {finish.includes(final && final[0]?.status[0]) && (
+                  <h1>
+                    {(checkTeam1IsWinner(final[0])
                       ? final[0]?.team1
                       : final[0]?.team2
-                  }
-                  fill
-                  className="object-cover"
-                  ref={imgRef}
-                  onLoad={() => {
-                    console.log("hahahaha");
-                    if (imgRef.current) {
-                      const colorThief = new ColorThief();
-                      const palette = colorThief
-                        .getPalette(imgRef.current)
-                        .slice(0, 3);
-                      const colors = palette.map((v) => {
-                        return rgbToHex(v);
-                      });
-
-                      setConfettiColor(colors);
-                    }
-                  }}
-                />
-              </div>
-            )}
-            <div className="text-xs mt-[45px] mb-[40px] text-[#9F9F9F] tracking-widest font-medium flex flex-col items-center">
-              {finish.includes(final && final[0]?.status[0]) && (
-                <h1>
-                  {(checkTeam1IsWinner(final[0])
-                    ? final[0]?.team1
-                    : final[0]?.team2
-                  ).toUpperCase()}
-                </h1>
-              )}
-              <h1>CHAMPION</h1>
-            </div>
-          </div>
-          {/* contents */}
-          {semiFinals?.length > 0 ? (
-            <div className="w-full h-full flex items-center">
-              {/* hr */}
-              <div className="flex items-center flex-1">
-                <hr className="border-l border-[1.2px] border-solid border-[#E8E8E8] w-full dark:border-[#464646]" />
-              </div>
-              {/* semiFinals[0] */}
-              <div
-                className="w-[80px] h-[80px] border-[#E8E8E8] border-[1.5px] border-solid rounded-[6px] px-[6px] py-[8px] cursor-pointer hover:bg-[#EDEDED] hover:border-[#EDEDED] dark:border-[#464646] dark:hover:bg-[#2B2B2B]"
-                onClick={() => {
-                  onClickViewMatch(semiFinals[0]);
-                }}
-              >
-                <div className="flex justify-between">
-                  {/* Home */}
-                  <div className="flex-col">
-                    {semiFinals[0]?.team1Logo ? (
-                      <Image
-                        src={semiFinals[0]?.team1Logo}
-                        alt={semiFinals[0]?.team1}
-                        width={20}
-                        height={20}
-                        className="w-[20px] h-[20px] m-auto object-contain"
-                      />
-                    ) : (
-                      <MdOutlineShield className="w-[20px] h-[20px] m-auto object-contain" />
-                    )}
-
-                    <h1
-                      className={`text-[13px] font-medium text-center pt-[4px] ${
-                        checkMatchIsDone(semiFinals[0]) &&
-                        (checkTeam1IsWinner(semiFinals[0])
-                          ? ""
-                          : "line-through text-[#9F9F9F]")
-                      }`}
-                    >
-                      {semiFinals[0]?.team1?.substr(0, 3)?.toUpperCase()}
-                    </h1>
-                  </div>
-
-                  <div></div>
-                  {/* Away */}
-                  <div className="flex-col">
-                    {semiFinals[0]?.team2Logo ? (
-                      <Image
-                        src={semiFinals[0]?.team2Logo}
-                        alt={semiFinals[0]?.team2}
-                        width={20}
-                        height={20}
-                        className="w-[20px] h-[20px] m-auto object-contain"
-                      />
-                    ) : (
-                      <MdOutlineShield className="w-[20px] h-[20px] m-auto object-contain" />
-                    )}
-                    <h1
-                      className={`text-[13px] font-medium text-center pt-[4px] ${
-                        checkMatchIsDone(semiFinals[0]) &&
-                        (checkTeam2IsWinner(semiFinals[0])
-                          ? ""
-                          : "line-through text-[#9F9F9F]")
-                      }`}
-                    >
-                      {semiFinals[0]?.team2?.substr(0, 3)?.toUpperCase()}
-                    </h1>
-                  </div>
-                </div>
-                {/* Score or Date */}
-                {semiFinals[0]?.status?.some((status: any) =>
-                  live?.includes(status)
-                ) && semiFinals[0]?.elapsed?.length > 0 ? (
-                  <AnimatePresence>
-                    <div className="bg-[#00985F] text-white text-sm w-[50px] h-[20px] rounded-[0.4vw] flex items-center justify-center m-auto mt-[7px] text-[11px]">
-                      <motion.h3
-                        key={isPoint ? "score" : "time"}
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                        transition={{
-                          duration: 0.5,
-                          ease: "easeInOut",
-                        }}
-                      >
-                        {isPoint
-                          ? `${semiFinals[0]?.team1Score}
-                          -
-                          ${semiFinals[0]?.team2Score}`
-                          : `${semiFinals[0]?.elapsed[0] || 0}'`}
-                      </motion.h3>
-                    </div>
-                  </AnimatePresence>
-                ) : semiFinals[0]?.team1Score ||
-                  semiFinals[0]?.team2Score ||
-                  finish?.includes(
-                    semiFinals[0]?.matches[0]?.fixture?.status?.short
-                  ) ||
-                  finish?.includes(
-                    semiFinals[0]?.matches[1]?.fixture?.status?.short
-                  ) ? (
-                  <div className="flex justify-between text-[13px] text-center pt-[9px]">
-                    <h2 className="text-[13px] w-[26.11px]">
-                      {semiFinals[0]?.team1Score}
-                    </h2>
-                    <h2>-</h2>
-                    <h2 className="text-[13px] w-[26.11px]">
-                      {semiFinals[0]?.team2Score}
-                    </h2>
-                  </div>
-                ) : FormatMatchDate(semiFinals[0]?.date[0], locale, d)?.date ? (
-                  <div className="text-[13px] text-center pt-[9px]">
-                    {FormatMatchDate(semiFinals[0]?.date[0], locale, d)?.date}
-                  </div>
-                ) : (
-                  <h1 className="text-[13px] text-center pt-[9px] font-medium">
-                    TBD
+                    ).toUpperCase()}
                   </h1>
                 )}
+                <h1>CHAMPION</h1>
               </div>
-              {/* hr */}
-              <div className="flex items-center flex-1">
-                <hr className="border-l border-[1.2px] border-solid border-[#E8E8E8] w-full dark:border-[#464646]" />
-              </div>
-              {/* Finals*/}
-              {final?.length > 0 ? (
+            </div>
+            {/* contents */}
+            {semiFinals?.length > 0 ? (
+              <div className="w-full flex items-center h-1/3 max-lg:flex-col max-lg:h-full max-lg:w-1/3">
+                {/* hr */}
+                <div className="flex items-center flex-1">
+                  <hr className="border-l border-[1.2px] border-solid border-[#E8E8E8] w-full dark:border-[#464646] max-lg:h-[20px]" />
+                </div>
+                {/* semiFinals[0] */}
                 <div
                   className="w-[80px] h-[80px] border-[#E8E8E8] border-[1.5px] border-solid rounded-[6px] px-[6px] py-[8px] cursor-pointer hover:bg-[#EDEDED] hover:border-[#EDEDED] dark:border-[#464646] dark:hover:bg-[#2B2B2B]"
                   onClick={() => {
-                    onClickViewMatch(final[0]);
+                    onClickViewMatch(semiFinals[0]);
                   }}
                 >
                   <div className="flex justify-between">
                     {/* Home */}
                     <div className="flex-col">
-                      {final[0]?.team1Logo ? (
+                      {semiFinals[0]?.team1Logo ? (
                         <Image
-                          src={final[0]?.team1Logo}
-                          alt={final[0]?.team1}
+                          src={semiFinals[0]?.team1Logo}
+                          alt={semiFinals[0]?.team1}
                           width={20}
                           height={20}
                           className="w-[20px] h-[20px] m-auto object-contain"
@@ -1475,23 +1479,23 @@ export default function LeagueKnockOut({
 
                       <h1
                         className={`text-[13px] font-medium text-center pt-[4px] ${
-                          checkMatchIsDone(final[0]) &&
-                          (checkTeam1IsWinner(final[0])
+                          checkMatchIsDone(semiFinals[0]) &&
+                          (checkTeam1IsWinner(semiFinals[0])
                             ? ""
                             : "line-through text-[#9F9F9F]")
                         }`}
                       >
-                        {final[0]?.team1?.substr(0, 3)?.toUpperCase()}
+                        {semiFinals[0]?.team1?.substr(0, 3)?.toUpperCase()}
                       </h1>
                     </div>
 
                     <div></div>
                     {/* Away */}
                     <div className="flex-col">
-                      {final[0]?.team2Logo ? (
+                      {semiFinals[0]?.team2Logo ? (
                         <Image
-                          src={final[0]?.team2Logo}
-                          alt={final[0]?.team2}
+                          src={semiFinals[0]?.team2Logo}
+                          alt={semiFinals[0]?.team2}
                           width={20}
                           height={20}
                           className="w-[20px] h-[20px] m-auto object-contain"
@@ -1501,20 +1505,20 @@ export default function LeagueKnockOut({
                       )}
                       <h1
                         className={`text-[13px] font-medium text-center pt-[4px] ${
-                          checkMatchIsDone(final[0]) &&
-                          (checkTeam2IsWinner(final[0])
+                          checkMatchIsDone(semiFinals[0]) &&
+                          (checkTeam2IsWinner(semiFinals[0])
                             ? ""
                             : "line-through text-[#9F9F9F]")
                         }`}
                       >
-                        {final[0]?.team2?.substr(0, 3)?.toUpperCase()}
+                        {semiFinals[0]?.team2?.substr(0, 3)?.toUpperCase()}
                       </h1>
                     </div>
                   </div>
                   {/* Score or Date */}
-                  {final[0]?.status?.some((status: any) =>
+                  {semiFinals[0]?.status?.some((status: any) =>
                     live?.includes(status)
-                  ) && final[0]?.elapsed?.length > 0 ? (
+                  ) && semiFinals[0]?.elapsed?.length > 0 ? (
                     <AnimatePresence>
                       <div className="bg-[#00985F] text-white text-sm w-[50px] h-[20px] rounded-[0.4vw] flex items-center justify-center m-auto mt-[7px] text-[11px]">
                         <motion.h3
@@ -1528,45 +1532,345 @@ export default function LeagueKnockOut({
                           }}
                         >
                           {isPoint
-                            ? `${final[0]?.team1Score}
+                            ? `${semiFinals[0]?.team1Score}
                           -
-                          ${final[0]?.team2Score}`
-                            : `${final[0]?.elapsed[0] || 0}'`}
+                          ${semiFinals[0]?.team2Score}`
+                            : `${semiFinals[0]?.elapsed[0] || 0}'`}
                         </motion.h3>
                       </div>
                     </AnimatePresence>
-                  ) : final[0]?.team1Score ||
-                    final[0]?.team2Score ||
+                  ) : semiFinals[0]?.team1Score ||
+                    semiFinals[0]?.team2Score ||
                     finish?.includes(
-                      final[0]?.matches[0]?.fixture?.status?.short
+                      semiFinals[0]?.matches[0]?.fixture?.status?.short
                     ) ||
                     finish?.includes(
-                      final[0]?.matches[1]?.fixture?.status?.short
+                      semiFinals[0]?.matches[1]?.fixture?.status?.short
                     ) ? (
                     <div className="flex justify-between text-[13px] text-center pt-[9px]">
                       <h2 className="text-[13px] w-[26.11px]">
-                        {final[0]?.team1Score}
+                        {semiFinals[0]?.team1Score}
                       </h2>
                       <h2>-</h2>
                       <h2 className="text-[13px] w-[26.11px]">
-                        {final[0]?.team2Score}
+                        {semiFinals[0]?.team2Score}
                       </h2>
                     </div>
-                  ) : FormatMatchDate(final[0]?.date[0], locale, d)?.date ? (
+                  ) : FormatMatchDate(semiFinals[0]?.date[0], locale, d)
+                      ?.date ? (
                     <div className="text-[13px] text-center pt-[9px]">
-                      {FormatMatchDate(final[0]?.date[0], locale, d)?.date}
+                      {FormatMatchDate(semiFinals[0]?.date[0], locale, d)?.date}
                     </div>
                   ) : (
                     <h1 className="text-[13px] text-center pt-[9px] font-medium">
                       TBD
                     </h1>
                   )}
-                  {/* final tag */}
-                  <div className="bg-[#F8D76A] flex items-center justify-center h-[15px] mx-2 mt-1 rounded-xl text-black">
-                    <h2 className="text-xxs font-medium">FINAL</h2>
+                </div>
+                {/* hr */}
+                <div className="flex items-center flex-1">
+                  <hr className="border-l border-[1.2px] border-solid border-[#E8E8E8] w-full dark:border-[#464646] max-lg:h-[20px]" />
+                </div>
+                {/* Finals*/}
+                {final?.length > 0 ? (
+                  <div
+                    className="w-[80px] h-[80px] border-[#E8E8E8] border-[1.5px] border-solid rounded-[6px] px-[6px] py-[8px] cursor-pointer hover:bg-[#EDEDED] hover:border-[#EDEDED] dark:border-[#464646] dark:hover:bg-[#2B2B2B]"
+                    onClick={() => {
+                      onClickViewMatch(final[0]);
+                    }}
+                  >
+                    <div className="flex justify-between">
+                      {/* Home */}
+                      <div className="flex-col">
+                        {final[0]?.team1Logo ? (
+                          <Image
+                            src={final[0]?.team1Logo}
+                            alt={final[0]?.team1}
+                            width={20}
+                            height={20}
+                            className="w-[20px] h-[20px] m-auto object-contain"
+                          />
+                        ) : (
+                          <MdOutlineShield className="w-[20px] h-[20px] m-auto object-contain" />
+                        )}
+
+                        <h1
+                          className={`text-[13px] font-medium text-center pt-[4px] ${
+                            checkMatchIsDone(final[0]) &&
+                            (checkTeam1IsWinner(final[0])
+                              ? ""
+                              : "line-through text-[#9F9F9F]")
+                          }`}
+                        >
+                          {final[0]?.team1?.substr(0, 3)?.toUpperCase()}
+                        </h1>
+                      </div>
+
+                      <div></div>
+                      {/* Away */}
+                      <div className="flex-col">
+                        {final[0]?.team2Logo ? (
+                          <Image
+                            src={final[0]?.team2Logo}
+                            alt={final[0]?.team2}
+                            width={20}
+                            height={20}
+                            className="w-[20px] h-[20px] m-auto object-contain"
+                          />
+                        ) : (
+                          <MdOutlineShield className="w-[20px] h-[20px] m-auto object-contain" />
+                        )}
+                        <h1
+                          className={`text-[13px] font-medium text-center pt-[4px] ${
+                            checkMatchIsDone(final[0]) &&
+                            (checkTeam2IsWinner(final[0])
+                              ? ""
+                              : "line-through text-[#9F9F9F]")
+                          }`}
+                        >
+                          {final[0]?.team2?.substr(0, 3)?.toUpperCase()}
+                        </h1>
+                      </div>
+                    </div>
+                    {/* Score or Date */}
+                    {final[0]?.status?.some((status: any) =>
+                      live?.includes(status)
+                    ) && final[0]?.elapsed?.length > 0 ? (
+                      <AnimatePresence>
+                        <div className="bg-[#00985F] text-white text-sm w-[50px] h-[20px] rounded-[0.4vw] flex items-center justify-center m-auto mt-[7px] text-[11px]">
+                          <motion.h3
+                            key={isPoint ? "score" : "time"}
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            transition={{
+                              duration: 0.5,
+                              ease: "easeInOut",
+                            }}
+                          >
+                            {isPoint
+                              ? `${final[0]?.team1Score}
+                          -
+                          ${final[0]?.team2Score}`
+                              : `${final[0]?.elapsed[0] || 0}'`}
+                          </motion.h3>
+                        </div>
+                      </AnimatePresence>
+                    ) : final[0]?.team1Score ||
+                      final[0]?.team2Score ||
+                      finish?.includes(
+                        final[0]?.matches[0]?.fixture?.status?.short
+                      ) ||
+                      finish?.includes(
+                        final[0]?.matches[1]?.fixture?.status?.short
+                      ) ? (
+                      <div className="flex justify-between text-[13px] text-center pt-[9px]">
+                        <h2 className="text-[13px] w-[26.11px]">
+                          {final[0]?.team1Score}
+                        </h2>
+                        <h2>-</h2>
+                        <h2 className="text-[13px] w-[26.11px]">
+                          {final[0]?.team2Score}
+                        </h2>
+                      </div>
+                    ) : FormatMatchDate(final[0]?.date[0], locale, d)?.date ? (
+                      <div className="text-[13px] text-center pt-[9px]">
+                        {FormatMatchDate(final[0]?.date[0], locale, d)?.date}
+                      </div>
+                    ) : (
+                      <h1 className="text-[13px] text-center pt-[9px] font-medium">
+                        TBD
+                      </h1>
+                    )}
+                    {/* final tag */}
+                    <div className="bg-[#F8D76A] flex items-center justify-center h-[15px] mx-2 mt-1 rounded-xl text-black z-10 relative">
+                      <h2 className="text-xxs font-medium">FINAL</h2>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="w-[80px] h-[80px] border-[#E8E8E8]  dark:border-[#464646] border-[1.5px] border-solid rounded-[6px] px-[6px] py-[8px] ">
+                    <div className="flex justify-between">
+                      {/* Home */}
+                      <div className="flex-col">
+                        <MdOutlineShield className="w-[20px] h-[20px] m-auto object-contain" />
+                        <h1 className="text-[13px] font-medium text-center pt-[4px]">
+                          TBD
+                        </h1>
+                      </div>
+                      {/* Away */}
+                      <div className="flex-col">
+                        <MdOutlineShield className="w-[20px] h-[20px] m-auto object-contain" />
+                        <h1 className="text-[13px] font-medium text-center pt-[4px]">
+                          TBD
+                        </h1>
+                      </div>
+                    </div>
+                    {/* Match Date */}
+                    <div className="text-[13px] text-center pt-[9px] font-medium">
+                      TBD
+                    </div>
+                    {/* final tag */}
+                    <div className="bg-[#F8D76A] flex items-center justify-center h-[15px] mx-2 mt-1 rounded-xl text-black z-10 relative">
+                      <h2 className="text-xxs font-medium">{l("final")}</h2>
+                    </div>
+                  </div>
+                )}
+
+                {/* hr */}
+                <div className="flex items-center flex-1  z-0">
+                  <hr className="border-l border-[1.2px] border-solid border-[#E8E8E8] w-full dark:border-[#464646] max-lg:h-[20px]" />
+                </div>
+                {/* semiFinals[1] */}
+                <div
+                  className="w-[80px] h-[80px] border-[#E8E8E8] border-[1.5px] border-solid rounded-[6px] px-[6px] py-[8px] cursor-pointer hover:bg-[#EDEDED] hover:border-[#EDEDED] dark:border-[#464646] dark:hover:bg-[#2B2B2B]"
+                  onClick={() => {
+                    onClickViewMatch(semiFinals[1]);
+                  }}
+                >
+                  <div className="flex justify-between">
+                    {/* Home */}
+                    <div className="flex-col">
+                      {semiFinals[1]?.team1Logo ? (
+                        <Image
+                          src={semiFinals[1]?.team1Logo}
+                          alt={semiFinals[1]?.team1}
+                          width={20}
+                          height={20}
+                          className="w-[20px] h-[20px] m-auto object-contain"
+                        />
+                      ) : (
+                        <MdOutlineShield className="w-[20px] h-[20px] m-auto object-contain" />
+                      )}
+
+                      <h1
+                        className={`text-[13px] font-medium text-center pt-[4px] ${
+                          checkMatchIsDone(semiFinals[1]) &&
+                          (checkTeam1IsWinner(semiFinals[1])
+                            ? ""
+                            : "line-through text-[#9F9F9F]")
+                        }`}
+                      >
+                        {semiFinals[1]?.team1?.substr(0, 3)?.toUpperCase()}
+                      </h1>
+                    </div>
+
+                    <div></div>
+                    {/* Away */}
+                    <div className="flex-col">
+                      {semiFinals[1]?.team2Logo ? (
+                        <Image
+                          src={semiFinals[1]?.team2Logo}
+                          alt={semiFinals[1]?.team2}
+                          width={20}
+                          height={20}
+                          className="w-[20px] h-[20px] m-auto object-contain"
+                        />
+                      ) : (
+                        <MdOutlineShield className="w-[20px] h-[20px] m-auto object-contain" />
+                      )}
+                      <h1
+                        className={`text-[13px] font-medium text-center pt-[4px] ${
+                          checkMatchIsDone(semiFinals[1]) &&
+                          (checkTeam2IsWinner(semiFinals[1])
+                            ? ""
+                            : "line-through text-[#9F9F9F]")
+                        }`}
+                      >
+                        {semiFinals[1]?.team2?.substr(0, 3)?.toUpperCase()}
+                      </h1>
+                    </div>
+                  </div>
+                  {/* Score or Date */}
+                  {semiFinals[1]?.status?.some((status: any) =>
+                    live?.includes(status)
+                  ) && semiFinals[1]?.elapsed?.length > 0 ? (
+                    <AnimatePresence>
+                      <div className="bg-[#00985F] text-white text-sm w-[50px] h-[20px] rounded-[0.4vw] flex items-center justify-center m-auto mt-[7px] text-[11px]">
+                        <motion.h3
+                          key={isPoint ? "score" : "time"}
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: 1 }}
+                          exit={{ opacity: 0 }}
+                          transition={{
+                            duration: 0.5,
+                            ease: "easeInOut",
+                          }}
+                        >
+                          {isPoint
+                            ? `${semiFinals[1]?.team1Score}
+                          -
+                          ${semiFinals[1]?.team2Score}`
+                            : `${semiFinals[1]?.elapsed[0] || 0}'`}
+                        </motion.h3>
+                      </div>
+                    </AnimatePresence>
+                  ) : semiFinals[1]?.team1Score ||
+                    semiFinals[1]?.team2Score ||
+                    finish?.includes(
+                      semiFinals[1]?.matches[0]?.fixture?.status?.short
+                    ) ||
+                    finish?.includes(
+                      semiFinals[1]?.matches[1]?.fixture?.status?.short
+                    ) ? (
+                    <div className="flex justify-between text-[13px] text-center pt-[9px]">
+                      <h2 className="text-[13px] w-[26.11px]">
+                        {semiFinals[1]?.team1Score}
+                      </h2>
+                      <h2>-</h2>
+                      <h2 className="text-[13px] w-[26.11px]">
+                        {semiFinals[1]?.team2Score}
+                      </h2>
+                    </div>
+                  ) : FormatMatchDate(semiFinals[1]?.date[0], locale, d)
+                      ?.date ? (
+                    <div className="text-[13px] text-center pt-[9px]">
+                      {FormatMatchDate(semiFinals[1]?.date[0], locale, d)?.date}
+                    </div>
+                  ) : (
+                    <h1 className="text-[13px] text-center pt-[9px] font-medium">
+                      TBD
+                    </h1>
+                  )}
+                </div>
+                {/* hr */}
+                <div className="flex items-center flex-1">
+                  <hr className="border-l border-[1.2px] border-solid border-[#E8E8E8] w-full dark:border-[#464646] max-lg:h-[20px]" />
+                </div>
+              </div>
+            ) : (
+              <div className="w-full flex items-center h-1/3 max-lg:flex-col max-lg:h-full max-lg:w-1/3">
+                {/* hr */}
+                <div className="flex items-center flex-1">
+                  <hr className="border-l border-[1.2px] border-solid border-[#E8E8E8] w-full dark:border-[#464646] max-lg:h-[20px]" />
+                </div>
+                {/* semiFinals[0] */}
+                <div className="w-[80px] h-[80px] border-[#E8E8E8]  dark:border-[#464646] border-[1.5px] border-solid rounded-[6px] px-[6px] py-[8px] ">
+                  <div className="flex justify-between">
+                    {/* Home */}
+                    <div className="flex-col">
+                      <MdOutlineShield className="w-[20px] h-[20px] m-auto object-contain" />
+                      <h1 className="text-[13px] font-medium text-center pt-[4px]">
+                        TBD
+                      </h1>
+                    </div>
+                    {/* Away */}
+                    <div className="flex-col">
+                      <MdOutlineShield className="w-[20px] h-[20px] m-auto object-contain" />
+                      <h1 className="text-[13px] font-medium text-center pt-[4px]">
+                        TBD
+                      </h1>
+                    </div>
+                  </div>
+                  {/* Match Date */}
+                  <div className="text-[13px] text-center pt-[9px] font-medium">
+                    TBD
                   </div>
                 </div>
-              ) : (
+                {/* hr */}
+                <div className="flex items-center flex-1">
+                  <hr className="border-l border-[1.2px] border-solid border-[#E8E8E8] w-full dark:border-[#464646] max-lg:h-[20px]" />
+                </div>
+                {/* Finals*/}
                 <div className="w-[80px] h-[80px] border-[#E8E8E8]  dark:border-[#464646] border-[1.5px] border-solid rounded-[6px] px-[6px] py-[8px] ">
                   <div className="flex justify-between">
                     {/* Home */}
@@ -1589,232 +1893,176 @@ export default function LeagueKnockOut({
                     TBD
                   </div>
                   {/* final tag */}
-                  <div className="bg-[#F8D76A] flex items-center justify-center h-[15px] mx-2 mt-1 rounded-xl text-black">
-                    <h2 className="text-xxs font-medium">FINAL</h2>
+                  <div className="bg-[#F8D76A] flex items-center justify-center h-[15px] mx-2 mt-1 rounded-xl text-black z-10 relative">
+                    <h2 className="text-xxs font-medium">{l("final")}</h2>
                   </div>
                 </div>
-              )}
 
-              {/* hr */}
-              <div className="flex items-center flex-1">
-                <hr className="border-l border-[1.2px] border-solid border-[#E8E8E8] w-full dark:border-[#464646]" />
-              </div>
-              {/* semiFinals[1] */}
-              <div
-                className="w-[80px] h-[80px] border-[#E8E8E8] border-[1.5px] border-solid rounded-[6px] px-[6px] py-[8px] cursor-pointer hover:bg-[#EDEDED] hover:border-[#EDEDED] dark:border-[#464646] dark:hover:bg-[#2B2B2B]"
-                onClick={() => {
-                  onClickViewMatch(semiFinals[1]);
-                }}
-              >
-                <div className="flex justify-between">
-                  {/* Home */}
-                  <div className="flex-col">
-                    {semiFinals[1]?.team1Logo ? (
-                      <Image
-                        src={semiFinals[1]?.team1Logo}
-                        alt={semiFinals[1]?.team1}
-                        width={20}
-                        height={20}
-                        className="w-[20px] h-[20px] m-auto object-contain"
-                      />
-                    ) : (
-                      <MdOutlineShield className="w-[20px] h-[20px] m-auto object-contain" />
-                    )}
-
-                    <h1
-                      className={`text-[13px] font-medium text-center pt-[4px] ${
-                        checkMatchIsDone(semiFinals[1]) &&
-                        (checkTeam1IsWinner(semiFinals[1])
-                          ? ""
-                          : "line-through text-[#9F9F9F]")
-                      }`}
-                    >
-                      {semiFinals[1]?.team1?.substr(0, 3)?.toUpperCase()}
-                    </h1>
-                  </div>
-
-                  <div></div>
-                  {/* Away */}
-                  <div className="flex-col">
-                    {semiFinals[1]?.team2Logo ? (
-                      <Image
-                        src={semiFinals[1]?.team2Logo}
-                        alt={semiFinals[1]?.team2}
-                        width={20}
-                        height={20}
-                        className="w-[20px] h-[20px] m-auto object-contain"
-                      />
-                    ) : (
-                      <MdOutlineShield className="w-[20px] h-[20px] m-auto object-contain" />
-                    )}
-                    <h1
-                      className={`text-[13px] font-medium text-center pt-[4px] ${
-                        checkMatchIsDone(semiFinals[1]) &&
-                        (checkTeam2IsWinner(semiFinals[1])
-                          ? ""
-                          : "line-through text-[#9F9F9F]")
-                      }`}
-                    >
-                      {semiFinals[1]?.team2?.substr(0, 3)?.toUpperCase()}
-                    </h1>
-                  </div>
+                {/* hr */}
+                <div className="flex items-center flex-1">
+                  <hr className="border-l border-[1.2px] border-solid border-[#E8E8E8] w-full dark:border-[#464646] max-lg:h-[20px]" />
                 </div>
-                {/* Score or Date */}
-                {semiFinals[1]?.status?.some((status: any) =>
-                  live?.includes(status)
-                ) && semiFinals[1]?.elapsed?.length > 0 ? (
-                  <AnimatePresence>
-                    <div className="bg-[#00985F] text-white text-sm w-[50px] h-[20px] rounded-[0.4vw] flex items-center justify-center m-auto mt-[7px] text-[11px]">
-                      <motion.h3
-                        key={isPoint ? "score" : "time"}
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                        transition={{
-                          duration: 0.5,
-                          ease: "easeInOut",
-                        }}
-                      >
-                        {isPoint
-                          ? `${semiFinals[1]?.team1Score}
-                          -
-                          ${semiFinals[1]?.team2Score}`
-                          : `${semiFinals[1]?.elapsed[0] || 0}'`}
-                      </motion.h3>
+                {/* semiFinals[1] */}
+                <div className="w-[80px] h-[80px] border-[#E8E8E8]  dark:border-[#464646] border-[1.5px] border-solid rounded-[6px] px-[6px] py-[8px] ">
+                  <div className="flex justify-between">
+                    {/* Home */}
+                    <div className="flex-col">
+                      <MdOutlineShield className="w-[20px] h-[20px] m-auto object-contain" />
+                      <h1 className="text-[13px] font-medium text-center pt-[4px]">
+                        TBD
+                      </h1>
                     </div>
-                  </AnimatePresence>
-                ) : semiFinals[1]?.team1Score ||
-                  semiFinals[1]?.team2Score ||
-                  finish?.includes(
-                    semiFinals[1]?.matches[0]?.fixture?.status?.short
-                  ) ||
-                  finish?.includes(
-                    semiFinals[1]?.matches[1]?.fixture?.status?.short
-                  ) ? (
-                  <div className="flex justify-between text-[13px] text-center pt-[9px]">
-                    <h2 className="text-[13px] w-[26.11px]">
-                      {semiFinals[1]?.team1Score}
-                    </h2>
-                    <h2>-</h2>
-                    <h2 className="text-[13px] w-[26.11px]">
-                      {semiFinals[1]?.team2Score}
-                    </h2>
+                    {/* Away */}
+                    <div className="flex-col">
+                      <MdOutlineShield className="w-[20px] h-[20px] m-auto object-contain" />
+                      <h1 className="text-[13px] font-medium text-center pt-[4px]">
+                        TBD
+                      </h1>
+                    </div>
                   </div>
-                ) : FormatMatchDate(semiFinals[1]?.date[0], locale, d)?.date ? (
-                  <div className="text-[13px] text-center pt-[9px]">
-                    {FormatMatchDate(semiFinals[1]?.date[0], locale, d)?.date}
-                  </div>
-                ) : (
-                  <h1 className="text-[13px] text-center pt-[9px] font-medium">
+                  {/* Match Date */}
+                  <div className="text-[13px] text-center pt-[9px] font-medium">
                     TBD
-                  </h1>
-                )}
-              </div>
-              {/* hr */}
-              <div className="flex items-center flex-1">
-                <hr className="border-l border-[1.2px] border-solid border-[#E8E8E8] w-full dark:border-[#464646]" />
-              </div>
-            </div>
-          ) : (
-            <div className="w-full h-full flex items-center">
-              {/* hr */}
-              <div className="flex items-center flex-1">
-                <hr className="border-l border-[1.2px] border-solid border-[#E8E8E8] w-full dark:border-[#464646]" />
-              </div>
-              {/* semiFinals[0] */}
-              <div className="w-[80px] h-[80px] border-[#E8E8E8]  dark:border-[#464646] border-[1.5px] border-solid rounded-[6px] px-[6px] py-[8px] ">
-                <div className="flex justify-between">
-                  {/* Home */}
-                  <div className="flex-col">
-                    <MdOutlineShield className="w-[20px] h-[20px] m-auto object-contain" />
-                    <h1 className="text-[13px] font-medium text-center pt-[4px]">
-                      TBD
-                    </h1>
-                  </div>
-                  {/* Away */}
-                  <div className="flex-col">
-                    <MdOutlineShield className="w-[20px] h-[20px] m-auto object-contain" />
-                    <h1 className="text-[13px] font-medium text-center pt-[4px]">
-                      TBD
-                    </h1>
                   </div>
                 </div>
-                {/* Match Date */}
-                <div className="text-[13px] text-center pt-[9px] font-medium">
-                  TBD
+                {/* hr */}
+                <div className="flex items-center flex-1">
+                  <hr className="border-l border-[1.2px] border-solid border-[#E8E8E8] w-full dark:border-[#464646] max-lg:h-[20px]" />
                 </div>
               </div>
-              {/* hr */}
-              <div className="flex items-center flex-1">
-                <hr className="border-l border-[1.2px] border-solid border-[#E8E8E8] w-full dark:border-[#464646]" />
-              </div>
-              {/* Finals*/}
-              <div className="w-[80px] h-[80px] border-[#E8E8E8]  dark:border-[#464646] border-[1.5px] border-solid rounded-[6px] px-[6px] py-[8px] ">
-                <div className="flex justify-between">
-                  {/* Home */}
-                  <div className="flex-col">
-                    <MdOutlineShield className="w-[20px] h-[20px] m-auto object-contain" />
-                    <h1 className="text-[13px] font-medium text-center pt-[4px]">
-                      TBD
-                    </h1>
-                  </div>
-                  {/* Away */}
-                  <div className="flex-col">
-                    <MdOutlineShield className="w-[20px] h-[20px] m-auto object-contain" />
-                    <h1 className="text-[13px] font-medium text-center pt-[4px]">
-                      TBD
-                    </h1>
-                  </div>
-                </div>
-                {/* Match Date */}
-                <div className="text-[13px] text-center pt-[9px] font-medium">
-                  TBD
-                </div>
-                {/* final tag */}
-                <div className="bg-[#F8D76A] flex items-center justify-center h-[15px] mx-2 mt-1 rounded-xl text-black">
-                  <h2 className="text-xxs font-medium">FINAL</h2>
-                </div>
-              </div>
+            )}
+            {/* 3rd Place Final  */}
+            {thirdPlace?.length > 0 ? (
+              <div className="h-1/3 flex justify-center max-lg:h-full max-lg:w-1/3">
+                {/* third place */}
+                <div
+                  className="w-[80px] h-[80px] border-[#E8E8E8] border-[1.5px] border-solid rounded-[6px] px-[6px] py-[8px] cursor-pointer hover:bg-[#EDEDED] hover:border-[#EDEDED] dark:border-[#464646] dark:hover:bg-[#2B2B2B] relative"
+                  onClick={() => {
+                    onClickViewMatch(semiFinals[0]);
+                  }}
+                >
+                  <div className="flex justify-between">
+                    {/* Home */}
+                    <div className="flex-col">
+                      {thirdPlace[0]?.team1Logo ? (
+                        <Image
+                          src={thirdPlace[0]?.team1Logo}
+                          alt={thirdPlace[0]?.team1}
+                          width={20}
+                          height={20}
+                          className="w-[20px] h-[20px] m-auto object-contain"
+                        />
+                      ) : (
+                        <MdOutlineShield className="w-[20px] h-[20px] m-auto object-contain" />
+                      )}
 
-              {/* hr */}
-              <div className="flex items-center flex-1">
-                <hr className="border-l border-[1.2px] border-solid border-[#E8E8E8] w-full dark:border-[#464646]" />
-              </div>
-              {/* semiFinals[1] */}
-              <div className="w-[80px] h-[80px] border-[#E8E8E8]  dark:border-[#464646] border-[1.5px] border-solid rounded-[6px] px-[6px] py-[8px] ">
-                <div className="flex justify-between">
-                  {/* Home */}
-                  <div className="flex-col">
-                    <MdOutlineShield className="w-[20px] h-[20px] m-auto object-contain" />
-                    <h1 className="text-[13px] font-medium text-center pt-[4px]">
+                      <h1
+                        className={`text-[13px] font-medium text-center pt-[4px] ${
+                          checkMatchIsDone(thirdPlace[0]) &&
+                          (checkTeam1IsWinner(thirdPlace[0])
+                            ? ""
+                            : "line-through text-[#9F9F9F]")
+                        }`}
+                      >
+                        {thirdPlace[0]?.team1?.substr(0, 3)?.toUpperCase()}
+                      </h1>
+                    </div>
+
+                    <div></div>
+                    {/* Away */}
+                    <div className="flex-col">
+                      {thirdPlace[0]?.team2Logo ? (
+                        <Image
+                          src={thirdPlace[0]?.team2Logo}
+                          alt={thirdPlace[0]?.team2}
+                          width={20}
+                          height={20}
+                          className="w-[20px] h-[20px] m-auto object-contain"
+                        />
+                      ) : (
+                        <MdOutlineShield className="w-[20px] h-[20px] m-auto object-contain" />
+                      )}
+                      <h1
+                        className={`text-[13px] font-medium text-center pt-[4px] ${
+                          checkMatchIsDone(thirdPlace[0]) &&
+                          (checkTeam2IsWinner(thirdPlace[0])
+                            ? ""
+                            : "line-through text-[#9F9F9F]")
+                        }`}
+                      >
+                        {thirdPlace[0]?.team2?.substr(0, 3)?.toUpperCase()}
+                      </h1>
+                    </div>
+                  </div>
+                  {/* Score or Date */}
+                  {thirdPlace[0]?.status?.some((status: any) =>
+                    live?.includes(status)
+                  ) && thirdPlace[0]?.elapsed?.length > 0 ? (
+                    <AnimatePresence>
+                      <div className="bg-[#00985F] text-white text-sm w-[50px] h-[20px] rounded-[0.4vw] flex items-center justify-center m-auto mt-[7px] text-[11px]">
+                        <motion.h3
+                          key={isPoint ? "score" : "time"}
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: 1 }}
+                          exit={{ opacity: 0 }}
+                          transition={{
+                            duration: 0.5,
+                            ease: "easeInOut",
+                          }}
+                        >
+                          {isPoint
+                            ? `${thirdPlace[0]?.team1Score}
+                          -
+                          ${thirdPlace[0]?.team2Score}`
+                            : `${thirdPlace[0]?.elapsed[0] || 0}'`}
+                        </motion.h3>
+                      </div>
+                    </AnimatePresence>
+                  ) : thirdPlace[0]?.team1Score ||
+                    thirdPlace[0]?.team2Score ||
+                    finish?.includes(
+                      thirdPlace[0]?.matches[0]?.fixture?.status?.short
+                    ) ||
+                    finish?.includes(
+                      thirdPlace[0]?.matches[1]?.fixture?.status?.short
+                    ) ? (
+                    <div className="flex justify-between text-[13px] text-center pt-[9px]">
+                      <h2 className="text-[13px] w-[26.11px]">
+                        {thirdPlace[0]?.team1Score}
+                      </h2>
+                      <h2>-</h2>
+                      <h2 className="text-[13px] w-[26.11px]">
+                        {thirdPlace[0]?.team2Score}
+                      </h2>
+                    </div>
+                  ) : FormatMatchDate(thirdPlace[0]?.date[0], locale, d)
+                      ?.date ? (
+                    <div className="text-[13px] text-center pt-[9px]">
+                      {FormatMatchDate(thirdPlace[0]?.date[0], locale, d)?.date}
+                    </div>
+                  ) : (
+                    <h1 className="text-[13px] text-center pt-[9px] font-medium">
                       TBD
                     </h1>
-                  </div>
-                  {/* Away */}
-                  <div className="flex-col">
-                    <MdOutlineShield className="w-[20px] h-[20px] m-auto object-contain" />
-                    <h1 className="text-[13px] font-medium text-center pt-[4px]">
-                      TBD
-                    </h1>
+                  )}
+                  {/* final tag */}
+                  <div className="bg-[#db8632] flex items-center justify-center h-[15px] mt-1 rounded-xl text-black absolute left-0 w-full">
+                    <h2 className="text-[9px] font-medium">
+                      {l("bronze-final")}
+                    </h2>
                   </div>
                 </div>
-                {/* Match Date */}
-                <div className="text-[13px] text-center pt-[9px] font-medium">
-                  TBD
-                </div>
               </div>
-              {/* hr */}
-              <div className="flex items-center flex-1">
-                <hr className="border-l border-[1.2px] border-solid border-[#E8E8E8] w-full dark:border-[#464646]" />
-              </div>
-            </div>
-          )}
+            ) : (
+              <div className="h-1/3 max-lg:w-1/3"></div>
+            )}
+          </div>
         </div>
 
         {/* right */}
-        <div className="h-full w-4/12 flex">
+        <div className="h-full w-4/12 flex max-lg:flex-col max-lg:w-full">
           {/* Quarter-finals */}
-          <div className="w-1/2 h-full flex flex-col relative">
+          <div className="w-1/2 h-full flex flex-col relative max-lg:flex-row max-lg:w-full">
             {quarterFinals?.length > 0
               ? semiFinals?.length > 0
                 ? // if there are quarterFinal and semiFinals data, show this
@@ -1853,13 +2101,21 @@ export default function LeagueKnockOut({
                     );
 
                     return (
-                      <div key={i} className="w-full h-1/2 flex items-center">
-                        {/* hr */}
+                      <div
+                        key={i}
+                        className="w-full h-1/2 flex items-center max-lg:flex-col max-lg:h-[110px]"
+                      >
                         {i % 2 !== 0 && (
-                          <div className="absolute left-0 top-[135px] h-1/2 border-l border-solid border-[#E8E8E8] border-[1.2px] dark:border-[#464646]"></div>
+                          <>
+                            {/* computer */}
+                            <div className="absolute left-0 top-[135px] h-1/2 border-l border-solid border-[#E8E8E8] border-[1.2px] dark:border-[#464646] max-lg:hidden"></div>
+                            {/* mobile */}
+                            <div className="w-full mr-[99%] border-l border-solid border-[#E8E8E8] border-[1.2px] dark:border-[#464646] lg:hidden"></div>
+                          </>
                         )}
-                        <div className="flex items-center flex-1">
-                          <hr className="border-l border-[1.2px] border-solid border-[#E8E8E8] w-full dark:border-[#464646]" />
+                        {/* hr */}
+                        <div className="flex items-center flex-1 max-lg:h-full">
+                          <hr className="border-l border-[1.2px] border-solid border-[#E8E8E8] w-full dark:border-[#464646] max-lg:h-full" />
                         </div>
                         {/* contents */}
                         <div
@@ -1974,8 +2230,8 @@ export default function LeagueKnockOut({
                         </div>
 
                         {/* hr */}
-                        <div className="flex items-center flex-1">
-                          <hr className="border-l border-[1.2px] border-solid border-[#E8E8E8] w-full dark:border-[#464646]" />
+                        <div className="flex items-center flex-1 max-lg:h-full">
+                          <hr className="border-l border-[1.2px] border-solid border-[#E8E8E8] w-full dark:border-[#464646] max-lg:h-full" />
                         </div>
                       </div>
                     );
@@ -2183,7 +2439,7 @@ export default function LeagueKnockOut({
           </div>
 
           {/* Round of 16 */}
-          <div className="w-1/2 h-full flex flex-col relative">
+          <div className="w-1/2 h-full flex flex-col relative max-lg:flex-row max-lg:w-full">
             {roundOf16?.length > 0
               ? quarterFinals?.length > 0
                 ? // if there are quarterFinal and roundOf16 data, show this

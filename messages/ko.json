@@ -195,7 +195,9 @@
     "viewall": "전체보기",
     "redcards": "퇴장",
     "yellowcards": "경고",
-    "close": "닫기"
+    "close": "닫기",
+    "bronze-final": "3위 결정전",
+    "final": "결승전"
   },
   "fixture": {
     "back": "뒤로가기",

@@ -195,7 +195,9 @@
     "viewall": "View All",
     "redcards": "Red Cards",
     "yellowcards": "Yellow Cards",
-    "close": "Close"
+    "close": "Close",
+    "bronze-final":"BRONZE-FINAL",
+    "final":"FINAL"
   },
   "fixture": {
     "back": "Back",

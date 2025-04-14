@@ -195,7 +195,9 @@
     "viewall": "Se Alle",
     "redcards": "Røde kort",
     "yellowcards": "Gule kort",
-    "close": "Luk"
+    "close": "Luk",
+    "bronze-final": "Bronzekamp",
+    "final": "Finale"
   },
   "fixture": {
     "back": "Tilbage",
