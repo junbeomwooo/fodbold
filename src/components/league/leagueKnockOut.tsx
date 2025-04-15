@@ -117,9 +117,6 @@ export default function LeagueKnockOut({
   const unearned = ["AWD", "WO"];
 
   /**
-   * 2. 데이터 통신이 적절히 일어나는지 확인 후 모바일 타블렛 버전도 구현하기
-   * 3. fixtureOverview에서도 ColorThief를 사용할지 생각해보기
-   *
    * http://localhost:3000/en/leagues/1/world-cup/playoff
    * http://localhost:3000/en/leagues/2/champions-league/playoff
    */
@@ -156,14 +153,14 @@ export default function LeagueKnockOut({
     }
   }, [dispatch, id, selectedYear, selectedYearChanged, location]);
 
-  // // // // Show match scores and game time alternately every 2.5 seconds.
-  // useEffect(() => {
-  //   const interval = setInterval(() => {
-  //     setIsPoint((prev) => !prev); // match goals <-> match time
-  //   }, 2500);
+ // Show match scores and game time alternately every 2.5 seconds.
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setIsPoint((prev) => !prev); // match goals <-> match time
+    }, 2500);
 
-  //   return () => clearInterval(interval); // clear Interval when componets is unmounted
-  // }, []);
+    return () => clearInterval(interval); // clear Interval when componets is unmounted
+  }, []);
 
   /** Find 'Round of 16' data */
   const round16 = match?.filter((v: any) => {
@@ -216,6 +213,8 @@ export default function LeagueKnockOut({
   }, []);
 
   const roundOf16 = round16 && Object.values(groupdByRound16);
+  // const roundOf16 = null;
+
   console.group("Round of 16");
   console.log(roundOf16);
   console.groupEnd();
@@ -269,6 +268,8 @@ export default function LeagueKnockOut({
   }, []);
 
   const quarterFinals = groupdByquarter && Object.values(groupdByquarter);
+  // const quarterFinals = null;
+  
   console.group("Quarter-finals");
   console.log(quarterFinals);
   console.groupEnd();
@@ -322,6 +323,7 @@ export default function LeagueKnockOut({
   }, []);
 
   const semiFinals = groupdBySemi && Object.values(groupdBySemi);
+  // const semiFinals = null;
 
   console.group("Semi-finals");
   console.log(semiFinals);
@@ -376,6 +378,7 @@ export default function LeagueKnockOut({
   }, []);
 
   const final = groupdByLastStage && Object.values(groupdByLastStage);
+  // const final = null;
 
   console.group("Final");
   console.log(final);
@@ -547,7 +550,7 @@ export default function LeagueKnockOut({
                 ? // if there are quarterFinal and roundOf16 data, show this
                   getSortedMatchesBasedOnNextRound(
                     roundOf16,
-                    semiFinals.length > 0
+                    semiFinals?.length > 0
                       ? getSortedMatchesBasedOnNextRound(
                           quarterFinals,
                           semiFinals
@@ -942,7 +945,7 @@ export default function LeagueKnockOut({
                         </>
                       )}
 
-                      {i % 2 === 0 && i < roundOf16?.length - 1 && (
+                      {i % 2 === 0 && (
                         <>
                           {/* computer */}
                           <div className="absolute right-[0px] bottom-[68px] h-1/4 border-l border-solid border-[#E8E8E8] dark:border-[#464646] border-[1.2px] max-lg:hidden"></div>
@@ -2269,9 +2272,19 @@ export default function LeagueKnockOut({
                     );
 
                     return (
-                      <div key={i} className="w-full h-1/2 flex items-center">
-                        <div className="flex items-center flex-1">
-                          <hr className="border-l border-[1.2px] border-solid border-[#E8E8E8] w-full dark:border-[#464646]" />
+                      <div key={i} className="w-full h-1/2 flex items-center max-lg:flex-col max-lg:h-[110px]">
+
+                         {i % 2 !== 0 && (
+                          <>
+                            {/* computer */}
+                            <div className="absolute left-0 top-[135px] h-1/2 border-l border-solid border-[#E8E8E8] border-[1.2px] dark:border-[#464646] max-lg:hidden"></div>
+                            {/* mobile */}
+                            <div className="w-full mr-[99%] border-l border-solid border-[#E8E8E8] border-[1.2px] dark:border-[#464646] lg:hidden"></div>
+                          </>
+                        )}
+                        {/* hr */}
+                        <div className="flex items-center flex-1 max-lg:h-full">
+                          <hr className="border-l border-[1.2px] border-solid border-[#E8E8E8] w-full dark:border-[#464646] max-lg:h-full" />
                         </div>
 
                         {/* contents */}
@@ -2386,28 +2399,34 @@ export default function LeagueKnockOut({
                           )}
                         </div>
 
-                        {/* hr */}
-                        <div className="flex items-center flex-1">
-                          <hr className="border-l border-[1.2px] border-solid border-[#E8E8E8] w-full dark:border-[#464646]" />
+                       {/* hr */}
+                       <div className="flex items-center flex-1 max-lg:h-full">
+                          <hr className="border-l border-[1.2px] border-solid border-[#E8E8E8] w-full dark:border-[#464646] max-lg:h-full" />
                         </div>
-
-                        {i % 2 !== 0 && (
-                          <div className="absolute left-0 top-[135px] h-1/2 border-l border-solid border-[#E8E8E8] border-[1.2px] dark:border-[#464646]"></div>
-                        )}
                       </div>
                     );
                   })
               : // if there  no data, show this
                 Array.from({ length: 2 }).map((_, i) => {
                   return (
-                    <div key={i} className="w-full h-1/2 flex items-center">
-                      <div className="flex items-center flex-1">
-                        <hr className="border-l border-[1.2px] border-solid border-[#E8E8E8] w-full dark:border-[#464646]" />
+                    <div
+                      key={i}
+                      className="w-full h-1/2 flex items-center max-lg:flex-col max-lg:h-[110px]"
+                    >
+                      {i % 2 !== 0 && (
+                        <>
+                          {/* computer */}
+                          <div className="absolute left-0 top-[135px] h-1/2 border-l border-solid border-[#E8E8E8] border-[1.2px] dark:border-[#464646] max-lg:hidden"></div>
+                          {/* mobile */}
+                          <div className="w-full mr-[99%] border-l border-solid border-[#E8E8E8] border-[1.2px] dark:border-[#464646] lg:hidden"></div>
+                        </>
+                      )}
+
+                      <div className="flex items-center flex-1 max-lg:h-full">
+                        <hr className="border-l border-[1.2px] border-solid border-[#E8E8E8] w-full dark:border-[#464646] max-lg:h-full" />
                       </div>
 
-                      {i % 2 !== 0 && (
-                        <div className="absolute left-0 top-[135px] h-1/2 border-l border-solid border-[#E8E8E8] border-[1.2px] dark:border-[#464646]"></div>
-                      )}
+                      {/* content */}
                       <div className="w-[80px] h-[80px] border-[#E8E8E8]  dark:border-[#464646] border-[1.5px] border-solid rounded-[6px] px-[6px] py-[8px] ">
                         <div className="flex justify-between">
                           {/* Home */}
@@ -2430,8 +2449,9 @@ export default function LeagueKnockOut({
                           TBD
                         </div>
                       </div>
-                      <div className="flex items-center flex-1">
-                        <hr className="border-l border-[1.2px] border-solid border-[#E8E8E8] w-full dark:border-[#464646]" />
+
+                      <div className="flex items-center flex-1 max-lg:h-full">
+                        <hr className="border-l border-[1.2px] border-solid border-[#E8E8E8] w-full dark:border-[#464646] max-lg:h-full" />
                       </div>
                     </div>
                   );
@@ -2445,7 +2465,7 @@ export default function LeagueKnockOut({
                 ? // if there are quarterFinal and roundOf16 data, show this
                   getSortedMatchesBasedOnNextRound(
                     roundOf16,
-                    semiFinals.length > 0
+                    semiFinals?.length > 0
                       ? getSortedMatchesBasedOnNextRound(
                           quarterFinals,
                           semiFinals
@@ -2482,18 +2502,30 @@ export default function LeagueKnockOut({
                       d
                     );
                     return (
-                      <div key={i} className="w-full h-1/4 flex items-center">
-                        {/* hr */}
-                        <div className="flex items-center flex-1">
-                          <hr className="border-l border-[1.2px] border-solid border-[#E8E8E8] w-full dark:border-[#464646]" />
-                        </div>
-
+                      <div
+                        key={i}
+                        className="w-full h-1/4 flex items-center max-lg:flex-col max-lg:h-[110px]"
+                      >
                         {i % 2 !== 0 && (
-                          <div className="absolute left-0 top-[68px] h-1/4 border-l border-solid border-[#E8E8E8] border-[1.2px] dark:border-[#464646]"></div>
+                          <>
+                            {/* computer */}
+                            <div className="absolute left-0 top-[68px] h-1/4 border-l border-solid border-[#E8E8E8] border-[1.2px] dark:border-[#464646] max-lg:hidden"></div>
+
+                            {/* mobile */}
+                            <div className="w-full mr-[99%] border-l border-solid border-[#E8E8E8] border-[1.2px] dark:border-[#464646] lg:hidden"></div>
+                          </>
                         )}
 
+                        {/* hr */}
+                        <div className="flex items-center flex-1 max-lg:h-full">
+                          <hr className="border-l border-[1.2px] border-solid border-[#E8E8E8] w-full dark:border-[#464646] max-lg:h-full" />
+                        </div>
+
                         {i % 2 === 0 && i < roundOf16.length - 1 && (
-                          <div className="absolute left-[0px] bottom-[68px] h-1/4 border-l border-solid border-[#E8E8E8] dark:border-[#464646] border-[1.2px]"></div>
+                          <>
+                            {/* computer */}
+                            <div className="absolute left-[0px] bottom-[68px] h-1/4 border-l border-solid border-[#E8E8E8] dark:border-[#464646] border-[1.2px] max-lg:hidden"></div>
+                          </>
                         )}
                         {/* contents */}
                         <div
@@ -2641,18 +2673,30 @@ export default function LeagueKnockOut({
                     );
 
                     return (
-                      <div key={i} className="w-full h-1/4 flex items-center">
-                        {/* hr */}
-                        <div className="flex items-center flex-1">
-                          <hr className="border-l border-[1.2px] border-solid border-[#E8E8E8] w-full dark:border-[#464646]" />
-                        </div>
-
+                      <div
+                        key={i}
+                        className="w-full h-1/4 flex items-center max-lg:flex-col max-lg:h-[110px]"
+                      >
                         {i % 2 !== 0 && (
-                          <div className="absolute left-0 top-[68px] h-1/4 border-l border-solid border-[#E8E8E8] border-[1.2px] dark:border-[#464646]"></div>
+                          <>
+                            {/* computer */}
+                            <div className="absolute left-0 top-[68px] h-1/4 border-l border-solid border-[#E8E8E8] border-[1.2px] dark:border-[#464646] max-lg:hidden"></div>
+
+                            {/* mobile */}
+                            <div className="w-full mr-[99%] border-l border-solid border-[#E8E8E8] border-[1.2px] dark:border-[#464646] lg:hidden"></div>
+                          </>
                         )}
 
+                        {/* hr */}
+                        <div className="flex items-center flex-1 max-lg:h-full">
+                          <hr className="border-l border-[1.2px] border-solid border-[#E8E8E8] w-full dark:border-[#464646] max-lg:h-full" />
+                        </div>
+
                         {i % 2 === 0 && i < roundOf16.length - 1 && (
-                          <div className="absolute left-[0px] bottom-[68px] h-1/4 border-l border-solid border-[#E8E8E8] dark:border-[#464646] border-[1.2px]"></div>
+                          <>
+                            {/* computer */}
+                            <div className="absolute left-[0px] bottom-[68px] h-1/4 border-l border-solid border-[#E8E8E8] dark:border-[#464646] border-[1.2px] max-lg:hidden"></div>
+                          </>
                         )}
                         {/* contents */}
                         <div
@@ -2771,15 +2815,24 @@ export default function LeagueKnockOut({
               : // if there  no data, show this
                 Array.from({ length: 4 }).map((_, i) => {
                   return (
-                    <div key={i} className="w-full h-1/4 flex items-center">
-                      <div className="flex items-center flex-1">
-                        <hr className="border-l border-[1.2px] border-solid border-[#E8E8E8] w-full dark:border-[#464646]" />
-                        {i % 2 !== 0 && (
-                          <div className="absolute left-0 top-[68px] h-1/4 border-l border-solid border-[#E8E8E8] border-[1.2px] dark:border-[#464646]"></div>
-                        )}
+                    <div
+                      key={i}
+                      className="w-full h-1/4 flex items-center max-lg:flex-col max-lg:h-[110px]"
+                    >
+                      {i % 2 !== 0 && (
+                        <>
+                          {/* computer */}
+                          <div className="absolute left-0 top-[68px] h-1/4 border-l border-solid border-[#E8E8E8] border-[1.2px] dark:border-[#464646] max-lg:hidden"></div>
+                          {/* mobile */}
+                          <div className="w-full mr-[99%] border-l border-solid border-[#E8E8E8] border-[1.2px] dark:border-[#464646] lg:hidden"></div>
+                        </>
+                      )}
+
+                      <div className="flex items-center flex-1 max-lg:h-full">
+                        <hr className="border-l border-[1.2px] border-solid border-[#E8E8E8] w-full dark:border-[#464646] max-lg:h-full" />
 
                         {i % 2 === 0 && (
-                          <div className="absolute left-[0px] bottom-[68px] h-1/4 border-l border-solid border-[#E8E8E8] dark:border-[#464646] border-[1.2px]"></div>
+                          <div className="absolute left-[0px] bottom-[68px] h-1/4 border-l border-solid border-[#E8E8E8] dark:border-[#464646] border-[1.2px] max-lg:hidden"></div>
                         )}
                       </div>
                       <div className="w-[80px] h-[80px] border-[#E8E8E8]  dark:border-[#464646] border-[1.5px] border-solid rounded-[6px] px-[6px] py-[8px] ">
@@ -2804,7 +2857,7 @@ export default function LeagueKnockOut({
                           TBD
                         </div>
                       </div>
-                      <div className="flex items-center flex-1">
+                      <div className="flex items-center flex-1 lg:hidden">
                         <hr className="border-l border-[1.2px] border-solid border-[#E8E8E8] w-full dark:border-[#464646]" />
                       </div>
                     </div>
