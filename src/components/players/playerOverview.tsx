@@ -32,13 +32,17 @@ export default function PlayerOverview({
   /** image url */
   const FOOTBALL_IMAGE = "https://media.api-sports.io/football";
 
-  useEffect(() => {
-    dispatch(getTeamsByPlayer({ id: playerID })).then((payload) => {
-      const lastestSeason = payload?.payload[0]?.seasons[0];
-      setSelectedYear(lastestSeason);
-      dispatch(getPlayerStatistics({ id: playerID, season: lastestSeason }));
-    });
-  }, [dispatch, playerID]);
+  // http://localhost:3000/en/players/18784/J.-Maddison
+  // http://localhost:3000/en/players/306/Mohamed-Salah
+  // http://localhost:3000/en/players/186/Son-Heung-Min
+
+  // useEffect(() => {
+  //   dispatch(getTeamsByPlayer({ id: playerID })).then((payload) => {
+  //     const lastestSeason = payload?.payload[0]?.seasons[0];
+  //     setSelectedYear(lastestSeason);
+  //     dispatch(getPlayerStatistics({ id: playerID, season: lastestSeason }));
+  //   });
+  // }, [dispatch, playerID]);
 
   /** data for using */
   const playerStatics = statics && statics[0];
@@ -59,31 +63,29 @@ export default function PlayerOverview({
   return (
     <div className="w-full">
       {/** header */}
-      <div className="w-full h-auto bg-white rounded-xl px-8 py-10  border-slate-200 border border-solid dark:bg-custom-dark dark:border-0 max-sm:px-4 ">
+      <div className="w-full h-auto bg-white rounded-t-xl px-8 pt-10  border-slate-200 border border-solid dark:bg-custom-dark dark:border-0 max-sm:px-4 ">
         <div className="flex items-center justify-between">
-          <div className="flex">
+          <div className="flex items-start">
             <Image
               src={`${FOOTBALL_IMAGE}/players/${id}.png`}
               alt="Player profile picture"
-              width={35}
-              height={35}
-              style={{ width: "auto", height: "auto" }}
+              width={80}
+              height={80}
             />
-            <div className="flex flex-col justify-center ml-4">
-              <h1 className="text-lg">{playerStatics?.player?.name}</h1>
-              <div className="flex">
+            <div className="flex flex-col justify-center ml-6">
+              <h1 className="text-xl">{playerStatics?.player?.name}</h1>
+              <div className="flex items-center gap-2 mt-1">
                 <Image
                   src={playerTeams?.team?.logo}
                   alt="nationallity, team logo"
-                  width={35}
-                  height={35}
-                  style={{ width: "auto", height: "auto" }}
+                  width={20}
+                  height={20}
                 />
-                <h1 className="text-xsm text-custom-gray ">{playerTeams?.team?.name}</h1>
+                <h1 className="text-base text-custom-gray ">{playerTeams?.team?.name}</h1>
               </div>
             </div>
           </div>
-          <div className="relative">
+          {/* <div className="relative">
             <select
               className="border border-black rounded-full text-xsm p-1.5 font-medium appearance-none pr-5 pl-3 dark:bg-custom-dark dark:border-custom-gray2"
               onChange={(e) => {
@@ -109,7 +111,7 @@ export default function PlayerOverview({
                 className={`ml-3 absolute top-1.5 right-1.5 dark:invert`}
               />
             </span>
-          </div>
+          </div> */}
         </div>
       </div>
     </div>
