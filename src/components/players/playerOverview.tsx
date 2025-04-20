@@ -63,14 +63,15 @@ export default function PlayerOverview({
   return (
     <div className="w-full">
       {/** header */}
-      <div className="w-full h-auto bg-white rounded-t-xl px-8 pt-10  border-slate-200 border border-solid dark:bg-custom-dark dark:border-0 max-sm:px-4 ">
+      <div className="w-full h-auto bg-white rounded-t-xl px-8 py-6  border-slate-200 border border-solid dark:bg-custom-dark dark:border-0 max-sm:px-4 border-b-0 dark:border-b-[1px] dark:border-black">
         <div className="flex items-center justify-between">
-          <div className="flex items-start">
+          <div className="flex items-center">
             <Image
               src={`${FOOTBALL_IMAGE}/players/${id}.png`}
               alt="Player profile picture"
               width={80}
               height={80}
+              className="rounded-full"
             />
             <div className="flex flex-col justify-center ml-6">
               <h1 className="text-xl">{playerStatics?.player?.name}</h1>
@@ -81,7 +82,9 @@ export default function PlayerOverview({
                   width={20}
                   height={20}
                 />
-                <h1 className="text-base text-custom-gray ">{playerTeams?.team?.name}</h1>
+                <h1 className="text-base text-custom-gray ">
+                  {playerTeams?.team?.name}
+                </h1>
               </div>
             </div>
           </div>
@@ -112,6 +115,112 @@ export default function PlayerOverview({
               />
             </span>
           </div> */}
+        </div>
+      </div>
+      <div className="w-full h-auto bg-white rounded-b-xl px-8 pt-8  border-slate-200 border border-solid dark:bg-custom-dark dark:border-0 max-sm:px-4 pb-8 flex gap-10">
+        {/* left */}
+        <div className="w-1/2 h-auto ">
+          {/* country, position] */}
+          <div className="flex text-[16px] gap-10">
+            {/* country */}
+            <div className="w-1/2 h-auto">
+              <h2>{playerStatics?.player?.nationality}</h2>
+              <h3 className="text-[14px] text-custom-gray mt-2">Country</h3>
+              <hr className="my-8" />
+            </div>
+
+            {/* position */}
+            <div className="w-1/2 h-auto">
+              <h2>{playerStatics?.statistics[0]?.games?.position}</h2>
+              <h3 className="text-[14px] text-custom-gray mt-2">Position</h3>
+              <hr className="my-8" />
+            </div>
+          </div>
+
+          {/* height, weight */}
+          <div className="flex text-[16px] gap-10">
+            {/* height */}
+            <div className="w-1/2 h-auto">
+              <h2>{playerStatics?.player?.height}</h2>
+              <h3 className="text-[14px] text-custom-gray mt-2">Height</h3>
+              <hr className="my-8" />
+            </div>
+
+            {/* weight */}
+            <div className="w-1/2 h-auto">
+              <h2>{playerStatics?.player?.weight}</h2>
+              <h3 className="text-[14px] text-custom-gray mt-2">Weight</h3>
+              <hr className="my-8" />
+            </div>
+          </div>
+
+          {/* age, date */}
+          <div className="flex text-[16px] gap-10">
+            {/* dge */}
+            <div className="w-1/2 h-auto">
+              <h2>{playerStatics?.player?.age}</h2>
+              <h3 className="text-[14px] text-custom-gray mt-2">Age</h3>
+            </div>
+
+            {/* date */}
+            <div className="w-1/2 h-auto">
+              <h2>{playerStatics?.player?.birth?.date}</h2>
+              <h3 className="text-[14px] text-custom-gray mt-2">Date</h3>
+            </div>
+          </div>
+        </div>
+        <div className="w-px bg-slate-200 h-auto mx-4" />
+
+        {/* right */}
+        <div className="w-1/2 h-auto ">
+          {/* country, position] */}
+          <div className="flex text-[16px] gap-10">
+            {/* country */}
+            <div className="w-1/2 h-auto">
+              <h2>{playerStatics?.player?.nationality}</h2>
+              <h3 className="text-[14px] text-custom-gray mt-2">Country</h3>
+              <hr className="my-8" />
+            </div>
+
+            {/* position */}
+            <div className="w-1/2 h-auto">
+              <h2>{playerStatics?.statistics[0]?.games?.position}</h2>
+              <h3 className="text-[14px] text-custom-gray mt-2">Position</h3>
+              <hr className="my-8" />
+            </div>
+          </div>
+
+          {/* height, weight */}
+          <div className="flex text-[16px] gap-10">
+            {/* height */}
+            <div className="w-1/2 h-auto">
+              <h2>{playerStatics?.player?.height}</h2>
+              <h3 className="text-[14px] text-custom-gray mt-2">Height</h3>
+              <hr className="my-8" />
+            </div>
+
+            {/* weight */}
+            <div className="w-1/2 h-auto">
+              <h2>{playerStatics?.player?.weight}</h2>
+              <h3 className="text-[14px] text-custom-gray mt-2">Weight</h3>
+              <hr className="my-8" />
+            </div>
+          </div>
+
+          {/* age, date */}
+          <div className="flex text-[16px] gap-10">
+            {/* dge */}
+            <div className="w-1/2 h-auto">
+              <h2>{playerStatics?.player?.age}</h2>
+              <h3 className="text-[14px] text-custom-gray mt-2">Age</h3>
+            </div>
+
+            {/* date */}
+            <div className="w-1/2 h-auto">
+              <h2>{playerStatics?.player?.birth?.date}</h2>
+              <h3 className="text-[14px] text-custom-gray mt-2">Date</h3>
+            </div>
+          </div>
         </div>
       </div>
     </div>
