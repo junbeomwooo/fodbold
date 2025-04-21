@@ -196,8 +196,8 @@
     "redcards": "Red Cards",
     "yellowcards": "Yellow Cards",
     "close": "Close",
-    "bronze-final":"BRONZE-FINAL",
-    "final":"FINAL"
+    "bronze-final": "BRONZE-FINAL",
+    "final": "FINAL"
   },
   "fixture": {
     "back": "Back",
@@ -284,15 +284,23 @@
     "playerIn": "Players in",
     "playerOut": "Players out",
     "player": "Player",
-    "fee":"Fee",
-    "from":"From",
-    "to":"To",
-    "date":"Date",
-    "lastXI":"Last starting XI",
-    "fixtures":"Fixtures",
-    "overview":"Overview",
+    "fee": "Fee",
+    "from": "From",
+    "to": "To",
+    "date": "Date",
+    "lastXI": "Last starting XI",
+    "fixtures": "Fixtures",
+    "overview": "Overview",
     "transfer": "Transfer",
     "table": "Table",
-    "fixture":"Fixture"
+    "fixture": "Fixture"
+  },
+  "player": {
+    "country": "Country",
+    "position": "Position",
+    "height": "Height",
+    "weight": "Weight",
+    "age": "Age",
+    "date": "Date"
   }
 }

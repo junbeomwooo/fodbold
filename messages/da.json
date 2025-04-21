@@ -295,5 +295,14 @@
     "transfer": "Overgang",
     "table": "Stilling",
     "fixture": "Kampplan"
+  },
+
+  "player": {
+    "country": "Land",
+    "position": "Position",
+    "height": "Højde",
+    "weight": "Vægt",
+    "age": "Alder",
+    "date": "Fødselsdato"
   }
 }

@@ -64,12 +64,8 @@ export default function TeamOverView({
   const { leagues, standing }: { leagues: any; standing: any } = useAppSelector(
     (state) => state.leagueSlice
   );
-  const {
-    squads,
-    transfer,
-  }: { statics: any; squads: any; transfer: any } = useAppSelector(
-    (state) => state.teamsSlice
-  );
+  const { squads, transfer }: { statics: any; squads: any; transfer: any } =
+    useAppSelector((state) => state.teamsSlice);
   const { fixtureByTeam }: any = useAppSelector((state) => state.fixtureSlice);
   const { location }: any = useAppSelector((state) => state.locationSlice);
   const { fixture }: any = useAppSelector((state) => state.fixtureSlice);
@@ -91,6 +87,7 @@ export default function TeamOverView({
 
   // http://localhost:3000/en/teams/47/Tottenham/overview
   // http://localhost:3000/en/teams/57/ipswich/overview
+  // http://localhost:3000/en/teams/40/liverpool/overview
 
   useEffect(() => {
     const fetchData = async () => {
@@ -368,7 +365,14 @@ export default function TeamOverView({
   return (
     <div className="w-full">
       {/* header */}
-      <TeamHeader fixture={fixture} leagues={leagues} locale={locale} id={id} name={name} t={t}/>
+      <TeamHeader
+        fixture={fixture}
+        leagues={leagues}
+        locale={locale}
+        id={id}
+        name={name}
+        t={t}
+      />
 
       <div className="mlg:flex gap-4">
         {/* last 5 matches , next match || ongoing match, transfer info */}
