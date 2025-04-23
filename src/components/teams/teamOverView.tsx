@@ -100,11 +100,24 @@ export default function TeamOverView({
         ]);
         // Assign National league ID and Latest season year to variable  */
         const leagues = getAllLeaguesByTeamAction.payload;
-        const nationalLeagueObj = leagues?.filter(
+        let nationalLeagueObj = leagues?.filter(
           (league: any) =>
             league?.league?.type === "League" &&
             league?.seasons?.some((v: any) => v?.current === true)
         );
+
+        // if there is no league type data, then find cup type data
+        if (nationalLeagueObj.length === 0) {
+          nationalLeagueObj =
+            leagues?.filter(
+              (league: any) =>
+                league?.league?.type === "Cup" &&
+                league?.seasons?.some((v: any) => v?.current === true)
+            ) || [];
+        }
+
+        console.log(leagues);
+        console.log(nationalLeagueObj);
 
         setLeagueNational(nationalLeagueObj[0]);
 

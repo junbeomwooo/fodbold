@@ -53,14 +53,14 @@ export default function PlayerOverview({
   // http://localhost:3000/en/players/306/Mohamed-Salah
   // http://localhost:3000/en/players/186/Son-Heung-Min
 
-  // useEffect(() => {
-  //   dispatch(getTrophiesByPlayer({id: playerID}));
-  //   dispatch(getTeamsByPlayer({ id: playerID })).then((payload) => {
-  //     const lastestSeason = payload?.payload[0]?.seasons[0];
-  //     setSelectedYear(lastestSeason);
-  //     dispatch(getPlayerStatistics({ id: playerID, season: lastestSeason }));
-  //   });
-  // }, [dispatch, playerID]);
+  useEffect(() => {
+    dispatch(getTrophiesByPlayer({id: playerID}));
+    dispatch(getTeamsByPlayer({ id: playerID })).then((payload) => {
+      const lastestSeason = payload?.payload[0]?.seasons[0];
+      setSelectedYear(lastestSeason);
+      dispatch(getPlayerStatistics({ id: playerID, season: lastestSeason }));
+    });
+  }, [dispatch, playerID]);
 
   /** data for using */
   const playerStatics = statics && statics[0];
