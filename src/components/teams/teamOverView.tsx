@@ -456,7 +456,7 @@ export default function TeamOverView({
                           alt={opponentTeam?.name}
                           width={30}
                           height={30}
-                          className="m-auto w-auto h-full"
+                            className="w-[30px] h-[30px] object-contain m-auto"
                         />
                       </div>
                     </div>
@@ -525,7 +525,7 @@ export default function TeamOverView({
                       }
                       width={50}
                       height={50}
-                      className="m-auto w-auto h-full"
+                      className="w-[50px] h-[50px] object-contain m-auto"
                     />
                   </div>
                   <h1 className="text-sm text-center mt-3">
@@ -576,7 +576,7 @@ export default function TeamOverView({
                       }
                       width={50}
                       height={50}
-                      className="m-auto w-auto h-full"
+                      className="w-[50px] h-[50px] object-contain m-auto"
                     />
                   </div>
                   <h1 className="text-sm text-center mt-3">
@@ -592,7 +592,6 @@ export default function TeamOverView({
             /** 조별리그 스탠딩 */
             stands.length > 1 ? (
               <div className="w-full bg-white rounded-xl mt-6 px-8 py-5 dark:bg-custom-dark max-sm:px-4  border-slate-200 border border-solid dark:border-0">
-                {/* 조별리그에서 이게 잘렌더링되는지 확인하기 그 이후 조별리그 그룹 폰트 변경하기 (리그페이지 또한 바꾸기) */}
                 <div
                   className="w-full flex items-center gap-4 mb-5 cursor-pointer hover:opacity-70"
                   onClick={() => {
@@ -615,11 +614,11 @@ export default function TeamOverView({
                     {leagueNational?.league?.name}
                   </h1>
                 </div>
-                <div className="flex flex-col mx-4 mt-3 font-semibold ">
+                <div className="flex flex-col mt-3 font-semibold">
                   {stands.map((v: any, i: number) => {
                     return (
-                      <div key={i} className="mb-7">
-                        <h1 className="text-black dark:text-white">
+                      <div key={i} className="mb-7 mt-5">
+                        <h1 className="text-black dark:text-white text-sm font-medium">
                           {v[0].group}
                         </h1>
                         <hr className="border-slate-200 my-5 dark:border-custom-gray3" />
@@ -700,7 +699,7 @@ export default function TeamOverView({
                                     alt={v?.team?.name}
                                     width={50}
                                     height={50}
-                                    style={{ width: 15, height: 15 }}
+                                    className="w-[15px] h-[15px] object-contain"
                                   />
                                   <h2 className="text-xs pl-3">
                                     {v?.team?.name}
@@ -855,7 +854,7 @@ export default function TeamOverView({
                             alt={v?.team?.name}
                             width={50}
                             height={50}
-                            style={{ width: 15, height: 15 }}
+                            className="w-[15px] h-[15px] object-contain"
                           />
                           <h2 className="text-xs pl-3">{v?.team?.name}</h2>
                         </div>
@@ -1721,6 +1720,7 @@ export default function TeamOverView({
                               alt={v?.teams?.home?.name}
                               width={30}
                               height={30}
+                              className="w-[30px] h-[30px] object-contain"
                             />
                           </div>
                           {/* match time */}
@@ -1795,6 +1795,7 @@ export default function TeamOverView({
                               alt={v?.teams?.away?.name}
                               width={30}
                               height={30}
+                              className="w-[30px] h-[30px] object-contain"
                             />
                             <h3>{v?.teams?.away?.name}</h3>
                           </div>

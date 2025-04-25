@@ -153,7 +153,7 @@ export default function LeagueOverview({
                     {stands.map((v: any, i: number) => {
                       return (
                         <div key={i} className="mb-7">
-                          <h1 className="text-black dark:text-white">
+                          <h1 className="text-black dark:text-white text-sm font-medium">
                             {v[0].group}
                           </h1>
                           <hr className="border-slate-200 my-5 dark:border-custom-gray3" />
@@ -236,7 +236,7 @@ export default function LeagueOverview({
                                       alt={v?.team?.name}
                                       width={50}
                                       height={50}
-                                      style={{ width: 15, height: 15 }}
+                                      className="w-[15px] h-[15px] object-contain"
                                     />
                                     <h2 className="text-xs pl-3">
                                       {v?.team?.name}
@@ -368,7 +368,7 @@ export default function LeagueOverview({
                               alt={v?.team?.name}
                               width={50}
                               height={50}
-                              style={{ width: 15, height: 15 }}
+                              className="w-[15px] h-[15px] object-contain"
                             />
                             <h2 className="text-xs pl-3">{v?.team?.name}</h2>
                           </div>
@@ -458,6 +458,7 @@ export default function LeagueOverview({
                                   alt={v.statistics[0].team.name}
                                   width={14}
                                   height={14}
+                                  className="w-[14px] h-[14px] object-contain"
                                 />
                                 <h4 className="text-xxs ml-2">
                                   {v.statistics[0].team.name}
@@ -525,6 +526,7 @@ export default function LeagueOverview({
                                   alt={v.statistics[0].team.name}
                                   width={14}
                                   height={14}
+                                  className="w-[14px] h-[14px] object-contain"
                                 />
                                 <h4 className="text-xxs ml-2">
                                   {v.statistics[0].team.name}

@@ -218,8 +218,8 @@ export default function LeagueSwiper({
                     <Image
                       src={v.teams.home.logo}
                       alt="home tame logo"
-                      width={10}
-                      height={10}
+                      width={50}
+                      height={50}
                       className="w-8 h-8  object-contain"
                     />
                     <h3 className="mt-4">{v.teams.home.name}</h3>
@@ -260,8 +260,8 @@ export default function LeagueSwiper({
                     <Image
                       src={v.teams.away.logo}
                       alt="away tame logo"
-                      width={10}
-                      height={10}
+                      width={50}
+                      height={50}
                       className="w-8 h-8  object-contain"
                     />
                     <h3 className="mt-4">{v.teams.away.name}</h3>

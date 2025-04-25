@@ -111,7 +111,7 @@ export default function LeagueTable({
                   {stands.map((v: any, i: number) => {
                     return (
                       <div key={i} className="mb-7">
-                        <h1 className="text-black dark:text-white">
+                        <h1 className="text-black dark:text-white text-sm font-medium">
                           {v[0].group}
                         </h1>
                         <hr className="border-slate-200 my-5 dark:border-custom-gray3" />
@@ -192,7 +192,7 @@ export default function LeagueTable({
                                     alt={v?.team?.name}
                                     width={50}
                                     height={50}
-                                    style={{ width: 15, height: 15 }}
+                                    className="w-[15px] h-[15px] object-contain"
                                   />
                                   <h2 className="text-xs pl-3">
                                     {v?.team?.name}
@@ -324,7 +324,7 @@ export default function LeagueTable({
                             alt={v?.team?.name}
                             width={50}
                             height={50}
-                            style={{ width: 15, height: 15 }}
+                            className="w-[15px] h-[15px] object-contain"
                           />
                           <h2 className="text-xs pl-3">{v?.team?.name}</h2>
                         </div>
