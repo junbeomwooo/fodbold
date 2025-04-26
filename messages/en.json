@@ -293,7 +293,8 @@
     "overview": "Overview",
     "transfer": "Transfer",
     "table": "Table",
-    "fixture": "Fixture"
+    "fixture": "Fixture",
+    "lineup":"Lineup"
   },
   "player": {
     "country": "Country",

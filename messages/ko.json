@@ -294,14 +294,15 @@
     "overview": "개요",
     "transfer": "이적",
     "table": "순위",
-    "fixture": "경기 일정"
+    "fixture": "경기 일정",
+    "lineup": "라인업"
   },
   "player": {
-  "country": "국가",
-  "position": "포지션",
-  "height": "키",
-  "weight": "몸무게",
-  "age": "나이",
-  "date": "생년월일"
-}
+    "country": "국가",
+    "position": "포지션",
+    "height": "키",
+    "weight": "몸무게",
+    "age": "나이",
+    "date": "생년월일"
+  }
 }

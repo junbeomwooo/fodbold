@@ -89,6 +89,10 @@ export default function TeamOverView({
   // http://localhost:3000/en/teams/57/ipswich/overview
   // http://localhost:3000/en/teams/40/liverpool/overview
 
+  /**
+   * 1. 오버뷰, 테이블 카테고리의 스탠딩 ui의 팀이동 및 리그페이지 이동이 모두 적절히 잘 이동되는지 확인하기 () 
+   * 2. 1번 해결 후 스쿼드 페이지 완성하기
+   * */
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -124,10 +128,6 @@ export default function TeamOverView({
             return bLatestSeason - aLatestSeason;
           }
         );
-
-        // 명시적으로 첫번째 배열로 설정하지말고 최신시즌을 적용시키기
-        console.log(sortedNationalLeagues);
-        console.log(sortedNationalLeagues[0]);
 
         setLeagueNational(sortedNationalLeagues[0]);
 
@@ -456,7 +456,7 @@ export default function TeamOverView({
                           alt={opponentTeam?.name}
                           width={30}
                           height={30}
-                            className="w-[30px] h-[30px] object-contain m-auto"
+                          className="w-[30px] h-[30px] object-contain m-auto"
                         />
                       </div>
                     </div>
@@ -672,7 +672,20 @@ export default function TeamOverView({
                             return (
                               <div
                                 key={i}
-                                className="w-full flex justify-between py-2  hover:cursor-pointer  hover:bg-slate-100 dark:hover:bg-zinc-700"
+                                className={`w-full flex justify-between py-2  hover:cursor-pointer  hover:bg-slate-100 dark:hover:bg-zinc-700 ${
+                                  v?.team?.id === Number(id)
+                                    ? "bg-slate-100 dark:bg-zinc-700"
+                                    : ""
+                                }`}
+                                onClick={() => {
+                                  router.push(
+                                    `/${locale}/teams/${
+                                      v?.team?.id
+                                    }/${FormatLeagueOrTeamName(
+                                      v?.team?.name
+                                    )}/overview`
+                                  );
+                                }}
                               >
                                 {v.description &&
                                 v.description.includes(relegation) === true ? (
@@ -828,7 +841,18 @@ export default function TeamOverView({
                     return (
                       <div
                         key={i}
-                        className="w-full flex justify-between py-2  hover:cursor-pointer  hover:bg-slate-100 dark:hover:bg-zinc-700"
+                        className={`w-full flex justify-between py-2  hover:cursor-pointer  hover:bg-slate-100 dark:hover:bg-zinc-700 ${
+                          v?.team?.id === Number(id)
+                            ? "bg-slate-100 dark:bg-zinc-700"
+                            : ""
+                        }`}
+                        onClick={() => {
+                          router.push(
+                            `/${locale}/teams/${
+                              v?.team?.id
+                            }/${FormatLeagueOrTeamName(v?.team?.name)}/overview`
+                          );
+                        }}
                       >
                         {v.description &&
                         v.description.includes(relegation) === true ? (

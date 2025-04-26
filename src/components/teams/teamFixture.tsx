@@ -62,7 +62,6 @@ export default function TeamFixture({
         (!fixture || !teamInfo)
       ) {
         firstRender.current = false; // after first rendering, it will chagne useRef value as fasle.
-        console.log("fetched!!");
 
         dispatch(getTeamInfo({ team: id }));
         dispatch(getAllLeaguesByTeam({ team: id })).then((payload) => {
@@ -278,6 +277,7 @@ export default function TeamFixture({
                             alt={v?.league?.name}
                             width={12}
                             height={12}
+                                           className="w-[12px] h-[12px] object-contain"
                           />
                         </div>
                       </div>
@@ -292,6 +292,7 @@ export default function TeamFixture({
                           alt={v?.teams?.home?.name}
                           width={30}
                           height={30}
+                          className="w-[30px] h-[30px] object-contain"
                         />
                       </div>
                       {/* match time */}
@@ -366,6 +367,7 @@ export default function TeamFixture({
                           alt={v?.teams?.away?.name}
                           width={30}
                           height={30}
+                          className="w-[30px] h-[30px] object-contain"
                         />
                         <h3>{v?.teams?.away?.name}</h3>
                       </div>
