@@ -295,7 +295,8 @@
     "transfer": "이적",
     "table": "순위",
     "fixture": "경기 일정",
-    "lineup": "라인업"
+    "lineup": "라인업",
+    "squad": "선수단"
   },
   "player": {
     "country": "국가",

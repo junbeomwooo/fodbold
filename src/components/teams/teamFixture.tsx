@@ -66,12 +66,31 @@ export default function TeamFixture({
         dispatch(getTeamInfo({ team: id }));
         dispatch(getAllLeaguesByTeam({ team: id })).then((payload) => {
           const leagues = payload?.payload;
-          const nationalLeagueObj = leagues?.filter(
+          let nationalLeagueObj = leagues?.filter(
             (league: any) =>
               league?.league?.type === "League" &&
               league?.seasons?.some((v: any) => v?.current === true)
           );
-          const latestSeason = nationalLeagueObj[0]?.seasons?.at(-1)?.year;
+
+          // if there is no league type data, then find cup type data
+          if (nationalLeagueObj.length === 0) {
+            nationalLeagueObj =
+              leagues?.filter(
+                (league: any) =>
+                  league?.league?.type === "Cup" &&
+                  league?.seasons?.some((v: any) => v?.current === true)
+              ) || [];
+          }
+
+          // find most recent league
+          const sortedNationalLeagues = [...nationalLeagueObj].sort(
+            (a: any, b: any) => {
+              const aLatestSeason = a.seasons?.at(-1)?.year || 0;
+              const bLatestSeason = b.seasons?.at(-1)?.year || 0;
+              return bLatestSeason - aLatestSeason;
+            }
+          );
+          const latestSeason = sortedNationalLeagues[0]?.seasons?.at(-1)?.year;
           dispatch(
             getFixturesByTeam({
               team: id,
@@ -83,6 +102,7 @@ export default function TeamFixture({
       }
     }
   }, [dispatch, fixture, fixtureByTeam, id, leagues, locate, teamInfo]);
+
   /** routing */
   const router = useRouter();
 
@@ -177,6 +197,7 @@ export default function TeamFixture({
 
     return () => clearInterval(interval); // clear Interval when componets is unmounted
   }, []);
+
 
   return (
     <div className="w-full">
@@ -277,7 +298,7 @@ export default function TeamFixture({
                             alt={v?.league?.name}
                             width={12}
                             height={12}
-                                           className="w-[12px] h-[12px] object-contain"
+                            className="w-[12px] h-[12px] object-contain"
                           />
                         </div>
                       </div>

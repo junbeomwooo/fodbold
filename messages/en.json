@@ -294,7 +294,8 @@
     "transfer": "Transfer",
     "table": "Table",
     "fixture": "Fixture",
-    "lineup":"Lineup"
+    "lineup":"Lineup",
+    "squad":"Squad"
   },
   "player": {
     "country": "Country",

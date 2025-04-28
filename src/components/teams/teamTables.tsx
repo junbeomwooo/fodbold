@@ -78,7 +78,6 @@ export default function TeamTables({
         (!fixture || !teamInfo)
       ) {
         firstRender.current = false; // after first rendering, it will chagne useRef value as fasle.
-        console.log("fetched!!");
 
         dispatch(getTeamInfo({ team: id }));
         dispatch(getAllLeaguesByTeam({ team: id })).then((payload) => {

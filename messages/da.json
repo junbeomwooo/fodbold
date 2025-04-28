@@ -295,7 +295,8 @@
     "transfer": "Overgang",
     "table": "Stilling",
     "fixture": "Kampplan",
-    "lineup": "Opstilling"
+    "lineup": "Opstilling",
+    "squad": "Trup"
   },
 
   "player": {

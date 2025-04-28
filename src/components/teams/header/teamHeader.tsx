@@ -12,6 +12,7 @@ export default function TeamHeader({
   locale,
   id,
   name,
+  squads,
   t,
 }: {
   fixture: any;
@@ -20,6 +21,7 @@ export default function TeamHeader({
   locale: any;
   id: number;
   name: string;
+  squads?: any;
   t: any;
 }) {
   const pathname = usePathname();
@@ -118,6 +120,21 @@ export default function TeamHeader({
             {t("fixture")}
           </Link>
           {pathname === `/${locale}/teams/${id}/${name}/fixture` ? (
+            <div className="bg-green-600 w-auto h-1 mt-6 rounded-full ml-6"></div>
+          ) : (
+            <></>
+          )}
+        </div>
+
+        {/* sqaud */}
+        <div className="flex flex-col">
+          <Link
+            href={`/${locale}/teams/${id}/${name}/squad`}
+            className="hover:no-underline  hover:text-custom-gray tracking-wide ml-6"
+          >
+            {t("squad")}
+          </Link>
+          {pathname === `/${locale}/teams/${id}/${name}/squad` ? (
             <div className="bg-green-600 w-auto h-1 mt-6 rounded-full ml-6"></div>
           ) : (
             <></>
