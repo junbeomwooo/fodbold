@@ -12,7 +12,6 @@ import { useRouter } from "next/navigation";
 import { useRef } from "react";
 
 // fetching data
-import { getFixtures } from "@/lib/features/fixtureSlice";
 import { getFixturesByTeam } from "@/lib/features/fixtureSlice";
 import { getAllLeaguesByTeam } from "@/lib/features/leagueSlice";
 import { getTeamInfo } from "@/lib/features/teamsSlice";

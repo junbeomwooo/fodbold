@@ -15,7 +15,7 @@ export default function TeamHeader({
   squads,
   t,
 }: {
-  fixture: any;
+  fixture?: any;
   teamInfo?: any;
   leagues: any;
   locale: any;
