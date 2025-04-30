@@ -296,7 +296,15 @@
     "table": "Stilling",
     "fixture": "Kampplan",
     "lineup": "Opstilling",
-    "squad": "Trup"
+    "squad": "Trup",
+    "position": "Position",
+    "age": "Alder",
+    "shirt": "Rygnummer",
+    "noResults": "Ingen resultater fundet",
+    "Goalkeeper": "Målmand",
+    "Defender": "Forsvarer",
+    "Midfielder": "Midtbanespiller",
+    "Attacker": "Angriber"
   },
 
   "player": {

@@ -295,7 +295,15 @@
     "table": "Table",
     "fixture": "Fixture",
     "lineup":"Lineup",
-    "squad":"Squad"
+    "squad":"Squad",
+    "position":"Position",
+    "age":"Age",
+    "shirt":"Shirt",
+    "noResults":"No results found",
+    "Goalkeeper":"Goalkeeper",
+    "Defender":"Defender",
+    "Midfielder":"Midfielder",
+    "Attacker":"Attacker"
   },
   "player": {
     "country": "Country",

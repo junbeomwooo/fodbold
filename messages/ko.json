@@ -296,7 +296,15 @@
     "table": "순위",
     "fixture": "경기 일정",
     "lineup": "라인업",
-    "squad": "선수단"
+    "squad": "선수단",
+    "position": "포지션",
+    "age": "나이",
+    "shirt": "등번호",
+    "noResults": "결과를 찾을 수 없습니다",
+    "Goalkeeper": "골키퍼",
+    "Defender": "수비수",
+    "Midfielder": "미드필더",
+    "Attacker": "공격수"
   },
   "player": {
     "country": "국가",
