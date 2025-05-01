@@ -48,14 +48,14 @@ export default function TeamHeader({
               ? lastMatchStartXI[0]?.team?.logo
               : teamInfo
               ? teamInfo?.team?.logo
-              : noimage
+              : `https://media.api-sports.io/football/teams/${id}.png`
           }
           alt={
             lastMatchStartXI?.length > 0
               ? lastMatchStartXI[0]?.team?.name
               : teamInfo
               ? teamInfo?.team?.name
-              : "no home team"
+              : name
           }
           width={35}
           height={35}
@@ -68,7 +68,7 @@ export default function TeamHeader({
               ? lastMatchStartXI[0]?.team?.name
               : teamInfo
               ? teamInfo?.team?.name
-              : null}
+              : name}
           </h1>
           <h1 className="text-sm mr-8 max-lg:mr-0 max-lg:text-xs text-custom-gray">
             {leagues?.length > 0

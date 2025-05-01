@@ -2,7 +2,7 @@
 
 import { useAppDispatch, useAppSelector } from "@/lib/storeHooks";
 import { useRouter } from "next/navigation";
-import { useEffect, useMemo, useRef } from "react";
+import { useMemo, useRef, useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 import { getTeamSquad, getTeamInfo } from "@/lib/features/teamsSlice";
 import { getAllLeaguesByTeam } from "@/lib/features/leagueSlice";
@@ -43,7 +43,6 @@ export default function TeamSquad({
   const firstRender = useRef(true);
 
   // http://localhost:3000/en/teams/47/Tottenham/squad
-  // 1. ref를 통해 색상 추출하고 해당 색상을 통해 tshirt 부분 backgroud 색상 입히기
   // 2. teamSqaud, teamOverView 테이블 부분 에러 고치기
   // 3. 마저 완성하고 transfer 페이지도 만들기
 
@@ -61,11 +60,19 @@ export default function TeamSquad({
     }
   }, [dispatch, id, teamInfo, squads]);
 
-  console.log(teamInfo);
-
   const players = squads ? squads[0]?.players : null;
 
   const imgRef = useRef<HTMLImageElement | null>(null);
+
+  const [extrationColor, setExtractionColor] = useState<
+    [number, number, number] | null
+  >(null);
+
+  function getTextColor([r, g, b]: [number, number, number]): string {
+    // YIQ 알고리즘: 밝기를 기준으로 텍스트 색 결정
+    const brightness = (r * 299 + g * 587 + b * 114) / 1000;
+    return brightness > 128 ? 'black' : 'white';
+  }
 
   return (
     <div className="w-full">
@@ -79,6 +86,23 @@ export default function TeamSquad({
         t={t}
       />
 
+      {/* for extraction color */}
+      <Image
+        src={`https://media.api-sports.io/football/teams/${id}.png`}
+        alt={teamInfo?.name || "no name"}
+        width={1}
+        height={1}
+        className="absolute opacity-0"
+        ref={imgRef}
+        onLoad={() => {
+          if (imgRef.current) {
+            const colorThief = new ColorThief();
+            const palette = colorThief.getPalette(imgRef.current);
+            setExtractionColor(palette[2]);
+          }
+        }}
+      />
+
       {
         <div className="w-full bg-white rounded-xl mt-6 pt-5 dark:bg-custom-dark border-slate-200 border border-solid dark:border-0">
           <div className="px-8">
@@ -89,8 +113,8 @@ export default function TeamSquad({
                   <th className="text-center pb-4 max-md:hidden">
                     {t("position")}
                   </th>
-                  <th className="text-center pb-4">{t("age")}</th>
                   <th className="text-center pb-4">{t("shirt")}</th>
+                  <th className="text-center pb-4">{t("age")}</th>
                 </tr>
               </thead>
 
@@ -133,10 +157,24 @@ export default function TeamSquad({
                             {t(v?.position)}
                           </td>
                           <td className="h-[50px] align-middle py-4 text-center w-1/5">
-                            {v?.age}
+                            {extrationColor && v?.number ? (
+                              <div
+                                className="w-6 h-6 rounded-full flex items-center justify-center"
+                                style={{
+                                  backgroundColor: `rgb(${extrationColor[0]}, ${extrationColor[1]}, ${extrationColor[2]})`,
+                                  color: getTextColor(extrationColor),
+                                }}
+                              >
+                                {v?.number}
+                              </div>
+                            ) : (
+                              <div className="w-6 h-6 rounded-full flex items-center justify-center">
+                                {v?.number || ""}
+                              </div>
+                            )}
                           </td>
                           <td className="h-[50px] align-middle py-4 text-center w-1/5">
-                            {v?.number}
+                            {v?.age}
                           </td>
                         </tr>
                         {players?.length > i + 1 && (

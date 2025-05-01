@@ -54,35 +54,35 @@ const FixturesOverView = ({ id, locale }: { id: number; locale: string }) => {
 
   /** useEffect  */
   // http://localhost:3000/en/matches/tottenham-vs-leicester/1208251
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     try {
-  //       const { payload } = await dispatch(
-  //         getFixtures({ id: id, timezone: locate })
-  //       );
-  //       await Promise.all([
-  //         dispatch(getInjuries({ id: id })),
-  //         dispatch(
-  //           getFixtruesByRound({
-  //             leagueID: payload?.league.id,
-  //             season: payload?.league.season,
-  //             round: payload?.league.round,
-  //           })
-  //         ),
-  //         dispatch(
-  //           getH2H({
-  //             homeID: payload?.teams.home.id,
-  //             awayID: payload?.teams.away.id,
-  //             timezone: locate,
-  //           })
-  //         ),
-  //       ]);
-  //     } catch (error) {
-  //       console.error("Error fetching data:", error);
-  //     }
-  //   };
-  //   fetchData();
-  // }, [dispatch, id, locate]);
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const { payload } = await dispatch(
+          getFixtures({ id: id, timezone: locate })
+        );
+        await Promise.all([
+          dispatch(getInjuries({ id: id })),
+          dispatch(
+            getFixtruesByRound({
+              leagueID: payload?.league.id,
+              season: payload?.league.season,
+              round: payload?.league.round,
+            })
+          ),
+          dispatch(
+            getH2H({
+              homeID: payload?.teams.home.id,
+              awayID: payload?.teams.away.id,
+              timezone: locate,
+            })
+          ),
+        ]);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+    fetchData();
+  }, [dispatch, id, locate]);
 
   /** data for using */
 
@@ -237,6 +237,21 @@ const FixturesOverView = ({ id, locale }: { id: number; locale: string }) => {
   const substitutedPlayer = fixture?.events?.filter((player: any) => {
     return player?.type === "subst";
   });
+
+  // for text color
+  function getTextColor(hex: string): string {
+    // #을 제외하고 16진수 값을 추출
+    const hexColor = hex.replace("#", "");
+
+    // R, G, B 값을 추출
+    const r = parseInt(hexColor.substring(0, 2), 16);
+    const g = parseInt(hexColor.substring(2, 4), 16);
+    const b = parseInt(hexColor.substring(4, 6), 16);
+
+    // YIQ 알고리즘: 밝기를 기준으로 텍스트 색 결정
+    const brightness = (r * 299 + g * 587 + b * 114) / 1000;
+    return brightness > 128 ? "black" : "white";
+  }
 
   return (
     <div className="flex w-full justify-center">
@@ -424,14 +439,9 @@ const FixturesOverView = ({ id, locale }: { id: number; locale: string }) => {
                         <h1
                           className="ml-5"
                           style={{
-                            color: `${
+                            color: getTextColor(
                               fixture?.lineups[0]?.team?.colors?.player?.primary
-                                ? fixture?.lineups[0]?.team?.colors?.player
-                                    ?.primary === "ffffff"
-                                  ? "black"
-                                  : "white"
-                                : "black"
-                            }`,
+                            ),
                           }}
                         >
                           {homeStats[9].value}
@@ -455,14 +465,9 @@ const FixturesOverView = ({ id, locale }: { id: number; locale: string }) => {
                         <h1
                           className="mr-5"
                           style={{
-                            color: `${
+                            color: getTextColor(
                               fixture?.lineups[1]?.team?.colors?.player?.primary
-                                ? fixture?.lineups[1]?.team?.colors?.player
-                                    ?.primary === "ffffff"
-                                  ? "black"
-                                  : "white"
-                                : "white"
-                            }`,
+                            ),
                           }}
                         >
                           {awayStats[9].value}
@@ -2420,16 +2425,14 @@ const FixturesOverView = ({ id, locale }: { id: number; locale: string }) => {
                           }}
                         >
                           <h3
-                            className={`text-[21px]  max-lg:text-[14px] max-lg:font-bold
-                              ${
-                                fixture?.lineups.length > 0
-                                  ? fixture?.lineups[0]?.team?.colors?.player
-                                      ?.primary === "text-[#ffffff]"
-                                    ? "text-black"
-                                    : "text-white"
-                                  : "text-black dark:text-white"
-                              }
-                              `}
+                            className="text-[21px]  max-lg:text-[14px] max-lg:font-bold
+                                                           "
+                            style={{
+                              color: getTextColor(
+                                fixture?.lineups[0]?.team?.colors?.player
+                                  ?.primary
+                              ),
+                            }}
                           >
                             {winnerCounts[fixture?.teams.home.id] || "0"}
                           </h3>
@@ -2473,16 +2476,14 @@ const FixturesOverView = ({ id, locale }: { id: number; locale: string }) => {
                           }}
                         >
                           <h3
-                            className={`text-[21px]  max-lg:text-[14px] max-lg:font-bold
-                              ${
-                                fixture?.lineups.length > 0
-                                  ? fixture?.lineups[1]?.team?.colors?.player
-                                      ?.primary === "text-[#ffffff]"
-                                    ? "text-black"
-                                    : "text-white"
-                                  : "text-black dark:text-white"
-                              }
-                              `}
+                            className="text-[21px]  max-lg:text-[14px] max-lg:font-bold
+                              "
+                            style={{
+                              color: getTextColor(
+                                fixture?.lineups[1]?.team?.colors?.player
+                                  ?.primary
+                              ),
+                            }}
                           >
                             {winnerCounts[fixture?.teams.away.id] || "0"}
                           </h3>
@@ -2661,12 +2662,9 @@ const FixturesOverView = ({ id, locale }: { id: number; locale: string }) => {
                         <h1
                           className="ml-5"
                           style={{
-                            color: `${
-                              fixture.lineups[0].team.colors.player.primary ===
-                              "ffffff"
-                                ? "black"
-                                : "white"
-                            }`,
+                            color: getTextColor(
+                              fixture?.lineups[0]?.team?.colors?.player?.primary
+                            ),
                           }}
                         >
                           {homeStats[9].value}
@@ -2687,12 +2685,9 @@ const FixturesOverView = ({ id, locale }: { id: number; locale: string }) => {
                         <h1
                           className="mr-5"
                           style={{
-                            color: `${
-                              fixture.lineups[1].team.colors.player.primary ===
-                              "ffffff"
-                                ? "black"
-                                : "white"
-                            }`,
+                            color: getTextColor(
+                              fixture?.lineups[1]?.team?.colors?.player?.primary
+                            ),
                           }}
                         >
                           {awayStats[9].value}
@@ -4928,16 +4923,12 @@ const FixturesOverView = ({ id, locale }: { id: number; locale: string }) => {
                           }}
                         >
                           <h3
-                            className={`text-[21px]  max-lg:text-[14px] max-lg:font-bold
-                              ${
-                                fixture?.lineups.length > 0
-                                  ? fixture?.lineups[0]?.team?.colors?.player
-                                      ?.primary === "text-[#ffffff]"
-                                    ? "text-black"
-                                    : "text-white"
-                                  : "text-black dark:text-white"
-                              }
-                              `}
+                            className="text-[21px]  max-lg:text-[14px] max-lg:font-bold"
+                            style={{
+                              color: getTextColor(
+                                fixture?.lineups[0]?.team?.colors?.player?.primary
+                              ),
+                            }}
                           >
                             {winnerCounts[fixture?.teams.home.id] || "0"}
                           </h3>
@@ -4981,16 +4972,12 @@ const FixturesOverView = ({ id, locale }: { id: number; locale: string }) => {
                           }}
                         >
                           <h3
-                            className={`text-[21px]  max-lg:text-[14px] max-lg:font-bold
-                              ${
-                                fixture?.lineups.length > 0
-                                  ? fixture?.lineups[1]?.team?.colors?.player
-                                      ?.primary === "text-[#ffffff]"
-                                    ? "text-black"
-                                    : "text-white"
-                                  : "text-black dark:text-white"
-                              }
-                              `}
+                            className="text-[21px]  max-lg:text-[14px] max-lg:font-bold"
+                            style={{
+                              color: getTextColor(
+                                fixture?.lineups[1]?.team?.colors?.player?.primary
+                              ),
+                            }}
                           >
                             {winnerCounts[fixture?.teams.away.id] || "0"}
                           </h3>

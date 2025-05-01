@@ -90,8 +90,6 @@ export default function TeamOverView({
   // http://localhost:3000/en/teams/40/liverpool/overview
 
   /**
-   * 1. 오버뷰, 테이블 카테고리의 스탠딩 ui의 팀이동 및 리그페이지 이동이 모두 적절히 잘 이동되는지 확인하기 () 
-   * 2. 1번 해결 후 스쿼드 페이지 완성하기
    * */
   useEffect(() => {
     const fetchData = async () => {
