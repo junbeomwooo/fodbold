@@ -13,7 +13,7 @@ import FormatLeagueOrTeamName from "@/lib/formatLeagueOrTeamName";
 import FormatMatchDate from "@/lib/formatMatchDate";
 
 // ...
-import { useEffect, useMemo, useState } from "react";
+import { Fragment, useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
@@ -986,9 +986,8 @@ export default function TeamOverView({
                       (transferIn?.length > 0 ? (
                         transferIn?.splice(0, 5)?.map((v: any, i: number) => {
                           return (
-                            <>
+                            <Fragment key={i}>
                               <tr
-                                key={i}
                                 className="align-middle h-[50px] cursor-pointer hover:bg-[#F5F5F5] dark:hover:bg-custom-lightDark"
                                 onClick={() => {
                                   router.push(
@@ -998,7 +997,7 @@ export default function TeamOverView({
                                   );
                                 }}
                               >
-                                <td className="h-[50px] py-4">
+                                <td className="h-[50px] py-4 w-2/5">
                                   <div className="flex gap-4 items-center h-[50px] ">
                                     <Image
                                       src={`https://media.api-sports.io/football/players/${v?.player?.id}.png`}
@@ -1010,10 +1009,10 @@ export default function TeamOverView({
                                     <span>{v?.player?.name}</span>
                                   </div>
                                 </td>
-                                <td className="h-[50px] align-middle py-4">
+                                <td className="h-[50px] align-middle py-4 w-1/5">
                                   {v?.transfer?.type}
                                 </td>
-                                <td className="h-[50px] align-middle py-4">
+                                <td className="h-[50px] align-middle py-4 w-1/5">
                                   <div className="flex items-center gap-4 h-[50px]">
                                     <Image
                                       src={v?.transfer?.teams?.out?.logo}
@@ -1024,14 +1023,18 @@ export default function TeamOverView({
                                     {v?.transfer?.teams?.out?.name}
                                   </div>
                                 </td>
-                                <td className="h-[50px] align-middle py-4">
+                                <td className="h-[50px] align-middle py-4 w-1/5">
                                   {v?.transfer?.date}
                                 </td>
                               </tr>
                               {5 > i + 1 && (
-                                <hr className="w-full border-1 border-solid absolute dark:border-custom-gray3" />
+                                <tr>
+                                  <td colSpan={4} className="p-0">
+                                    <div className="w-full h-[1px] bg-[#e5e5e5] dark:bg-custom-gray3" />
+                                  </td>
+                                </tr>
                               )}
-                            </>
+                            </Fragment>
                           );
                         })
                       ) : (
@@ -1043,9 +1046,8 @@ export default function TeamOverView({
                       (transferOut?.length > 0 ? (
                         transferOut?.splice(0, 5)?.map((v: any, i: number) => {
                           return (
-                            <>
+                            <Fragment key={i}>
                               <tr
-                                key={i}
                                 className="align-middle h-[50px] cursor-pointer hover:bg-[#F5F5F5] dark:hover:bg-custom-lightDark"
                                 onClick={() => {
                                   router.push(
@@ -1055,7 +1057,7 @@ export default function TeamOverView({
                                   );
                                 }}
                               >
-                                <td className="h-[50px] py-4">
+                                <td className="h-[50px] py-4 w-2/5">
                                   <div className="flex gap-4 items-center h-[50px] ">
                                     <Image
                                       src={`https://media.api-sports.io/football/players/${v?.player?.id}.png`}
@@ -1067,10 +1069,10 @@ export default function TeamOverView({
                                     <span>{v?.player?.name}</span>
                                   </div>
                                 </td>
-                                <td className="h-[50px] align-middle py-4">
+                                <td className="h-[50px] align-middle py-4 w-1/5">
                                   {v?.transfer?.type}
                                 </td>
-                                <td className="h-[50px] align-middle py-4">
+                                <td className="h-[50px] align-middle py-4 w-1/5">
                                   <div className="flex items-center gap-4 h-[50px]">
                                     <Image
                                       src={v?.transfer?.teams?.in?.logo}
@@ -1081,14 +1083,18 @@ export default function TeamOverView({
                                     {v?.transfer?.teams?.in?.name}
                                   </div>
                                 </td>
-                                <td className="h-[50px] align-middle py-4">
+                                <td className="h-[50px] align-middle py-4 w-1/5">
                                   {v?.transfer?.date}
                                 </td>
                               </tr>
                               {5 > i + 1 && (
-                                <hr className="w-full border-1 border-solid absolute dark:border-custom-gray3" />
+                                <tr>
+                                  <td colSpan={4} className="p-0">
+                                    <div className="w-full h-[1px] bg-[#e5e5e5] dark:bg-custom-gray3" />
+                                  </td>
+                                </tr>
                               )}
-                            </>
+                            </Fragment>
                           );
                         })
                       ) : (
@@ -1107,9 +1113,8 @@ export default function TeamOverView({
                     (transferIn?.length > 0 ? (
                       transferIn?.slice(0, 5)?.map((v: any, i: number) => {
                         return (
-                          <>
+                          <Fragment key={i}>
                             <div
-                              key={i}
                               className="w-[300px] text-xs m-auto mt-10 mb-6 hover:opacity-70 cursor-pointer"
                               onClick={() => {
                                 router.push(
@@ -1147,7 +1152,7 @@ export default function TeamOverView({
                             {5 > i + 1 && (
                               <hr className="dark:border-custom-gray3" />
                             )}
-                          </>
+                          </Fragment>
                         );
                       })
                     ) : (
@@ -1159,9 +1164,8 @@ export default function TeamOverView({
                     (transferOut?.length > 0 ? (
                       transferOut?.slice(0, 5)?.map((v: any, i: number) => {
                         return (
-                          <>
+                          <Fragment key={i}>
                             <div
-                              key={i}
                               className="w-[300px] text-xs m-auto mt-10 mb-6 hover:opacity-70 cursor-pointer"
                               onClick={() => {
                                 router.push(
@@ -1199,7 +1203,7 @@ export default function TeamOverView({
                             {5 > i + 1 && (
                               <hr className="dark:border-custom-gray3" />
                             )}
-                          </>
+                          </Fragment>
                         );
                       })
                     ) : (

@@ -7,6 +7,7 @@ import { useTranslations } from "next-intl";
 import { getTeamSquad, getTeamInfo } from "@/lib/features/teamsSlice";
 import { getAllLeaguesByTeam } from "@/lib/features/leagueSlice";
 import Image from "next/image";
+import { Fragment } from "react";
 
 import TeamHeader from "./header/teamHeader";
 import ColorThief from "colorthief";
@@ -43,8 +44,7 @@ export default function TeamSquad({
   const firstRender = useRef(true);
 
   // http://localhost:3000/en/teams/47/Tottenham/squad
-  // 2. teamSqaud, teamOverView 테이블 부분 에러 고치기
-  // 3. 마저 완성하고 transfer 페이지도 만들기
+  //  마저 완성하고 transfer 페이지도 만들기
 
   useEffect(() => {
     if (firstRender.current) {
@@ -71,7 +71,7 @@ export default function TeamSquad({
   function getTextColor([r, g, b]: [number, number, number]): string {
     // YIQ 알고리즘: 밝기를 기준으로 텍스트 색 결정
     const brightness = (r * 299 + g * 587 + b * 114) / 1000;
-    return brightness > 128 ? 'black' : 'white';
+    return brightness > 128 ? "black" : "white";
   }
 
   return (
@@ -123,7 +123,7 @@ export default function TeamSquad({
                 {players?.length > 0 ? (
                   players?.map((v: any, i: number) => {
                     return (
-                      <>
+                      <Fragment key={i}>
                         <tr
                           key={i}
                           className="align-middle h-[50px] cursor-pointer hover:bg-[#F5F5F5] dark:hover:bg-custom-lightDark"
@@ -156,16 +156,19 @@ export default function TeamSquad({
                           <td className="h-[50px] align-middle py-4 text-center w-1/5 hidden md:table-cell ">
                             {t(v?.position)}
                           </td>
+
                           <td className="h-[50px] align-middle py-4 text-center w-1/5">
                             {extrationColor && v?.number ? (
-                              <div
-                                className="w-6 h-6 rounded-full flex items-center justify-center"
-                                style={{
-                                  backgroundColor: `rgb(${extrationColor[0]}, ${extrationColor[1]}, ${extrationColor[2]})`,
-                                  color: getTextColor(extrationColor),
-                                }}
-                              >
-                                {v?.number}
+                              <div className="flex justify-center items-center h-full">
+                                <div
+                                  className="w-6 h-6 rounded-full flex items-center justify-center"
+                                  style={{
+                                    backgroundColor: `rgb(${extrationColor[0]}, ${extrationColor[1]}, ${extrationColor[2]})`,
+                                    color: getTextColor(extrationColor),
+                                  }}
+                                >
+                                  {v?.number}
+                                </div>
                               </div>
                             ) : (
                               <div className="w-6 h-6 rounded-full flex items-center justify-center">
@@ -173,18 +176,25 @@ export default function TeamSquad({
                               </div>
                             )}
                           </td>
+
                           <td className="h-[50px] align-middle py-4 text-center w-1/5">
                             {v?.age}
                           </td>
                         </tr>
                         {players?.length > i + 1 && (
-                          <hr className="w-full border-1 border-solid absolute dark:border-custom-gray3" />
+                          <tr>
+                            <td colSpan={4} className="p-0">
+                              <div className="w-full h-[1px] bg-[#e5e5e5] dark:bg-custom-gray3" />
+                            </td>
+                          </tr>
                         )}
-                      </>
+                      </Fragment>
                     );
                   })
                 ) : (
-                  <h1 className="py-6 text-sm">{t("noTransfer")}</h1>
+                  <tr>
+                    <td className="py-6 text-sm">{t("noTransfer")}</td>
+                  </tr>
                 )}
               </tbody>
             </table>
