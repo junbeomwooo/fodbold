@@ -44,7 +44,6 @@ export default function TeamSquad({
   const firstRender = useRef(true);
 
   // http://localhost:3000/en/teams/47/Tottenham/squad
-  //  마저 완성하고 transfer 페이지도 만들기
 
   useEffect(() => {
     if (firstRender.current) {

@@ -140,6 +140,21 @@ export default function TeamHeader({
             <></>
           )}
         </div>
+
+                {/* transfer */}
+                <div className="flex flex-col">
+          <Link
+            href={`/${locale}/teams/${id}/${name}/transfer`}
+            className="hover:no-underline  hover:text-custom-gray tracking-wide ml-6"
+          >
+            {t("transfer")}
+          </Link>
+          {pathname === `/${locale}/teams/${id}/${name}/transfer` ? (
+            <div className="bg-green-600 w-auto h-1 mt-6 rounded-full ml-6"></div>
+          ) : (
+            <></>
+          )}
+        </div>
       </div>
     </div>
   );
