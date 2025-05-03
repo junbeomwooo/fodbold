@@ -32,10 +32,6 @@ export default function TeamTransfer({
   const { leagues }: { leagues: any } = useAppSelector(
     (state) => state.leagueSlice
   );
-  const { location }: any = useAppSelector((state) => state.locationSlice);
-
-  // A state value useed for rendering with data obtained from Data fetching by useEffect;
-  const [leagueNational, setLeagueNational]: any = useState(null);
 
   const [transferFilter, setTransferFilter]: any = useState("playerIn");
 
@@ -55,40 +51,42 @@ export default function TeamTransfer({
         firstRender.current = false; // after first rendering, it will chagne useRef value as fasle.
 
         dispatch(getTeamInfo({ team: id }));
-        dispatch(getAllLeaguesByTeam({ team: id })).then((payload) => {
-          const leagues = payload?.payload;
-          let nationalLeagueObj = leagues?.filter(
-            (league: any) =>
-              league?.league?.type === "League" &&
-              league?.seasons?.some((v: any) => v?.current === true)
-          );
-
-          // if there is no league type data, then find cup type data
-          if (nationalLeagueObj.length === 0) {
-            nationalLeagueObj =
-              leagues?.filter(
-                (league: any) =>
-                  league?.league?.type === "Cup" &&
-                  league?.seasons?.some((v: any) => v?.current === true)
-              ) || [];
-          }
-
-          // find most recent league
-          const sortedNationalLeagues = [...nationalLeagueObj].sort(
-            (a: any, b: any) => {
-              const aLatestSeason = a.seasons?.at(-1)?.year || 0;
-              const bLatestSeason = b.seasons?.at(-1)?.year || 0;
-              return bLatestSeason - aLatestSeason;
-            }
-          );
-
-          setLeagueNational(sortedNationalLeagues[0]);
-
-          dispatch(getTransferInfoByTeam({ team: id }));
-        });
+        dispatch(getAllLeaguesByTeam({ team: id }));
+        dispatch(getTransferInfoByTeam({ team: id }));
       }
     }
   }, [dispatch, fixture, id, leagues, , teamInfo, transfer]);
+
+  /** data for using */
+
+  let nationalLeagueObj = leagues?.filter(
+    (league: any) =>
+      league?.league?.type === "League" &&
+      league?.seasons?.some((v: any) => v?.current === true)
+  );
+
+  // if there is no league type data, then find cup type data
+  if (nationalLeagueObj?.length === 0) {
+    nationalLeagueObj =
+      leagues?.filter(
+        (league: any) =>
+          league?.league?.type === "Cup" &&
+          league?.seasons?.some((v: any) => v?.current === true)
+      ) || [];
+  }
+  console.log(nationalLeagueObj);
+
+  // // find most recent league
+  const sortedNationalLeagues = Array.isArray(nationalLeagueObj) ?[...nationalLeagueObj].sort(
+    (a: any, b: any) => {
+      const aLatestSeason = a.seasons?.at(-1)?.year || 0;
+      const bLatestSeason = b.seasons?.at(-1)?.year || 0;
+      return bLatestSeason - aLatestSeason;
+    }
+  ): [];
+  console.log(sortedNationalLeagues);
+
+  const leagueNational = sortedNationalLeagues[0];
 
   // Find player transfer history in lastest season
   const filterTransfer = transfer
@@ -145,11 +143,11 @@ export default function TeamTransfer({
       );
     });
 
-    console.log(transfer);
-    console.log(leagueNational);
-    console.log(filterTransfer);
-    console.log(transferIn);
-    console.log(transferOut);
+  console.log(transfer);
+  console.log(leagueNational);
+  console.log(filterTransfer);
+  console.log(transferIn);
+  console.log(transferOut);
 
   return (
     <div className="w-full">

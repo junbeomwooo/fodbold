@@ -141,8 +141,8 @@ export default function TeamHeader({
           )}
         </div>
 
-                {/* transfer */}
-                <div className="flex flex-col">
+        {/* transfer */}
+        <div className="flex flex-col">
           <Link
             href={`/${locale}/teams/${id}/${name}/transfer`}
             className="hover:no-underline  hover:text-custom-gray tracking-wide ml-6"
