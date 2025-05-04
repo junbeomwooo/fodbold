@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "@/lib/storeHooks";
 import { useRouter } from "next/navigation";
 import FormatLeagueOrTeamName from "@/lib/formatLeagueOrTeamName";
@@ -81,6 +81,24 @@ export default function PlayerOverview({
   console.group("trophies");
   console.log(trophies);
   console.groupEnd();
+
+  const trophiesGroupByCountry = trophies
+    ? Object.entries(
+        trophies?.reduce((acc: any, v: any) => {
+          const key = v?.country;
+
+          if (!acc[key]) {
+            acc[key] = [];
+          }
+
+          acc[key].push(v);
+
+          return acc;
+        }, [])
+      )
+    : null;
+
+  console.log(trophiesGroupByCountry);
 
   return (
     <div className="w-full flex justify-center">
@@ -274,9 +292,9 @@ export default function PlayerOverview({
       </div>
 
       {/* Career, Trophies */}
-      <div className="w-[700px] h-full bg-white border-slate-200 border border-solid rounded-xl py-5 ml-6 dark:bg-custom-dark dark:border-none">
+      <div className="w-[700px] h-full">
         {/* Career */}
-        <div>
+        <div className="bg-white border-slate-200 border border-solid rounded-xl py-5 ml-6 dark:bg-custom-dark dark:border-none">
           {/* Header*/}
           <div className="flex items-center justify-between px-5 mt-2">
             <div className="w-full">
@@ -292,7 +310,6 @@ export default function PlayerOverview({
             const oldestSeason =
               v?.seasons.length > 0 ? Math.min(...v?.seasons) : null;
 
-            console.log(v);
             return (
               <div
                 key={i}
@@ -329,6 +346,54 @@ export default function PlayerOverview({
               </div>
             );
           })}
+        </div>
+
+        {/* Trophies */}
+        <div className="bg-white border-slate-200 border border-solid rounded-xl py-5 ml-6 dark:bg-custom-dark dark:border-none mt-6">
+          {/* Header*/}
+          <div className="flex items-center justify-between px-5 mt-2">
+            <div className="w-full">
+              <h1 className="text-base font-medium mb-4">Trophies</h1>
+            </div>
+          </div>
+
+          {/* Content */}
+          {trophies &&
+            trophiesGroupByCountry?.map((country: any, i: number) => {
+              // console.log(country);
+
+              return (
+                <div
+                  key={i}
+                  className="text-sm border-slate-200 border border-solid ark:bg-custom-dark dark:border-none mx-4 my-4 rounded-xl"
+                >
+                  <div className="bg-slate-100 py-3 px-3 rounded-t-xl dark:bg-custom-lightDark">
+                    <h1>{country[0]}</h1>
+                  </div>
+                  <div>
+                    {country[1]?.map((v: any, i: number) => {
+                      console.log(v);
+                      return (
+                        <Fragment key={i}>
+                          <div className="flex gap-3 px-4 py-3 text-[#4A4A4A] justify-between dark:text-white">
+                            <div>
+                              <h3>{v?.league}</h3>
+                              <h3 className="mt-2 text-xs">{v?.season}</h3>
+                            </div>
+                            <div>
+                              <h3>{v?.place}</h3>
+                            </div>
+                          </div>
+                          {country[1]?.length > i + 1 && (
+                            <hr className="dark:border-[#464646] " />
+                          )}
+                        </Fragment>
+                      );
+                    })}
+                  </div>
+                </div>
+              );
+            })}
         </div>
       </div>
     </div>

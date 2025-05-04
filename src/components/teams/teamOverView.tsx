@@ -1212,8 +1212,6 @@ export default function TeamOverView({
                 </div>
               </div>
 
-              {/* 이 버튼 잘작동하고 올바른 페이지로 이동하는지 확인 후 선수 페이지 마저 구현하기ㄹ
-               */}
               {/* button */}
               <div>
                 <hr className="dark:border-custom-gray3" />
