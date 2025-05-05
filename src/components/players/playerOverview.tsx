@@ -13,6 +13,7 @@ import {
 
 import Image from "next/image";
 import triangle from "@/../public/img/triangle.png";
+import noImage from "@/../public/img/noimage.png";
 
 import { useTranslations } from "next-intl";
 
@@ -44,7 +45,9 @@ export default function PlayerOverview({
   const playerID = parseInt(id);
 
   /** State value */
-  const [selectedYear, setSelectedYear] = useState<number>(0);
+  const [selectedYear, setSelectedYear] = useState<number>(
+    new Date().getFullYear()
+  );
 
   /** image url */
   const FOOTBALL_IMAGE = "https://media.api-sports.io/football";
@@ -53,34 +56,18 @@ export default function PlayerOverview({
   // http://localhost:3000/en/players/306/Mohamed-Salah
   // http://localhost:3000/en/players/186/Son-Heung-Min
 
-  // useEffect(() => {
-  //   dispatch(getTrophiesByPlayer({id: playerID}));
-  //   dispatch(getTeamsByPlayer({ id: playerID })).then((payload) => {
-  //     const lastestSeason = payload?.payload[0]?.seasons[0];
-  //     setSelectedYear(lastestSeason);
-  //     dispatch(getPlayerStatistics({ id: playerID, season: lastestSeason }));
-  //   });
-  // }, [dispatch, playerID]);
+  useEffect(() => {
+    dispatch(getTrophiesByPlayer({ id: playerID }));
+    dispatch(getTeamsByPlayer({ id: playerID })).then((payload) => {
+      const lastestSeason = payload?.payload[0]?.seasons[0];
+      setSelectedYear(lastestSeason);
+      dispatch(getPlayerStatistics({ id: playerID, season: lastestSeason }));
+    });
+  }, [dispatch, playerID]);
 
   /** data for using */
   const playerStatics = statics && statics[0];
   const playerTeams = teams && teams[0];
-
-  console.group("season");
-  console.log(season);
-  console.groupEnd();
-
-  console.group("statics");
-  console.log(playerStatics);
-  console.groupEnd();
-
-  console.group("teams");
-  console.log(teams);
-  console.groupEnd();
-
-  console.group("trophies");
-  console.log(trophies);
-  console.groupEnd();
 
   const trophiesGroupByCountry = trophies
     ? Object.entries(
@@ -98,7 +85,32 @@ export default function PlayerOverview({
       )
     : null;
 
-  console.log(playerTeams);
+  const seasonsByTeamData = teams?.flatMap((team: any) => team.seasons);
+  const allSeasons = Array.from(new Set(seasonsByTeamData)).sort(
+    (a: any, b: any) => {
+      return b - a;
+    }
+  );
+
+  console.group("season");
+  console.log(season);
+  console.groupEnd();
+
+  console.group("playerStatics");
+  console.log(playerStatics);
+  console.groupEnd();
+
+  console.group("teams");
+  console.log(teams);
+  console.groupEnd();
+
+  console.group("trophies");
+  console.log(trophies);
+  console.groupEnd();
+
+  console.group("allSeasons");
+  console.log(allSeasons);
+  console.groupEnd();
 
   return (
     <div className="w-full flex justify-center">
@@ -124,9 +136,18 @@ export default function PlayerOverview({
                     width={20}
                     height={20}
                   />
-                  <h1 className="text-base text-custom-gray cursor-pointer hover:underline" onClick={() => {
-                    router.push(`/${locale}/teams/${playerTeams?.team?.id}/${FormatLeagueOrTeamName(playerTeams?.team?.name)}/overview`)
-                  }}>
+                  <h1
+                    className="text-base text-custom-gray cursor-pointer hover:underline"
+                    onClick={() => {
+                      router.push(
+                        `/${locale}/teams/${
+                          playerTeams?.team?.id
+                        }/${FormatLeagueOrTeamName(
+                          playerTeams?.team?.name
+                        )}/overview`
+                      );
+                    }}
+                  >
                     {playerTeams?.team?.name}
                   </h1>
                 </div>
@@ -161,6 +182,8 @@ export default function PlayerOverview({
           </div> */}
           </div>
         </div>
+
+        {/* player Info */}
         <div className="w-full h-auto bg-white rounded-b-xl px-8 pt-8  border-slate-200 border border-solid dark:bg-custom-dark dark:border-0 max-sm:px-4 pb-8 flex gap-10">
           {/* left */}
           <div className="w-1/2 h-auto ">
@@ -290,6 +313,79 @@ export default function PlayerOverview({
               </div>
             </div>
           </div>
+        </div>
+
+        {/* player statics */}
+        <div className="w-full bg-white rounded-xl mt-6 dark:bg-custom-dark border-slate-200 border border-solid dark:border-0">
+          {/* title */}
+          <div className="text-base py-6 px-8 flex items-center gap-5">
+            {/* logo */}
+            <Image
+              src={
+                playerStatics?.statistics[0]?.league?.logo ||
+                playerStatics?.statistics[0]?.team?.logo ||
+                noImage
+              }
+              alt={
+                playerStatics?.statistics[0]?.league?.name ||
+                playerStatics?.statistics[0]?.team?.name ||
+                "team"
+              }
+              width={20}
+              height={20}
+              className="w-[20px] h-[20px] rounded-full"
+            />
+
+            {/* selectYear */}
+            <div className="flex items-center cursor-pointer hover:opacity-60">
+              <select
+                onChange={(e) => {
+                  setSelectedYear(parseInt(e.currentTarget.value));
+                }}
+                value={selectedYear}
+                className="apperance-none"
+                id="season"
+              >
+                {allSeasons?.map((v: any, i: number) => {
+                  console.log(v);
+                  return (
+                    <option key={i} value={v}>
+                      {`${v}/${v+1}`}
+                    </option>
+                  );
+                })}
+              </select>
+                <label htmlFor="season">
+              <Image
+                src={triangle}
+                alt="change date"
+                width={14}
+                height={14}
+                style={{ width: "14px", height: "14px" }}
+                className="ml-3 dark:invert"
+              />
+              </label>
+            </div>
+
+            <div className="w-[1.1px] h-4 bg-slate-300 mx-2"></div>
+
+            {/* league name */}
+            <div className="flex items-center cursor-pointer hover:opacity-60">
+              <h4 className="text-base font-medium">
+                {playerStatics?.statistics[0]?.league?.name}
+              </h4>
+              <Image
+                src={triangle}
+                alt="change date"
+                width={14}
+                height={14}
+                style={{ width: "14px", height: "14px" }}
+                className="ml-3 dark:invert"
+              />
+            </div>
+          </div>
+
+          <hr className="dark:border-[#464646] " />
         </div>
       </div>
 
