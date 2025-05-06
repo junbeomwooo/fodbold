@@ -1,6 +1,6 @@
 "use client";
 
-import { Fragment, useEffect, useState } from "react";
+import { Fragment, useEffect, useState, useRef } from "react";
 import { useAppDispatch, useAppSelector } from "@/lib/storeHooks";
 import { useRouter } from "next/navigation";
 import FormatLeagueOrTeamName from "@/lib/formatLeagueOrTeamName";
@@ -44,7 +44,7 @@ export default function PlayerOverview({
   );
   const playerID = parseInt(id);
 
-  /** State value */
+  /** State for year */
   const [selectedYear, setSelectedYear] = useState<number>(
     new Date().getFullYear()
   );
@@ -56,14 +56,25 @@ export default function PlayerOverview({
   // http://localhost:3000/en/players/306/Mohamed-Salah
   // http://localhost:3000/en/players/186/Son-Heung-Min
 
+  const firstRender = useRef(false);
+
   useEffect(() => {
-    dispatch(getTrophiesByPlayer({ id: playerID }));
-    dispatch(getTeamsByPlayer({ id: playerID })).then((payload) => {
-      const lastestSeason = payload?.payload[0]?.seasons[0];
-      setSelectedYear(lastestSeason);
-      dispatch(getPlayerStatistics({ id: playerID, season: lastestSeason }));
-    });
-  }, [dispatch, playerID]);
+    // When its first rendering, recieve Trophies, Teams, PlayerStatics data
+    if (!firstRender.current) {
+      firstRender.current = true;
+      dispatch(getTrophiesByPlayer({ id: playerID }));
+      dispatch(getTeamsByPlayer({ id: playerID })).then((payload) => {
+        const lastestSeason =
+          payload && payload?.payload[0] && payload?.payload[0]?.seasons[0];
+        setSelectedYear(lastestSeason);
+        dispatch(getPlayerStatistics({ id: playerID, season: lastestSeason }));
+      });
+      return;
+    } else {
+      // When selectYear value change receive new data
+      dispatch(getPlayerStatistics({ id: playerID, season: selectedYear }));
+    }
+  }, [dispatch, playerID, selectedYear]);
 
   /** data for using */
   const playerStatics = statics && statics[0];
@@ -92,6 +103,16 @@ export default function PlayerOverview({
     }
   );
 
+  /** State for League Name */
+  const [selectedLeague, setSelectLeague] = useState(
+    playerStatics?.statistics[0]?.league?.name || ""
+  );
+
+  // Renew data based on selectedLeague value
+  const staticsData = playerStatics?.statistics?.filter((v: any) => {
+    return selectedLeague === v?.league?.name;
+  });
+
   console.group("season");
   console.log(season);
   console.groupEnd();
@@ -110,6 +131,10 @@ export default function PlayerOverview({
 
   console.group("allSeasons");
   console.log(allSeasons);
+  console.groupEnd();
+
+  console.group("staticsData");
+  console.log(staticsData);
   console.groupEnd();
 
   return (
@@ -343,37 +368,58 @@ export default function PlayerOverview({
                   setSelectedYear(parseInt(e.currentTarget.value));
                 }}
                 value={selectedYear}
-                className="apperance-none"
+                className="appearance-none"
                 id="season"
               >
                 {allSeasons?.map((v: any, i: number) => {
-                  console.log(v);
                   return (
                     <option key={i} value={v}>
-                      {`${v}/${v+1}`}
+                      {`${v}/${v + 1}`}
                     </option>
                   );
                 })}
               </select>
-                <label htmlFor="season">
-              <Image
-                src={triangle}
-                alt="change date"
-                width={14}
-                height={14}
-                style={{ width: "14px", height: "14px" }}
-                className="ml-3 dark:invert"
-              />
+              <label htmlFor="season">
+                <Image
+                  src={triangle}
+                  alt="change date"
+                  width={14}
+                  height={14}
+                  style={{ width: "14px", height: "14px" }}
+                  className="ml-3 dark:invert"
+                />
               </label>
             </div>
 
             <div className="w-[1.1px] h-4 bg-slate-300 mx-2"></div>
 
+            {/* laague select 잘 작동하는지 확인하기, 이후 선택한 리그와 같은 값을 출력시키고 리그 이름값이 변경될때 해당 데이터 값도 변경된 값으로 변경하기 */}
+
             {/* league name */}
             <div className="flex items-center cursor-pointer hover:opacity-60">
-              <h4 className="text-base font-medium">
-                {playerStatics?.statistics[0]?.league?.name}
-              </h4>
+              <select
+                onChange={(e) => {
+                  setSelectLeague(e.currentTarget.value);
+                }}
+                value={selectedLeague}
+                className="appearance-none text-base font-medium"
+                id="season"
+              >
+                {playerStatics?.statistics?.map((v: any, i: number) => {
+                  console.log(v?.league?.name);
+                  console.log(typeof v?.league?.name);
+                  console.log(selectedLeague);
+                  console.log(typeof selectedLeague);
+                  return (
+                    <option
+                      key={i}
+                      value={v?.league?.name ? v?.league?.name : v?.team?.name}
+                    >
+                      {v?.league?.name || v?.team?.name}
+                    </option>
+                  );
+                })}
+              </select>
               <Image
                 src={triangle}
                 alt="change date"
@@ -386,6 +432,9 @@ export default function PlayerOverview({
           </div>
 
           <hr className="dark:border-[#464646] " />
+          <div className="py-6 px-8 ">
+            <h1></h1>
+          </div>
         </div>
       </div>
 
