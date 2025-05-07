@@ -58,11 +58,15 @@ export default function PlayerOverview({
 
   const firstRender = useRef(false);
 
+  /** 네트워크 페칭이 몇번되는지 확인하고 적절히 조절하기 
+   *  이 후 첫 렌더링시 selectLeague 가 잘 작동안하는 것도 수정하기 (121~128 라인)
+   *  */ 
+
   useEffect(() => {
     // When its first rendering, recieve Trophies, Teams, PlayerStatics data
     if (!firstRender.current) {
       firstRender.current = true;
-      dispatch(getTrophiesByPlayer({ id: playerID }));
+      // dispatch(getTrophiesByPlayer({ id: playerID }));
       dispatch(getTeamsByPlayer({ id: playerID })).then((payload) => {
         const lastestSeason =
           payload && payload?.payload[0] && payload?.payload[0]?.seasons[0];
@@ -105,13 +109,24 @@ export default function PlayerOverview({
 
   /** State for League Name */
   const [selectedLeague, setSelectLeague] = useState(
-    playerStatics?.statistics[0]?.league?.name || ""
+    playerStatics?.statistics[0]?.league?.id
   );
 
   // Renew data based on selectedLeague value
   const staticsData = playerStatics?.statistics?.filter((v: any) => {
-    return selectedLeague === v?.league?.name;
-  });
+    return selectedLeague === v?.league?.id;
+  })[0];
+
+  
+  // const firstRender2 = useRef(false);
+
+  // useEffect(() => {
+  //   if(!firstRender2.current) {
+  //     firstRender.current = true;
+  //     setSelectLeague(playerStatics?.statistics[0]?.league?.id);
+  //   }
+  // }, [playerStatics]);
+
 
   console.group("season");
   console.log(season);
@@ -178,33 +193,6 @@ export default function PlayerOverview({
                 </div>
               </div>
             </div>
-            {/* <div className="relative">
-            <select
-              className="border border-black rounded-full text-xsm p-1.5 font-medium appearance-none pr-5 pl-3 dark:bg-custom-dark dark:border-custom-gray2"
-              onChange={(e) => {
-                setSelectedYear(parseInt(e.currentTarget.value));
-              }}
-              value={selectedYear}
-            >
-              {season?.map((v: any, i: number) => {
-                return (
-                  <option key={i} value={v?.year}>
-                    {`${v?.year}/${v?.year + 1}`}
-                  </option>
-                );
-              })}
-            </select>
-            <span>
-              <Image
-                src={triangle}
-                alt="change date"
-                width={14}
-                height={14}
-                style={{ width: "14px", height: "14px" }}
-                className={`ml-3 absolute top-1.5 right-1.5 dark:invert`}
-              />
-            </span>
-          </div> */}
           </div>
         </div>
 
@@ -403,37 +391,36 @@ export default function PlayerOverview({
                 }}
                 value={selectedLeague}
                 className="appearance-none text-base font-medium"
-                id="season"
+                id="league"
               >
                 {playerStatics?.statistics?.map((v: any, i: number) => {
-                  console.log(v?.league?.name);
-                  console.log(typeof v?.league?.name);
-                  console.log(selectedLeague);
-                  console.log(typeof selectedLeague);
                   return (
-                    <option
-                      key={i}
-                      value={v?.league?.name ? v?.league?.name : v?.team?.name}
-                    >
+                    <option key={i} value={v?.league?.id}>
                       {v?.league?.name || v?.team?.name}
                     </option>
                   );
                 })}
               </select>
-              <Image
-                src={triangle}
-                alt="change date"
-                width={14}
-                height={14}
-                style={{ width: "14px", height: "14px" }}
-                className="ml-3 dark:invert"
-              />
+
+              <label htmlFor="league">
+                <Image
+                  src={triangle}
+                  alt="change date"
+                  width={14}
+                  height={14}
+                  style={{ width: "14px", height: "14px" }}
+                  className="ml-3 dark:invert"
+                />
+              </label>
             </div>
           </div>
 
           <hr className="dark:border-[#464646] " />
           <div className="py-6 px-8 ">
-            <h1></h1>
+            <h1>
+              {staticsData?.team?.name}
+              {staticsData?.games?.lineups}
+            </h1>
           </div>
         </div>
       </div>
