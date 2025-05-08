@@ -311,6 +311,9 @@
     "height": "Height",
     "weight": "Weight",
     "age": "Age",
-    "date": "Date"
+    "date": "Date",
+    "career": "Career",
+    "trophies": "Trophies",
+    "noResults":"No results found"
   }
 }

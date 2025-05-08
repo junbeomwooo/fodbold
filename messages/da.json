@@ -313,6 +313,9 @@
     "height": "Højde",
     "weight": "Vægt",
     "age": "Alder",
-    "date": "Fødselsdato"
+    "date": "Fødselsdato",
+    "career": "Karriere",
+    "trophies": "Trofæer",
+    "noResults": "Ingen resultater fundet"
   }
 }

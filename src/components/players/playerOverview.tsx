@@ -56,29 +56,14 @@ export default function PlayerOverview({
   // http://localhost:3000/en/players/306/Mohamed-Salah
   // http://localhost:3000/en/players/186/Son-Heung-Min
 
-  const firstRender = useRef(false);
-
-  /** 네트워크 페칭이 몇번되는지 확인하고 적절히 조절하기 
-   *  이 후 첫 렌더링시 selectLeague 가 잘 작동안하는 것도 수정하기 (121~128 라인)
-   *  */ 
-
   useEffect(() => {
-    // When its first rendering, recieve Trophies, Teams, PlayerStatics data
-    if (!firstRender.current) {
-      firstRender.current = true;
-      // dispatch(getTrophiesByPlayer({ id: playerID }));
-      dispatch(getTeamsByPlayer({ id: playerID })).then((payload) => {
-        const lastestSeason =
-          payload && payload?.payload[0] && payload?.payload[0]?.seasons[0];
-        setSelectedYear(lastestSeason);
-        dispatch(getPlayerStatistics({ id: playerID, season: lastestSeason }));
-      });
-      return;
-    } else {
-      // When selectYear value change receive new data
-      dispatch(getPlayerStatistics({ id: playerID, season: selectedYear }));
-    }
-  }, [dispatch, playerID, selectedYear]);
+    dispatch(getTrophiesByPlayer({ id: playerID }));
+    dispatch(getTeamsByPlayer({ id: playerID })).then((payload) => {
+      const lastestSeason =
+        payload && payload?.payload[0] && payload?.payload[0]?.seasons[0];
+      dispatch(getPlayerStatistics({ id: playerID, season: lastestSeason }));
+    });
+  }, [dispatch, playerID]);
 
   /** data for using */
   const playerStatics = statics && statics[0];
@@ -112,21 +97,19 @@ export default function PlayerOverview({
     playerStatics?.statistics[0]?.league?.id
   );
 
-  // Renew data based on selectedLeague value
-  const staticsData = playerStatics?.statistics?.filter((v: any) => {
-    return selectedLeague === v?.league?.id;
-  })[0];
+  /** State for Statistics Data */
+  const [staticsData, setStaticsData] = useState(
+    playerStatics?.statistics[0]?.league?.id
+  );
 
-  
-  // const firstRender2 = useRef(false);
+  // UseEffect for rendering statics data, when its initial rendering
+  useEffect(() => {
+    const staticsData = playerStatics?.statistics?.filter((v: any) => {
+      return playerStatics?.statistics[0]?.league?.id === v?.league?.id;
+    })[0];
 
-  // useEffect(() => {
-  //   if(!firstRender2.current) {
-  //     firstRender.current = true;
-  //     setSelectLeague(playerStatics?.statistics[0]?.league?.id);
-  //   }
-  // }, [playerStatics]);
-
+    setStaticsData(staticsData);
+  }, [playerStatics]);
 
   console.group("season");
   console.log(season);
@@ -335,14 +318,10 @@ export default function PlayerOverview({
             {/* logo */}
             <Image
               src={
-                playerStatics?.statistics[0]?.league?.logo ||
-                playerStatics?.statistics[0]?.team?.logo ||
-                noImage
+                staticsData?.league?.logo || staticsData?.team?.logo || noImage
               }
               alt={
-                playerStatics?.statistics[0]?.league?.name ||
-                playerStatics?.statistics[0]?.team?.name ||
-                "team"
+                staticsData?.league?.name || staticsData?.team?.name || "team"
               }
               width={20}
               height={20}
@@ -354,6 +333,12 @@ export default function PlayerOverview({
               <select
                 onChange={(e) => {
                   setSelectedYear(parseInt(e.currentTarget.value));
+                  dispatch(
+                    getPlayerStatistics({
+                      id: playerID,
+                      season: Number(e.currentTarget.value),
+                    })
+                  );
                 }}
                 value={selectedYear}
                 className="appearance-none"
@@ -381,13 +366,19 @@ export default function PlayerOverview({
 
             <div className="w-[1.1px] h-4 bg-slate-300 mx-2"></div>
 
-            {/* laague select 잘 작동하는지 확인하기, 이후 선택한 리그와 같은 값을 출력시키고 리그 이름값이 변경될때 해당 데이터 값도 변경된 값으로 변경하기 */}
-
             {/* league name */}
             <div className="flex items-center cursor-pointer hover:opacity-60">
               <select
                 onChange={(e) => {
                   setSelectLeague(e.currentTarget.value);
+
+                  const staticsData = playerStatics?.statistics?.filter(
+                    (v: any) => {
+                      return Number(e.currentTarget.value) === v?.league?.id;
+                    }
+                  )[0];
+
+                  setStaticsData(staticsData);
                 }}
                 value={selectedLeague}
                 className="appearance-none text-base font-medium"
@@ -417,10 +408,14 @@ export default function PlayerOverview({
 
           <hr className="dark:border-[#464646] " />
           <div className="py-6 px-8 ">
-            <h1>
-              {staticsData?.team?.name}
-              {staticsData?.games?.lineups}
-            </h1>
+            {staticsData ? (
+              <h1>
+                {staticsData?.team?.name}
+                {staticsData?.games?.lineups}
+              </h1>
+            ) : (
+              <h1 className="text-sm py-3">{p("noResults")}</h1>
+            )}
           </div>
         </div>
       </div>
@@ -432,13 +427,13 @@ export default function PlayerOverview({
           {/* Header*/}
           <div className="flex items-center justify-between px-5 mt-2">
             <div className="w-full">
-              <h1 className="text-base font-medium">Career</h1>
+              <h1 className="text-base font-medium">{p("career")}</h1>
             </div>
           </div>
           <hr className="dark:border-[#464646] mt-6 mb-4" />
 
           {/* Content */}
-          {teams?.map((v: any, i: number) => {
+          { teams ? teams?.map((v: any, i: number) => {
             const recentSeason =
               v?.seasons.length > 0 ? Math.max(...v?.seasons) : null;
             const oldestSeason =
@@ -479,7 +474,9 @@ export default function PlayerOverview({
                 </div>
               </div>
             );
-          })}
+          }):<div className="px-5 py-3 text-sm">
+            {p("noResults")}
+            </div>}
         </div>
 
         {/* Trophies */}
@@ -487,14 +484,13 @@ export default function PlayerOverview({
           {/* Header*/}
           <div className="flex items-center justify-between px-5 mt-2">
             <div className="w-full">
-              <h1 className="text-base font-medium mb-4">Trophies</h1>
+              <h1 className="text-base font-medium mb-4">{p("trophies")}</h1>
             </div>
           </div>
 
           {/* Content */}
-          {trophies &&
+          {trophies ?
             trophiesGroupByCountry?.map((country: any, i: number) => {
-              // console.log(country);
 
               return (
                 <div
@@ -526,7 +522,9 @@ export default function PlayerOverview({
                   </div>
                 </div>
               );
-            })}
+            }):<div className="px-5 pt-8 pb-3  text-sm">
+            {p("noResults")}
+            </div>}
         </div>
       </div>
     </div>
