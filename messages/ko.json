@@ -315,6 +315,56 @@
     "date": "생년월일",
     "career": "커리어",
     "trophies": "트로피",
-    "noResults": "결과를 찾을 수 없습니다"
+    "noResults": "결과를 찾을 수 없습니다",
+
+    "games": "경기",
+    "rating": "평점",
+    "minutes": "출전 시간",
+    "appearences": "출전 수",
+    "lineups": "선발 출전",
+
+    "goals": "골",
+    "total": "총합",
+    "assists": "도움",
+    "saves": "세이브",
+    "conceded": "실점",
+
+    "shots": "슈팅",
+    "on": "유효 슈팅",
+
+    "passes": "패스",
+    "key": "키 패스",
+    "accuracy": "정확도",
+
+    "dribbles": "드리블",
+    "attempts": "시도",
+    "success": "성공",
+    "past": "상대한 선수 제침",
+
+    "tackles": "태클",
+    "blocks": "블로킹",
+    "interceptions": "가로채기",
+
+    "duels": "경합",
+    "won": "이긴 횟수",
+
+    "penalty": "페널티",
+    "missed": "실패",
+    "saved": "선방",
+    "scored": "성공",
+
+    "fouls": "파울",
+    "committed": "범함",
+    "drawn": "당함",
+
+    "cards": "카드",
+    "yellow": "경고",
+    "second Y": "두 번째 경고",
+    "red": "퇴장",
+
+    "substitutes": "교체",
+    "bench": "벤치",
+    "in": "들어옴",
+    "out": "나감"
   }
 }

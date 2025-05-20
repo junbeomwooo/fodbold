@@ -316,6 +316,56 @@
     "date": "Fødselsdato",
     "career": "Karriere",
     "trophies": "Trofæer",
-    "noResults": "Ingen resultater fundet"
+    "noResults": "Ingen resultater fundet",
+
+    "games": "Kampe",
+    "rating": "Bedømmelse",
+    "minutes": "Minutter",
+    "appearences": "Optrædener",
+    "lineups": "Startopstillinger",
+
+    "goals": "Mål",
+    "total": "I alt",
+    "assists": "Assists",
+    "saves": "Redninger",
+    "conceded": "Indkasseret",
+
+    "shots": "Skud",
+    "on": "På mål",
+
+    "passes": "Afløb",
+    "key": "Nøgler",
+    "accuracy": "Præcision",
+
+    "dribbles": "Driblinger",
+    "attempts": "Forsøg",
+    "success": "Succes",
+    "past": "Forbi modstander",
+
+    "tackles": "Tacklinger",
+    "blocks": "Blokeringer",
+    "interceptions": "Opsnapninger",
+
+    "duels": "Dueller",
+    "won": "Vundet",
+
+    "penalty": "Straffe",
+    "missed": "Brændt",
+    "saved": "Redninger",
+    "scored": "Scoret",
+
+    "fouls": "Frispark",
+    "committed": "Begået",
+    "drawn": "Erhvervet",
+
+    "cards": "Kort",
+    "yellow": "Gult",
+    "second Y": "Andet Gule",
+    "red": "Rødt",
+
+    "substitutes": "Udskiftninger",
+    "bench": "Bænk",
+    "in": "Ind",
+    "out": "Ud"
   }
 }
