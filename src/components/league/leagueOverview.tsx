@@ -38,7 +38,6 @@ export default function LeagueOverview({
   league: string;
   locale: string;
 }) {
-  const c = useTranslations("countries");
   const l = useTranslations("league");
   const g = useTranslations("general");
 

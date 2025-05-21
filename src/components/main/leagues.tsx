@@ -12,7 +12,6 @@ import { useRouter, usePathname, useParams } from "next/navigation";
 
 export default function Leagues({ leagueData }: { leagueData: any }) {
   const t = useTranslations("main");
-  const c = useTranslations("countries");
 
   const router = useRouter();
 
@@ -237,7 +236,7 @@ export default function Leagues({ leagueData }: { leagueData: any }) {
                     className="rounded-full"
                   />
                   <h1 className="text-xsm ml-5 dark:text-white">
-                    {c(countryName)}
+                    {countryName}
                   </h1>
                 </div>
                 <Image

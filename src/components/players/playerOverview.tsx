@@ -57,16 +57,15 @@ export default function PlayerOverview({
   // http://localhost:3000/en/players/186/Son-Heung-Min
   // http://localhost:3000/en/players/31354/G.-Vicario
 
-  // 플레이어 인포 오른쪽 부분 구현하기
   
-  // useEffect(() => {
-  //   dispatch(getTrophiesByPlayer({ id: playerID }));
-  //   dispatch(getTeamsByPlayer({ id: playerID })).then((payload) => {
-  //     const lastestSeason =
-  //       payload && payload?.payload[0] && payload?.payload[0]?.seasons[0];
-  //     dispatch(getPlayerStatistics({ id: playerID, season: lastestSeason }));
-  //   });
-  // }, [dispatch, playerID]);
+  useEffect(() => {
+    dispatch(getTrophiesByPlayer({ id: playerID }));
+    dispatch(getTeamsByPlayer({ id: playerID })).then((payload) => {
+      const lastestSeason =
+        payload && payload?.payload[0] && payload?.payload[0]?.seasons[0];
+      dispatch(getPlayerStatistics({ id: playerID, season: lastestSeason }));
+    });
+  }, [dispatch, playerID]);
 
   /** data for using */
   const playerStatics = statics && statics[0];
@@ -184,8 +183,7 @@ export default function PlayerOverview({
 
         {/* player Info */}
         <div className="w-full h-auto bg-white rounded-b-xl px-8 pt-8  border-slate-200 border border-solid dark:bg-custom-dark dark:border-0 max-sm:px-4 pb-8 flex gap-10">
-          {/* left */}
-          <div className="w-1/2 h-auto ">
+          <div className="w-full h-auto ">
             {/* country, position] */}
             <div className="flex text-[16px] gap-10">
               {/* country */}
@@ -247,12 +245,7 @@ export default function PlayerOverview({
               </div>
             </div>
           </div>
-          <div className="w-px bg-slate-200 h-auto mx-4 dark:bg-[#464646]" />
-
-          {/* right */}
-          <div className="w-1/2 h-auto ">
-
-          </div>
+          {/* <div className="w-px bg-slate-200 h-auto mx-4 dark:bg-[#464646]" /> */}
         </div>
 
         {/* player statics */}

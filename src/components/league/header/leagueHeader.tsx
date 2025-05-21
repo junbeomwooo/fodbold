@@ -12,7 +12,6 @@ import { usePathname } from "next/navigation";
 export default function LeagueHeader({id, seasons ,setSelectedYear, selectedYear ,locale, league, setSelectedYearChanged, onHandleSeasonChange }:{id:number , seasons:any, setSelectedYear:any, selectedYear:number, locale:string, league:string, setSelectedYearChanged?:any ,onHandleSeasonChange?:any}) {
   
   /** 번역 */
-  const c = useTranslations("countries");
   const l = useTranslations("league");
 
   /** url */
@@ -39,7 +38,7 @@ export default function LeagueHeader({id, seasons ,setSelectedYear, selectedYear
             <div className="flex flex-col justify-center ml-4">
               <h1 className="text-lg">{leagueName}</h1>
               <h1 className="text-xsm text-custom-gray ">
-                {leageCountry ? c(leageCountry) : "Unknown"}
+                {leageCountry ? leageCountry : "Unknown"}
               </h1>
             </div>
           </div>
