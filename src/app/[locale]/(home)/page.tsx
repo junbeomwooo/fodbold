@@ -2,6 +2,7 @@
 import League from "@/components/main/leagues";
 import Standing from "@/components/main/standing";
 import Fixtures from "@/components/main/fixtures";
+import Main from "@/components/main/main";
 
 export const FOOTBALL_URL = "https://v3.football.api-sports.io";
 export const FOOTBALL_IMAGE = "https://media.api-sports.io/football";
@@ -62,11 +63,5 @@ export default async function page({
   /** 전 세계 리그정보 가져오기 */
   const leagueData = (await getAllLeagues()).response;
 
-  return (
-    <div className="flex w-full h-full px-14 pt-28 dark:bg-black max-lg:block max-msm:px-4">
-      <League leagueData={leagueData} locale={locale} />
-      <Fixtures />
-      <Standing standing={standing} locale={locale} />
-    </div>
-  );
+  return <Main standing={standing} locale={locale} leagueData={leagueData} />;
 }
