@@ -1,18 +1,44 @@
-"use client"
+"use client";
 
 import React, { useEffect } from "react";
 import Image from "next/image";
 import { FOOTBALL_IMAGE } from "@/app/[locale]/(home)/page";
 import { useTranslations } from "next-intl";
+import { useRouter } from "next/navigation";
+import FormatLeagueOrTeamName from "@/lib/formatLeagueOrTeamName";
 
-export default function Standing({ stands }: { stands: any }) {
+export default function Standing({
+  standing,
+  locale,
+}: {
+  standing: any;
+  locale: string;
+}) {
   const t = useTranslations("main");
+  const g = useTranslations("general");
+
+  console.log(standing);
+  const [stands] = Array.isArray(standing?.league?.standings)
+    ? standing?.league?.standings
+    : [];
+  const router = useRouter();
+
+  // 팀선택시 useRouter를 통한 팀 오버뷰 페이지로 이동 구현 후 leagues페이지 페이지 이동 구현확인. 이 두개가 완료된다면 메인페이지시 image upstream error 해결
 
   return (
     <div className="w-1/5 max-xl:hidden">
       {/* epl */}
       <div className="w-full h-auto bg-white rounded-xl border-solid border border-slate-200 pb-6 dark:bg-custom-dark dark:border-0">
-        <div className="hover:cursor-pointer hover:opacity-60 w-full h-full flex pt-6 pb-5 px-7 justify-between">
+        <div
+          className="hover:cursor-pointer hover:opacity-60 w-full h-full flex pt-6 pb-5 px-7 justify-between"
+          onClick={() => {
+            router.push(
+              `/${locale}/leagues/${
+                standing?.league.id
+              }/${FormatLeagueOrTeamName(standing?.league?.name)}/overview`
+            );
+          }}
+        >
           <div>
             <h1 className="text-base font-medium dark:text-custom-green">
               {t("premier")}
@@ -43,50 +69,58 @@ export default function Standing({ stands }: { stands: any }) {
           </div>
         </div>
         <div className="mt-3 flex flex-col">
-          {stands.map((v: any, i: any) => {
-            // 승급
-            const champions = "Champions League";
-            const europa = "Europa League";
-            const conference =
-              "Europa Conference League";
-            // 강등
-            const relegation = "Relegation";
-            return (
-              <div
-                key={i}
-                className="w-full flex justify-between py-2  hover:cursor-pointer  hover:bg-slate-100 dark:hover:bg-zinc-700"
-              >
-                {v.description &&
-                v.description.includes(relegation) === true ? (
-                  <div className="w-0.5 h-5 bg-red-500 absolute" />
-                ) : v.description && v.description.includes(champions) === true ? (
-                  <div className="w-0.5 h-5 bg-custom-green absolute" />
-                ) : v.description && v.description.includes(europa) === true ? (
-                  <div className="w-0.5 h-5 bg-blue-500 absolute" />
-                ) : v.description && v.description.includes(conference) === true ? (
-                  <div className="w-0.5 h-5 bg-sky-300 absolute" />
-                ) : (
-                  <></>
-                )}
-                <div className="flex pl-4 dark:text-white">
-                  <h2 className="text-xs pr-4 font-semibold">{v?.rank}</h2>
-                  <Image
-                    src={v?.team?.logo}
-                    alt={v?.team?.name}
-                    width={50}
-                    height={50}
-                    style={{ width: 15, height: 15 }}
-                  />
-                  <h2 className="text-xs pl-3">{v?.team?.name}</h2>
-                </div>
-                <div className="flex pr-1 dark:text-white">
-                  <h2 className="text-xs w-7">{v.all.played}</h2>
-                  <h2 className="text-xs w-7">{v.goalsDiff}</h2>
-                  <h2 className="text-xs w-7 ">{v.points}</h2>
-                </div>
-              </div>
-            );
-          })}
+          {stands?.length > 0
+            ? stands.map((v: any, i: any) => {
+                // 승급
+                const champions = "Champions League";
+                const europa = "Europa League";
+                const conference = "Europa Conference League";
+                // 강등
+                const relegation = "Relegation";
+                return (
+                  <div
+                    key={i}
+                    className="w-full flex justify-between py-2  hover:cursor-pointer  hover:bg-slate-100 dark:hover:bg-zinc-700"
+                  >
+                    {v.description &&
+                    v.description.includes(relegation) === true ? (
+                      <div className="w-0.5 h-5 bg-red-500 absolute" />
+                    ) : v.description &&
+                      v.description.includes(champions) === true ? (
+                      <div className="w-0.5 h-5 bg-custom-green absolute" />
+                    ) : v.description &&
+                      v.description.includes(europa) === true ? (
+                      <div className="w-0.5 h-5 bg-blue-500 absolute" />
+                    ) : v.description &&
+                      v.description.includes(conference) === true ? (
+                      <div className="w-0.5 h-5 bg-sky-300 absolute" />
+                    ) : (
+                      <></>
+                    )}
+                    <div className="flex pl-4 dark:text-white">
+                      <h2 className="text-xs pr-4 font-semibold">{v?.rank}</h2>
+                      <Image
+                        src={v?.team?.logo}
+                        alt={v?.team?.name}
+                        width={50}
+                        height={50}
+                        style={{ width: 15, height: 15 }}
+                      />
+                      <h2 className="text-xs pl-3">{v?.team?.name}</h2>
+                    </div>
+                    <div className="flex pr-3 dark:text-white">
+                      <h2 className="text-xs w-7 text-center">
+                        {v.all.played}
+                      </h2>
+                      <h2 className="text-xs w-7 text-center">{v.goalsDiff}</h2>
+                      <h2 className="text-xs w-7 text-center ">{v.points}</h2>
+                    </div>
+                  </div>
+                );
+              })
+            : <div>
+              <h1 className="text-sm ml-4 mt-2">{g("noresults")}</h1>
+              </div>}
         </div>
       </div>
     </div>

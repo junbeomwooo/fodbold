@@ -8,15 +8,18 @@ import triangle from "../../../public/img/triangle.png";
 import earth from "../../../public/img/earth.png";
 
 import { useTranslations } from "next-intl";
-import { useRouter, usePathname, useParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 
-export default function Leagues({ leagueData }: { leagueData: any }) {
+export default function Leagues({
+  leagueData,
+  locale,
+}: {
+  leagueData: any;
+  locale: string;
+}) {
   const t = useTranslations("main");
 
   const router = useRouter();
-
-  const params = useParams();
-  const locale = params.locale;
 
   const [leagueDropdown, setLeagueDropDown] = useState<{
     [key: string]: boolean;
@@ -249,7 +252,6 @@ export default function Leagues({ leagueData }: { leagueData: any }) {
                 />
               </div>
               {leagues?.map((v: any, i: number) => {
-                
                 // 하이픈을 모두 삭제합니다.
                 const noHyphens = v.name.replace(/-/g, " ");
 

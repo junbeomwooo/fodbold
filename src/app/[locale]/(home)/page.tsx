@@ -17,12 +17,15 @@ const getStanding = async (id: number) => {
       "x-rapidapi-key": `${process.env.FOOTBALL_API_KEY}`,
     },
   });
-  console.group("YEAR &&&&&&");
-  console.log(year);
-  console.groupEnd();
+
+  // chnage to JSON
+  const yearJSON = await year.json();
+
+  // latest season data
+  const yearData = yearJSON?.response[0]?.seasons?.at(-1)?.year;
 
   const response = await fetch(
-    `${FOOTBALL_URL}/standings?league=${id}&season=${year}`,
+    `${FOOTBALL_URL}/standings?league=${id}&season=${yearData}`,
     {
       method: "GET",
       headers: {
@@ -48,21 +51,22 @@ const getAllLeagues = async () => {
   return response.json();
 };
 
-export default async function page() {
+export default async function page({
+  params: { locale },
+}: {
+  params: { locale: string };
+}) {
   /** epl 스탠딩 받아오기 */
   const [standing] = (await getStanding(39)).response;
-  // const [stands] = standing?.league?.standings;
 
   /** 전 세계 리그정보 가져오기 */
   const leagueData = (await getAllLeagues()).response;
 
-  /** 지울 데이터 (데이터 통신 대용으로 사용중)*/
-
   return (
     <div className="flex w-full h-full px-14 pt-28 dark:bg-black max-lg:block max-msm:px-4">
-      <League leagueData={leagueData} />
+      <League leagueData={leagueData} locale={locale} />
       <Fixtures />
-      {/* <Standing stands={stands} /> */}
+      <Standing standing={standing} locale={locale} />
     </div>
   );
 }
