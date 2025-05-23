@@ -237,6 +237,7 @@ export default function Leagues({
                     height={16}
                     style={{ width: "16px", height: "16px" }}
                     className="rounded-full"
+                    loading="lazy"
                   />
                   <h1 className="text-xsm ml-5 dark:text-white">
                     {countryName}
@@ -249,6 +250,7 @@ export default function Leagues({
                   height={15}
                   style={{ width: "15px", height: "15px" }}
                   className="opacity-60 dark:invert"
+                  loading="lazy"
                 />
               </div>
               {leagues?.map((v: any, i: number) => {
@@ -301,6 +303,7 @@ export default function Leagues({
                            ? "max-h-auto "
                            : "max-h-0 hidden"
                        }`}
+                      loading="lazy"
                     />
                     <h1 className="text-xsm ml-5 text-slate-500 dark:text-custom-gray overflow-y-hidden">
                       {v.name}

@@ -244,7 +244,7 @@ export default function Fixtures() {
   };
 
   // 리그 id가 낮은 순서부터 보여주기 위해 재배열
-  const sortedData = data.sort((a:any,b:any) => a.league.id - b.league.id);
+  const sortedData = data.sort((a: any, b: any) => a.league.id - b.league.id);
 
   // /** 축구경기 리그별로 데이터 묶기 */
   const groupedByLeague = sortedData?.reduce((acc: any, match: any) => {
@@ -292,8 +292,11 @@ export default function Fixtures() {
   };
 
   /**경기 상세 페이지로 이동 */
-  const moveToFormattedMatchURL = (home: string, away: string, matchID: number) => {
-
+  const moveToFormattedMatchURL = (
+    home: string,
+    away: string,
+    matchID: number
+  ) => {
     const matchVS = `${home}-vs-${away}`;
 
     // 하이픈을 모두 삭제합니다.
@@ -319,6 +322,32 @@ export default function Fixtures() {
 
     router.push(url);
   };
+
+  /** Infinite Scroll */
+  // 인피니티 스크롤이 되었다 안되었다 하는 문제가 생김 해결하기 
+
+  const [visibleCount, setVisibleCount] = useState(10); // 처음에 10개만 보여줌
+  const observerRef = useRef(null);
+
+  // IntersectionObserver로 아래 도달 시 visibleCount 증가
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (v) => {
+        console.log("관찰됨:", v[0].isIntersecting);
+        if (v[0].isIntersecting) {
+          setVisibleCount((prev) => prev + 10); // 10개씩 추가
+        }
+      },
+      { threshold: 1 }
+    );
+
+    const currentRef = observerRef.current;
+    if (observerRef.current) observer.observe(observerRef.current);
+
+    return () => {
+      if (currentRef) observer.unobserve(currentRef);
+    };
+  }, []);
 
   return (
     <div className="w-3/5 mx-6 max-xl:mx-0 max-xl:w-full mb-20">
@@ -473,210 +502,221 @@ export default function Fixtures() {
       <div className="w-full h-aut rounded-xl pb-4 dark:border-0 mt-4">
         <div>
           {leagueKeys.length > 0 ? (
-            leagueKeys.map((leagueID: string, leagueIndex: number) => {
+            leagueKeys
+              .slice(0, visibleCount)
+              .map((leagueID: string, leagueIndex: number) => {
+                // 리그 이름
+                const leagueName = groupedByLeague[leagueID].leagueName;
 
-              // 리그 이름
-              const leagueName = groupedByLeague[leagueID].leagueName;
+                // 변수[키값]을 통해 해당하는 리그의 경기 데이터를 모두 가져옴
+                const leagueMatch = groupedByLeague[leagueID].matches;
 
-              // 변수[키값]을 통해 해당하는 리그의 경기 데이터를 모두 가져옴
-              const leagueMatch = groupedByLeague[leagueID].matches;
+                // 하이픈을 모두 삭제합니다.
+                const noHyphens = leagueMatch[0].league.name.replace(/-/g, " ");
 
-              // 하이픈을 모두 삭제합니다.
-              const noHyphens = leagueMatch[0].league.name.replace(/-/g, " ");
+                // 두 번 이상의 연속 공백을 하나로 줄입니다.
+                const cleanedString = noHyphens.replace(/\s{2,}/g, " ");
 
-              // 두 번 이상의 연속 공백을 하나로 줄입니다.
-              const cleanedString = noHyphens.replace(/\s{2,}/g, " ");
+                // 1. 공백을 하이픈으로 변경
+                const hyphenated = cleanedString.replace(/\s+/g, "-");
 
-              // 1. 공백을 하이픈으로 변경
-              const hyphenated = cleanedString.replace(/\s+/g, "-");
+                // 2. 온점을 제거
+                const withoutDots = hyphenated.replace(/\./g, "");
 
-              // 2. 온점을 제거
-              const withoutDots = hyphenated.replace(/\./g, "");
+                // 3. 대문자 뒤에 하이픈 추가 (선택 사항)
+                const withHyphens = withoutDots.replace(
+                  /(?<=[A-Z])-(?=[a-z])/g,
+                  "-"
+                );
 
-              // 3. 대문자 뒤에 하이픈 추가 (선택 사항)
-              const withHyphens = withoutDots.replace(
-                /(?<=[A-Z])-(?=[a-z])/g,
-                "-"
-              );
+                /** 최종 */
+                const name = withHyphens.toLowerCase();
 
-              /** 최종 */
-              const name = withHyphens.toLowerCase();
-
-              return (
-                <ul
-                  key={leagueIndex}
-                  className="bg-white border-solid border border-slate-200 mt-5 rounded-xl dark:border-0 dark:bg-custom-dark"
-                >
-                  <div
-                    className="p-4 bg-slate-100 rounded-t-xl flex cursor-pointer hover:bg-slate-200 dark:bg-custom-lightDark dark:hover:bg-custom-gray3 max-msm:p-2.5"
-                    onClick={() => {
-                      router.push(
-                        `${locale}/leagues/${leagueMatch[0].league.id}/${name}/overview`
-                      );
-                    }}
+                return (
+                  <ul
+                    key={leagueIndex}
+                    className="bg-white border-solid border border-slate-200 mt-5 rounded-xl dark:border-0 dark:bg-custom-dark"
                   >
-                    <Image
-                      src={leagueMatch[0].league.logo}
-                      alt={leagueMatch[0].league.name}
-                      width={16}
-                      height={16}
-                      style={{ width: "16px", height: "16px" }}
-                      className="mx-2"
-                      loading="lazy" 
-                    />
-                    <h1 className="text-sm font-medium ml-3 dark:text-white max-msm:text-xs">
-                      {leagueName}
-                    </h1>
-                  </div>
-                  {leagueMatch.map((match: any, matchIndex: number) => {
-                    //시작안함
-                    const scheduled = ["TBD", "NS"];
+                    <div
+                      className="p-4 bg-slate-100 rounded-t-xl flex cursor-pointer hover:bg-slate-200 dark:bg-custom-lightDark dark:hover:bg-custom-gray3 max-msm:p-2.5"
+                      onClick={() => {
+                        router.push(
+                          `${locale}/leagues/${leagueMatch[0].league.id}/${name}/overview`
+                        );
+                      }}
+                    >
+                      <Image
+                        src={leagueMatch[0].league.logo}
+                        alt={leagueMatch[0].league.name}
+                        width={16}
+                        height={16}
+                        style={{ width: "16px", height: "16px" }}
+                        className="mx-2"
+                        loading="lazy"
+                      />
+                      <h1 className="text-sm font-medium ml-3 dark:text-white max-msm:text-xs">
+                        {leagueName}
+                      </h1>
+                    </div>
+                    {leagueMatch.map((match: any, matchIndex: number) => {
+                      //시작안함
+                      const scheduled = ["TBD", "NS"];
 
-                    // 경기중 (하프타임 브레이킹타임 포함)
-                    const live = ["1H", "2H", "ET", "P", "LIVE", "HT", "BT"];
+                      // 경기중 (하프타임 브레이킹타임 포함)
+                      const live = ["1H", "2H", "ET", "P", "LIVE", "HT", "BT"];
 
-                    //심판 자의로 경기중단
-                    const stop = ["SUSP", "INT"];
+                      //심판 자의로 경기중단
+                      const stop = ["SUSP", "INT"];
 
-                    //경기 끝
-                    const finish = ["FT", "AET", "PEN"];
+                      //경기 끝
+                      const finish = ["FT", "AET", "PEN"];
 
-                    // 경기 취소 및 연기
-                    const cancle = ["PST", "CANC", "ABD"];
+                      // 경기 취소 및 연기
+                      const cancle = ["PST", "CANC", "ABD"];
 
-                    // 부전승
-                    const unearned = ["AWD", "WO"];
+                      // 부전승
+                      const unearned = ["AWD", "WO"];
 
-                    // 매치시간 (경기가 스케줄되었을떄)
-                    const matchTime = new Date(match.fixture.date)
-                      .toString()
-                      .substring(16, 21);
+                      // 매치시간 (경기가 스케줄되었을떄)
+                      const matchTime = new Date(match.fixture.date)
+                        .toString()
+                        .substring(16, 21);
 
-                    // 스코어
-                    const score = `${match.goals.home} - ${match.goals.away}`;
+                      // 스코어
+                      const score = `${match.goals.home} - ${match.goals.away}`;
 
-                    // 패널티 스코어
-                    const penaltyScore = `(${match.score.penalty.home} - ${match.score.penalty.away})`;
+                      // 패널티 스코어
+                      const penaltyScore = `(${match.score.penalty.home} - ${match.score.penalty.away})`;
 
-                    return (
-                      <li
-                        key={matchIndex}
-                        className="flex px-4 py-5 text-sm cursor-pointer hover:bg-slate-200 dark:hover:bg-custom-gray3 dark:hover:rounded-b-xl"
-                        onClick={() => moveToFormattedMatchURL(match.teams.home.name, match.teams.away.name, match.fixture.id)}
-                      >
-                        {/* 경기가 시작하지 않거나 취소 및 연기 */}
-                        {scheduled.includes(match.fixture.status.short) ||
-                        cancle.includes(match.fixture.status.short) ? (
-                          <div className="w-7 h-5" />
-                        ) : // 경기가 진행중이라면
-                        live.includes(match.fixture.status.short) ? (
-                          <div className="w-7 h-5 rounded-full bg-green-500 flex justify-center items-center">
-                            <h1 className="text-white text-xs max-msm:text-xxs">
-                              {match.fixture.status.elapsed}
-                            </h1>
-                          </div>
-                        ) : // 경기가 잠시 멈췄다면
-                        stop.includes(match.fixture.status.short) ? (
-                          <div className="w-7 h-5 rounded-full bg-slate-300  flex justify-center items-center dark:bg-custom-gray2">
-                            <h1 className="text-white text-xs dark:text-gray-200 max-msm:text-xxs">
-                              {match.fixture.status.short}
-                            </h1>
-                          </div>
-                        ) : //경기가 끝났을 경우
-                        finish.includes(match.fixture.status.short) ? (
-                          <div className="w-7 h-5 rounded-full bg-slate-300  flex justify-center items-center dark:bg-custom-gray2">
-                            <h1 className="text-white text-xs dark:text-gray-200 max-msm:text-xxs">
-                              {match.fixture.status.short}
-                            </h1>
-                          </div>
-                        ) : // 부전승이 일어났을경우
-                        unearned.includes(match.fixture.status.short) ? (
-                          <div className="w-7 h-5 rounded-full bg-slate-300 flex justify-center items-center dark:bg-custom-gray2">
-                            <h1 className="text-white text-xs dark:text-gray-200 max-msm:text-xxs">
-                              {match.fixture.status.short}
-                            </h1>
-                          </div>
-                        ) : (
-                          <></>
-                        )}
-                        <div className="w-full flex justify-center mr-7">
-                          <div className="flex w-2/5 justify-end">
-                            <h1 className="dark:text-white max-msm:text-xxs">
-                              {match.teams.home.name}
-                            </h1>
-                            <Image
-                              src={match.teams.home.logo}
-                              alt={match.teams.home.name}
-                              width={15}
-                              height={15}
-                              style={{ width: "18px", height: "18px" }}
-                              className="ml-5 max-msm:ml-2"
-                              loading="lazy" 
-                            />
-                          </div>
-                          {/* 경기가 시작하지않았다면 */}
-                          {scheduled.includes(match.fixture.status.short) ? (
-                            <div className="w-1/5 flex justify-center">
-                              <h1 className="dark:text-white max-msm:text-xxs">
-                                {matchTime}
-                              </h1>
-                            </div>
-                          ) : // 경기가 진행중, 중단, 끝났을때
-                          live.includes(match.fixture.status.short) ||
-                            stop.includes(match.fixture.status.short) ||
-                            finish.includes(match.fixture.status.short) ||
-                            unearned.includes(match.fixture.status.short) ? (
-                            <div className="w-1/5 h-full flex flex-col items-center justify-center">
-                              <h1 className="dark:text-white max-msm:text-xxs">
-                                {score}
-                              </h1>
-                              {/* 패널티 골이 있을경우 */}
-                              {match.score.penalty.home ||
-                              match.score.penalty.away ? (
-                                <h1 className="dark:text-white text-xs max-msm:text-xxs">
-                                  {penaltyScore}
-                                </h1>
-                              ) : (
-                                <></>
-                              )}
-                            </div>
-                          ) : // 경기가 중단 및 연기되었을떄
+                      return (
+                        <li
+                          key={matchIndex}
+                          className="flex px-4 py-5 text-sm cursor-pointer hover:bg-slate-200 dark:hover:bg-custom-gray3 dark:hover:rounded-b-xl"
+                          onClick={() =>
+                            moveToFormattedMatchURL(
+                              match.teams.home.name,
+                              match.teams.away.name,
+                              match.fixture.id
+                            )
+                          }
+                        >
+                          {/* 경기가 시작하지 않거나 취소 및 연기 */}
+                          {scheduled.includes(match.fixture.status.short) ||
                           cancle.includes(match.fixture.status.short) ? (
-                            <div className="w-1/5 flex justify-center">
-                              <h1 className="dark:text-white max-msm:text-xxs">
-                                {matchTime}
+                            <div className="w-7 h-5" />
+                          ) : // 경기가 진행중이라면
+                          live.includes(match.fixture.status.short) ? (
+                            <div className="w-7 h-5 rounded-full bg-green-500 flex justify-center items-center">
+                              <h1 className="text-white text-xs max-msm:text-xxs">
+                                {match.fixture.status.elapsed}
+                              </h1>
+                            </div>
+                          ) : // 경기가 잠시 멈췄다면
+                          stop.includes(match.fixture.status.short) ? (
+                            <div className="w-7 h-5 rounded-full bg-slate-300  flex justify-center items-center dark:bg-custom-gray2">
+                              <h1 className="text-white text-xs dark:text-gray-200 max-msm:text-xxs">
+                                {match.fixture.status.short}
+                              </h1>
+                            </div>
+                          ) : //경기가 끝났을 경우
+                          finish.includes(match.fixture.status.short) ? (
+                            <div className="w-7 h-5 rounded-full bg-slate-300  flex justify-center items-center dark:bg-custom-gray2">
+                              <h1 className="text-white text-xs dark:text-gray-200 max-msm:text-xxs">
+                                {match.fixture.status.short}
+                              </h1>
+                            </div>
+                          ) : // 부전승이 일어났을경우
+                          unearned.includes(match.fixture.status.short) ? (
+                            <div className="w-7 h-5 rounded-full bg-slate-300 flex justify-center items-center dark:bg-custom-gray2">
+                              <h1 className="text-white text-xs dark:text-gray-200 max-msm:text-xxs">
+                                {match.fixture.status.short}
                               </h1>
                             </div>
                           ) : (
                             <></>
                           )}
-                          <div className="flex w-2/5">
-                            <Image
-                              src={match.teams.away.logo}
-                              alt={match.teams.away.name}
-                              width={15}
-                              height={15}
-                              className="mr-5 max-msm:mr-2"
-                              style={{ width: "18px", height: "18px" }}
-                              loading="lazy" 
-                            />
-                            <h1 className="dark:text-white max-msm:text-xxs">
-                              {match.teams.away.name}
-                            </h1>
+                          <div className="w-full flex justify-center mr-7">
+                            <div className="flex w-2/5 justify-end">
+                              <h1 className="dark:text-white max-msm:text-xxs">
+                                {match.teams.home.name}
+                              </h1>
+                              <Image
+                                src={match.teams.home.logo}
+                                alt={match.teams.home.name}
+                                width={15}
+                                height={15}
+                                style={{ width: "18px", height: "18px" }}
+                                className="ml-5 max-msm:ml-2"
+                                loading="lazy"
+                              />
+                            </div>
+                            {/* 경기가 시작하지않았다면 */}
+                            {scheduled.includes(match.fixture.status.short) ? (
+                              <div className="w-1/5 flex justify-center">
+                                <h1 className="dark:text-white max-msm:text-xxs">
+                                  {matchTime}
+                                </h1>
+                              </div>
+                            ) : // 경기가 진행중, 중단, 끝났을때
+                            live.includes(match.fixture.status.short) ||
+                              stop.includes(match.fixture.status.short) ||
+                              finish.includes(match.fixture.status.short) ||
+                              unearned.includes(match.fixture.status.short) ? (
+                              <div className="w-1/5 h-full flex flex-col items-center justify-center">
+                                <h1 className="dark:text-white max-msm:text-xxs">
+                                  {score}
+                                </h1>
+                                {/* 패널티 골이 있을경우 */}
+                                {match.score.penalty.home ||
+                                match.score.penalty.away ? (
+                                  <h1 className="dark:text-white text-xs max-msm:text-xxs">
+                                    {penaltyScore}
+                                  </h1>
+                                ) : (
+                                  <></>
+                                )}
+                              </div>
+                            ) : // 경기가 중단 및 연기되었을떄
+                            cancle.includes(match.fixture.status.short) ? (
+                              <div className="w-1/5 flex justify-center">
+                                <h1 className="dark:text-white max-msm:text-xxs">
+                                  {matchTime}
+                                </h1>
+                              </div>
+                            ) : (
+                              <></>
+                            )}
+                            <div className="flex w-2/5">
+                              <Image
+                                src={match.teams.away.logo}
+                                alt={match.teams.away.name}
+                                width={15}
+                                height={15}
+                                className="mr-5 max-msm:mr-2"
+                                style={{ width: "18px", height: "18px" }}
+                                loading="lazy"
+                              />
+                              <h1 className="dark:text-white max-msm:text-xxs">
+                                {match.teams.away.name}
+                              </h1>
+                            </div>
                           </div>
-                        </div>
-                      </li>
-                    );
-                  })}
-                </ul>
-              );
-            })
+                        </li>
+                      );
+                    })}
+                  </ul>
+                );
+              })
           ) : (
             <div className="bg-white border-solid border border-slate-200 mt-5 rounded-xl dark:border-0 dark:bg-custom-dark py-8">
               <h1 className="text-center text-base dark:text-white">
                 {g("noresults")}
               </h1>
             </div>
+          )}
+          {/* 옵저버 타겟 */}
+          {visibleCount < leagueKeys.length && (
+            <div ref={observerRef} className="h-20" />
           )}
         </div>
       </div>

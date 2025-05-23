@@ -20,7 +20,7 @@ export default function Main({
   return (
     <Fragment>
       <div className="flex w-full h-full px-14 pt-28 dark:bg-black max-lg:block max-msm:px-4">
-        <League leagueData={leagueData} locale={locale} />
+        {/* <League leagueData={leagueData} locale={locale} /> */}
         <Fixtures />
         <Standing standing={standing} locale={locale} />
       </div>
