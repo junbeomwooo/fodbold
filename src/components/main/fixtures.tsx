@@ -324,30 +324,56 @@ export default function Fixtures() {
   };
 
   /** Infinite Scroll */
-  // 인피니티 스크롤이 되었다 안되었다 하는 문제가 생김 해결하기 
+  // 인피니티 스크롤이 되었다 안되었다 하는 문제가 생김 해결하기
 
   const [visibleCount, setVisibleCount] = useState(10); // 처음에 10개만 보여줌
-  const observerRef = useRef(null);
+  
+  /** option 1 */
+  // const observerRef = useRef(null);
 
   // IntersectionObserver로 아래 도달 시 visibleCount 증가
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (v) => {
-        console.log("관찰됨:", v[0].isIntersecting);
-        if (v[0].isIntersecting) {
+  // useEffect(() => {
+  //   const observer = new IntersectionObserver(
+  //     (entires) => {
+  //       console.log(entires);
+  //       if (entires[0].isIntersecting) {
+  //         setVisibleCount((prev) => prev + 10); // 10개씩 추가
+  //         console.log("관찰됨:", entires[0].isIntersecting);
+  //       }
+  //     }
+  //   );
+
+  //   const infinitetRef = observerRef.current;
+
+  //   if(infinitetRef) observer.observe(infinitetRef);
+
+  //   return () => {
+  //     if (infinitetRef) observer.unobserve(infinitetRef);
+  //   };
+  // }, [observerRef.current]);
+
+
+  /** option 2 */
+  const observerRef = useRef<IntersectionObserver | null>(null);
+
+  // IntersectionObserver로 아래 도달 시 visibleCount 증가
+  const lastItemRef = React.useCallback((node: HTMLDivElement | null) => {
+    // 기존 옵저버 해제
+    if (observerRef.current) observerRef.current.disconnect();
+
+    if (node) {
+      console.log(node);
+      observerRef.current = new IntersectionObserver((entries) => {
+        if (entries[0].isIntersecting) {
+          console.log("관찰됨:", entries[0].isIntersecting);
           setVisibleCount((prev) => prev + 10); // 10개씩 추가
         }
-      },
-      { threshold: 1 }
-    );
+      });
 
-    const currentRef = observerRef.current;
-    if (observerRef.current) observer.observe(observerRef.current);
-
-    return () => {
-      if (currentRef) observer.unobserve(currentRef);
-    };
+      observerRef.current.observe(node);
+    }
   }, []);
+
 
   return (
     <div className="w-3/5 mx-6 max-xl:mx-0 max-xl:w-full mb-20">
@@ -716,7 +742,7 @@ export default function Fixtures() {
           )}
           {/* 옵저버 타겟 */}
           {visibleCount < leagueKeys.length && (
-            <div ref={observerRef} className="h-20" />
+            <div ref={lastItemRef} className="h-20" />
           )}
         </div>
       </div>
