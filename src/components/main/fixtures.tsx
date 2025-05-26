@@ -328,32 +328,6 @@ export default function Fixtures() {
 
   const [visibleCount, setVisibleCount] = useState(10); // 처음에 10개만 보여줌
   
-  /** option 1 */
-  // const observerRef = useRef(null);
-
-  // IntersectionObserver로 아래 도달 시 visibleCount 증가
-  // useEffect(() => {
-  //   const observer = new IntersectionObserver(
-  //     (entires) => {
-  //       console.log(entires);
-  //       if (entires[0].isIntersecting) {
-  //         setVisibleCount((prev) => prev + 10); // 10개씩 추가
-  //         console.log("관찰됨:", entires[0].isIntersecting);
-  //       }
-  //     }
-  //   );
-
-  //   const infinitetRef = observerRef.current;
-
-  //   if(infinitetRef) observer.observe(infinitetRef);
-
-  //   return () => {
-  //     if (infinitetRef) observer.unobserve(infinitetRef);
-  //   };
-  // }, [observerRef.current]);
-
-
-  /** option 2 */
   const observerRef = useRef<IntersectionObserver | null>(null);
 
   // IntersectionObserver로 아래 도달 시 visibleCount 증가
@@ -362,11 +336,10 @@ export default function Fixtures() {
     if (observerRef.current) observerRef.current.disconnect();
 
     if (node) {
-      console.log(node);
       observerRef.current = new IntersectionObserver((entries) => {
         if (entries[0].isIntersecting) {
-          console.log("관찰됨:", entries[0].isIntersecting);
-          setVisibleCount((prev) => prev + 10); // 10개씩 추가
+          // console.log("관찰됨:", entries[0].isIntersecting);
+          setVisibleCount((prev) => prev + 10); 
         }
       });
 
@@ -663,7 +636,7 @@ export default function Fixtures() {
                           )}
                           <div className="w-full flex justify-center mr-7">
                             <div className="flex w-2/5 justify-end">
-                              <h1 className="dark:text-white max-msm:text-xxs">
+                              <h1 className="dark:text-white max-msm:text-xxs overflow-hidden truncate max-sm:ml-5">
                                 {match.teams.home.name}
                               </h1>
                               <Image
@@ -722,7 +695,7 @@ export default function Fixtures() {
                                 style={{ width: "18px", height: "18px" }}
                                 loading="lazy"
                               />
-                              <h1 className="dark:text-white max-msm:text-xxs">
+                              <h1 className="dark:text-white max-msm:text-xxs overflow-hidden truncate">
                                 {match.teams.away.name}
                               </h1>
                             </div>

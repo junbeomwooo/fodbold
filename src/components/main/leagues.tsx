@@ -10,6 +10,8 @@ import earth from "../../../public/img/earth.png";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 
+import { IoIosArrowDown } from "react-icons/io";
+
 export default function Leagues({
   leagueData,
   locale,
@@ -21,6 +23,10 @@ export default function Leagues({
 
   const router = useRouter();
 
+  // dropdown for all leagues
+  const [allLeagueDropdown, setAllLeagueDropDown] = useState(false);
+
+  // dropdowns for each league
   const [leagueDropdown, setLeagueDropDown] = useState<{
     [key: string]: boolean;
   }>({});
@@ -211,74 +217,91 @@ export default function Leagues({
         </ul>
       </div>
       {/* All Leagues */}
-      <div className="w-full h-auto bg-white rounded-xl border-solid border border-slate-200 pb-4 dark:bg-custom-dark dark:border-0 mt-6">
-        <h1 className="text-base font-medium p-3 ml-4 dark:text-custom-green pt-6 mb-2">
-          {t("allLeagues")}
-        </h1>
-        {countryKeys.map((countryName: string, countryIndex: number) => {
-          const flag = allLeagues[countryName]?.flag;
-          const leagues = allLeagues[countryName]?.league;
+      <div className="w-full h-auto bg-white rounded-xl border-solid border border-slate-200 pb-2 dark:bg-custom-dark dark:border-0 mt-6">
+        <div
+          className="flex p-3 ml-4 pt-6 mb-2 items-center justify-between hover:cursor-pointer"
+          onClick={() => {
+            setAllLeagueDropDown(!allLeagueDropdown);
+          }}
+        >
+          <h1 className="text-base font-medium  dark:text-custom-green">
+            {t("allLeagues")}
+          </h1>
+          <h2 className="mt-1">
+            <IoIosArrowDown
+              className={`text-base transition-all ${
+                allLeagueDropdown && "rotate-180"
+              }`}
+            />
+          </h2>
+        </div>
+        {allLeagueDropdown &&
+          countryKeys.map((countryName: string, countryIndex: number) => {
+            const flag = allLeagues[countryName]?.flag;
+            const leagues = allLeagues[countryName]?.league;
 
-          return (
-            <ul key={countryIndex}>
-              <div
-                className={`flex justify-between hover:cursor-pointer hover:bg-slate-100 p-3 pl-7 dark:hover:bg-zinc-700 ${
-                  leagueDropdown[countryName]
-                    ? "bg-slate-100 dark:bg-zinc-700"
-                    : null
-                }`}
-                onClick={() => onCickDropDown(countryName)}
-              >
-                <div className="flex">
+            return (
+              <ul key={countryIndex}>
+                <div
+                  className={`flex justify-between hover:cursor-pointer hover:bg-slate-100 p-3 pl-7 dark:hover:bg-zinc-700 ${
+                    leagueDropdown[countryName]
+                      ? "bg-slate-100 dark:bg-zinc-700"
+                      : null
+                  }`}
+                  onClick={() => onCickDropDown(countryName)}
+                >
+                  <div className="flex">
+                    <Image
+                      src={flag || earth}
+                      alt={countryName}
+                      width={16}
+                      height={16}
+                      style={{ width: "16px", height: "16px" }}
+                      className="rounded-full"
+                      loading="lazy"
+                    />
+                    <h1 className="text-xsm ml-5 dark:text-white">
+                      {countryName}
+                    </h1>
+                  </div>
                   <Image
-                    src={flag || earth}
-                    alt={countryName}
-                    width={16}
-                    height={16}
-                    style={{ width: "16px", height: "16px" }}
-                    className="rounded-full"
+                    src={triangle}
+                    alt="dropdown"
+                    width={15}
+                    height={15}
+                    style={{ width: "15px", height: "15px" }}
+                    className={`opacity-60 dark:invert transition-all ${
+                      leagueDropdown[countryName] && "rotate-180"
+                    }`}
                     loading="lazy"
                   />
-                  <h1 className="text-xsm ml-5 dark:text-white">
-                    {countryName}
-                  </h1>
                 </div>
-                <Image
-                  src={triangle}
-                  alt="dropdown"
-                  width={15}
-                  height={15}
-                  style={{ width: "15px", height: "15px" }}
-                  className="opacity-60 dark:invert"
-                  loading="lazy"
-                />
-              </div>
-              {leagues?.map((v: any, i: number) => {
-                // 하이픈을 모두 삭제합니다.
-                const noHyphens = v.name.replace(/-/g, " ");
+                {leagues?.map((v: any, i: number) => {
+                  // 하이픈을 모두 삭제합니다.
+                  const noHyphens = v.name.replace(/-/g, " ");
 
-                // 두 번 이상의 연속 공백을 하나로 줄입니다.
-                const cleanedString = noHyphens.replace(/\s{2,}/g, " ");
+                  // 두 번 이상의 연속 공백을 하나로 줄입니다.
+                  const cleanedString = noHyphens.replace(/\s{2,}/g, " ");
 
-                // 1. 공백을 하이픈으로 변경
-                const hyphenated = cleanedString.replace(/\s+/g, "-");
+                  // 1. 공백을 하이픈으로 변경
+                  const hyphenated = cleanedString.replace(/\s+/g, "-");
 
-                // 2. 온점을 제거
-                const withoutDots = hyphenated.replace(/\./g, "");
+                  // 2. 온점을 제거
+                  const withoutDots = hyphenated.replace(/\./g, "");
 
-                // 3. 대문자 뒤에 하이픈 추가 (선택 사항)
-                const withHyphens = withoutDots.replace(
-                  /(?<=[A-Z])-(?=[a-z])/g,
-                  "-"
-                );
+                  // 3. 대문자 뒤에 하이픈 추가 (선택 사항)
+                  const withHyphens = withoutDots.replace(
+                    /(?<=[A-Z])-(?=[a-z])/g,
+                    "-"
+                  );
 
-                /** 최종 */
-                const name = withHyphens.toLowerCase();
+                  /** 최종 */
+                  const name = withHyphens.toLowerCase();
 
-                return (
-                  <li
-                    key={i}
-                    className={`flex  hover:cursor-pointer hover:bg-slate-100 dark:hover:bg-zinc-700 
+                  return (
+                    <li
+                      key={i}
+                      className={`flex  hover:cursor-pointer hover:bg-slate-100 dark:hover:bg-zinc-700 
                       transition-all
                       pl-7
                   ${
@@ -286,34 +309,36 @@ export default function Leagues({
                       ? "max-h-auto  p-3"
                       : "max-h-0 p-0"
                   }`}
-                    onClick={() => {
-                      router.push(`${locale}/leagues/${v.id}/${name}/overview`);
-                    }}
-                  >
-                    <Image
-                      src={v.logo}
-                      alt={v.name}
-                      width={16}
-                      height={16}
-                      style={{ width: "16px", height: "16px" }}
-                      className={`
+                      onClick={() => {
+                        router.push(
+                          `${locale}/leagues/${v.id}/${name}/overview`
+                        );
+                      }}
+                    >
+                      <Image
+                        src={v.logo}
+                        alt={v.name}
+                        width={16}
+                        height={16}
+                        style={{ width: "16px", height: "16px" }}
+                        className={`
                           transition-all
                        ${
                          leagueDropdown[countryName]
                            ? "max-h-auto "
                            : "max-h-0 hidden"
                        }`}
-                      loading="lazy"
-                    />
-                    <h1 className="text-xsm ml-5 text-slate-500 dark:text-custom-gray overflow-y-hidden">
-                      {v.name}
-                    </h1>
-                  </li>
-                );
-              })}
-            </ul>
-          );
-        })}
+                        loading="lazy"
+                      />
+                      <h1 className="text-xsm ml-5 text-slate-500 dark:text-custom-gray overflow-y-hidden">
+                        {v.name}
+                      </h1>
+                    </li>
+                  );
+                })}
+              </ul>
+            );
+          })}
       </div>
     </div>
   );
