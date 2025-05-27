@@ -20,7 +20,8 @@
     "notification1": "이 사이트는 API-Football의 무료 요금제를 사용하며, 하루 100회 및 분당 10회의 요청으로 제한됩니다.",
     "notification2": "데이터 로딩에 실패한 경우 1분 후 다시 시도해주세요.",
     "notification3": "일일 제한에 도달하면 서비스는 다음 날에 다시 시작됩니다.",
-    "gotit": "확인했어요!"
+    "gotit": "확인했어요!",
+    "dontshowtoday": "오늘 하루 보지 않기"
   },
 
   "general": {

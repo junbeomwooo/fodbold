@@ -49,6 +49,10 @@ const getAllLeagues = async () => {
     },
   });
 
+  // const data = await response.json();
+  // console.log("AHAHAHHA");
+  // console.log(data?.errors?.requests);
+
   return response.json();
 };
 

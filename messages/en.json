@@ -20,7 +20,8 @@
     "notification1": "This site uses API-Football’s free tier, which is limited to 100 requests per day and 10 per minute.",
     "notification2": "If data fails to load, please try again in 1 minute.",
     "notification3": "Once the daily limit is reached, the service will resume the following day.",
-    "gotit": "Got it!"
+    "gotit": "Got it!",
+    "dontshowtoday": "Don’t show again today"
   },
 
   "general": {

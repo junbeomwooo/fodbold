@@ -5171,7 +5171,7 @@ const FixturesOverView = ({ id, locale }: { id: number; locale: string }) => {
                               alt={v?.teams.home.name || "home team logo"}
                               width={20}
                               height={20}
-                              className="mr-3"
+                              className="mr-3 object-contain w-[20px] h-[20px]"
                             />
                             <h1>{v?.teams.home.name}</h1>
                           </div>
@@ -5188,7 +5188,7 @@ const FixturesOverView = ({ id, locale }: { id: number; locale: string }) => {
                               alt={v?.teams.away.name || "away team logo"}
                               width={20}
                               height={20}
-                              className="mr-3"
+                              className="mr-3 object-contain w-[20px] h-[20px]"
                             />
                             <h1>{v?.teams.away.name}</h1>
                           </div>

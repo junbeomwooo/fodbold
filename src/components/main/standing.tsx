@@ -109,6 +109,7 @@ export default function Standing({
                       width={50}
                       height={50}
                       style={{ width: 15, height: 15 }}
+                      className="object-contain"
                     />
                     <h2 className="text-xs pl-3">{v?.team?.name}</h2>
                   </div>

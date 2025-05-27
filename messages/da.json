@@ -20,7 +20,8 @@
     "notification1": "Dette websted bruger API-Footballs gratis plan, som er begrænset til 100 forespørgsler pr. dag og 10 pr. minut.",
     "notification2": "Hvis data ikke indlæses, så prøv igen om 1 minut.",
     "notification3": "Når den daglige grænse er nået, genoptages tjenesten næste dag.",
-    "gotit": "Forstået!"
+    "gotit": "Forstået!",
+    "dontshowtoday": "Vis ikke igen i dag"
   },
 
   "general": {
