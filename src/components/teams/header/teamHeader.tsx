@@ -85,7 +85,7 @@ export default function TeamHeader({
         <div className="flex flex-col">
           <Link
             href={`/${locale}/teams/${id}/${name}/overview`}
-            className="hover:no-underline  hover:text-custom-gray tracking-wide"
+            className="hover:no-underline  hover:text-custom-gray tracking-wide max-sm:text-xs"
           >
             {t("overview")}
           </Link>
@@ -100,7 +100,7 @@ export default function TeamHeader({
         <div className="flex flex-col">
           <Link
             href={`/${locale}/teams/${id}/${name}/tables`}
-            className="hover:no-underline  hover:text-custom-gray tracking-wide ml-6"
+            className="hover:no-underline  hover:text-custom-gray tracking-wide ml-6 max-sm:text-xs"
           >
             {t("table")}
           </Link>
@@ -115,7 +115,7 @@ export default function TeamHeader({
         <div className="flex flex-col">
           <Link
             href={`/${locale}/teams/${id}/${name}/fixture`}
-            className="hover:no-underline  hover:text-custom-gray tracking-wide ml-6"
+            className="hover:no-underline  hover:text-custom-gray tracking-wide ml-6 max-sm:text-xs"
           >
             {t("fixture")}
           </Link>
@@ -130,7 +130,7 @@ export default function TeamHeader({
         <div className="flex flex-col">
           <Link
             href={`/${locale}/teams/${id}/${name}/squad`}
-            className="hover:no-underline  hover:text-custom-gray tracking-wide ml-6"
+            className="hover:no-underline  hover:text-custom-gray tracking-wide ml-6 max-sm:text-xs"
           >
             {t("squad")}
           </Link>
@@ -145,7 +145,7 @@ export default function TeamHeader({
         <div className="flex flex-col">
           <Link
             href={`/${locale}/teams/${id}/${name}/transfer`}
-            className="hover:no-underline  hover:text-custom-gray tracking-wide ml-6"
+            className="hover:no-underline  hover:text-custom-gray tracking-wide ml-6 max-sm:text-xs"
           >
             {t("transfer")}
           </Link>

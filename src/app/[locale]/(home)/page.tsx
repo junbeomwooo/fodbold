@@ -49,6 +49,7 @@ const getAllLeagues = async () => {
     },
   });
 
+  /** API가 일일 한도치 또는 분당 한도치에 초과하였을 경우 알림메세지 보여주기 */
   // const data = await response.json();
   // console.log("AHAHAHHA");
   // console.log(data?.errors?.requests);

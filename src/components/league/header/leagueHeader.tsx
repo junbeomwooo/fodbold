@@ -1,6 +1,6 @@
 import React from "react";
 import Image from "next/image";
-import {FOOTBALL_IMAGE} from "../../../app/[locale]/(home)/page";
+import { FOOTBALL_IMAGE } from "../../../app/[locale]/(home)/page";
 
 import { useTranslations } from "next-intl";
 
@@ -9,8 +9,25 @@ import Link from "next/link";
 
 import { usePathname } from "next/navigation";
 
-export default function LeagueHeader({id, seasons ,setSelectedYear, selectedYear ,locale, league, setSelectedYearChanged, onHandleSeasonChange }:{id:number , seasons:any, setSelectedYear:any, selectedYear:number, locale:string, league:string, setSelectedYearChanged?:any ,onHandleSeasonChange?:any}) {
-  
+export default function LeagueHeader({
+  id,
+  seasons,
+  setSelectedYear,
+  selectedYear,
+  locale,
+  league,
+  setSelectedYearChanged,
+  onHandleSeasonChange,
+}: {
+  id: number;
+  seasons: any;
+  setSelectedYear: any;
+  selectedYear: number;
+  locale: string;
+  league: string;
+  setSelectedYearChanged?: any;
+  onHandleSeasonChange?: any;
+}) {
   /** 번역 */
   const l = useTranslations("league");
 
@@ -23,9 +40,9 @@ export default function LeagueHeader({id, seasons ,setSelectedYear, selectedYear
   const totalYears = seasons?.seasons;
 
   return (
-   <>
-          {/** header */}
-          <div className="w-full h-auto bg-white rounded-xl px-8 pt-10  border-slate-200 border border-solid dark:bg-custom-dark dark:border-0 max-sm:px-4 ">
+    <>
+      {/** header */}
+      <div className="w-full h-auto bg-white rounded-xl px-8 pt-10  border-slate-200 border border-solid dark:bg-custom-dark dark:border-0 max-sm:px-4 ">
         <div className="flex items-center justify-between">
           <div className="flex">
             <Image
@@ -47,9 +64,9 @@ export default function LeagueHeader({id, seasons ,setSelectedYear, selectedYear
               className="border border-black rounded-full text-xsm p-1.5 font-medium appearance-none pr-5 pl-3 dark:bg-custom-dark dark:border-custom-gray2"
               onChange={(e) => {
                 setSelectedYear(parseInt(e.currentTarget.value));
-                onHandleSeasonChange(true)
-                if(setSelectedYearChanged) {
-                  setSelectedYearChanged(true)
+                onHandleSeasonChange(true);
+                if (setSelectedYearChanged) {
+                  setSelectedYearChanged(true);
                 }
               }}
               value={selectedYear}
@@ -78,12 +95,12 @@ export default function LeagueHeader({id, seasons ,setSelectedYear, selectedYear
           <div className="flex flex-col">
             <Link
               href={`/${locale}/leagues/${id}/${league}/overview`}
-              className="hover:no-underline  hover:text-custom-gray tracking-wide"
+              className="hover:no-underline  hover:text-custom-gray tracking-wide max-sm:text-xs"
             >
               {l("overview")}
             </Link>
             {pathname === `/${locale}/leagues/${id}/${league}/overview` ? (
-              <div className="bg-green-600 w-auto h-1 mt-6 rounded-full"></div>
+              <div className="bg-green-600 w-auto h-1 mt-6 rounded-full "></div>
             ) : (
               <></>
             )}
@@ -91,7 +108,7 @@ export default function LeagueHeader({id, seasons ,setSelectedYear, selectedYear
           <div>
             <Link
               href={`/${locale}/leagues/${id}/${league}/tables`}
-              className="ml-6 hover:no-underline hover:text-custom-gray tracking-wide"
+              className="ml-6 hover:no-underline hover:text-custom-gray tracking-wide max-sm:text-xs"
             >
               {l("table")}
             </Link>
@@ -106,7 +123,7 @@ export default function LeagueHeader({id, seasons ,setSelectedYear, selectedYear
             <div>
               <Link
                 href={`/${locale}/leagues/${id}/${league}/playoff`}
-                className="ml-6 hover:no-underline hover:text-custom-gray tracking-wide"
+                className="ml-6 hover:no-underline hover:text-custom-gray tracking-wide max-sm:text-xs"
               >
                 {l("knockout")}
               </Link>
@@ -120,7 +137,7 @@ export default function LeagueHeader({id, seasons ,setSelectedYear, selectedYear
           <div>
             <Link
               href={`/${locale}/leagues/${id}/${league}/matches`}
-              className="ml-6 hover:no-underline hover:text-custom-gray tracking-wide"
+              className="ml-6 hover:no-underline hover:text-custom-gray tracking-wide max-sm:text-xs"
             >
               {l("matches")}
             </Link>
@@ -133,7 +150,7 @@ export default function LeagueHeader({id, seasons ,setSelectedYear, selectedYear
           <div>
             <Link
               href={`/${locale}/leagues/${id}/${league}/stats`}
-              className="ml-6 hover:no-underline hover:text-custom-gray"
+              className="ml-6 hover:no-underline hover:text-custom-gray max-sm:text-xs"
             >
               {l("stats")}
             </Link>
@@ -145,7 +162,6 @@ export default function LeagueHeader({id, seasons ,setSelectedYear, selectedYear
           </div>
         </div>
       </div>
-
-   </>
+    </>
   );
 }

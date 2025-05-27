@@ -32,8 +32,6 @@ export default function Main({
   const getToday = (timezone: string) => {
     return moment().tz(timezone).startOf("day").format("YYYY-MM-DD");
   };
-  console.log(getToday(locate));
-
 
   useEffect(() => {
     const hideDate = localStorage.getItem("HIDE_POPUP_TODAY");
@@ -41,7 +39,7 @@ export default function Main({
 
     // if hide data was yesterday or before, remove storage data.
     if (hideDate && hideDate !== today) {
-      localStorage.removeItem("HIDE_POPUP_TODAY"); 
+      localStorage.removeItem("HIDE_POPUP_TODAY");
     }
 
     // if hide data is today,hide popup ui
@@ -66,25 +64,25 @@ export default function Main({
             <hr className="border-white dark:border-[#5F5F5F] border-[0.5px]" />
             {/* Box */}
             <div
-              className="bg-white dark:bg-[#1D1D1D] p-8 rounded-b-xl shadow-lg z-60 w-[450px]"
+              className="bg-white dark:bg-[#1D1D1D] p-8 rounded-b-xl shadow-lg z-60 w-[450px] max-sm:w-[350px]"
               onClick={(e) => e.stopPropagation()} // 팝업 내부 클릭은 닫히지 않게
             >
-              <h1 className="text-2xl font-bold text-black dark:text-white">
+              <h1 className="text-2xl font-bold text-black dark:text-white ">
                 {m("notification")}
               </h1>
 
-              <p className="text-black dark:text-white text-base mt-8 font-light">
+              <p className="text-black dark:text-white text-base mt-8 font-light max-sm:text-xs  max-sm:mt-5">
                 {m("notification1")}
               </p>
-              <p className="text-black dark:text-white text-base mt-2 font-light">
+              <p className="text-black dark:text-white text-base mt-2 font-light  max-sm:text-xs">
                 {m("notification2")}
               </p>
-              <p className="text-black dark:text-white text-base mt-2 font-light">
+              <p className="text-black dark:text-white text-base mt-2 font-light  max-sm:text-xs">
                 {m("notification3")}
               </p>
               <button
                 className="mt-[40px] mb-1 px-4 py-[13px] bg-[#16A348] text-white rounded w-full 
-             transform transition-transform duration-200 hover:scale-[103%]"
+             transform transition-transform duration-200 hover:scale-[103%]  max-sm:mt-[20px]  max-sm:py-[9px]  max-sm:text-sm"
                 onClick={() => {
                   if (dontShowToday) {
                     localStorage.setItem("HIDE_POPUP_TODAY", getToday(locate));
@@ -94,7 +92,7 @@ export default function Main({
               >
                 {m("gotit")}
               </button>
-              <label className="text-sm flex items-center gap-2 cursor-pointer mt-3">
+              <label className="text-sm flex items-center gap-2 cursor-pointer mt-3  max-sm:text-xs">
                 <input
                   type="checkbox"
                   className="accent-green-600 scale-[1.1]"
