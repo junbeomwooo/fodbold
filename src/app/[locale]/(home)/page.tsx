@@ -25,6 +25,15 @@ const getStanding = async (id: number) => {
   // // latest season data
   // const yearData = yearJSON?.response[0]?.seasons?.at(-1)?.year;
 
+
+  /** 
+   * 1. 모든 데이터를 잘 받아오는 지 확인 메인페이지 및 fixtureOverView 에서 
+   * 2. 에러 핸들링이 메인페이지에서 분당 , 하루 할당량 넘었을 경우 잘 작동하는지 확인
+   * 3. 그 이후 fixtureOverView에서도 잘작동하는 지 확인
+   * 4. 모두 잘 작동한다면 나머지 에러 핸들링도 구현
+   * 현재까지 메인페이지의 page.tsx , fixtureOverView 까지 에러 핸들링 구현 완료 
+   * */
+
   const response = await fetch(
     `${FOOTBALL_URL}/standings?league=${id}&season=2024`,
     {
@@ -77,6 +86,7 @@ export default async function page({
 
     return <Main standing={standing} locale={locale} leagueData={leagueData} />;
   } catch (error) {
+    console.error(error);
     return <Main locale={locale} error={(error as Error).message} />;
   }
 }
