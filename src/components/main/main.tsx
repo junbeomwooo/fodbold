@@ -9,18 +9,22 @@ import { Fragment, useState, useEffect } from "react";
 import { useTranslations } from "next-intl";
 import { useAppSelector } from "@/lib/storeHooks";
 import moment from "moment-timezone";
+import LimittedError from "../reuse/limittedError";
 
 export default function Main({
   standing,
   locale,
   leagueData,
+  error,
 }: {
-  standing: any;
+  standing?: any;
   locale: string;
-  leagueData: any;
+  leagueData?: any;
+  error?: any;
 }) {
   const [isPopup, setIsPopup] = useState(true);
   const [dontShowToday, setDontShowToday] = useState(false);
+  const [isError, setIsError] = useState<string | false>(error);
 
   const { location }: any = useAppSelector((state) => state.locationSlice);
 
@@ -55,6 +59,7 @@ export default function Main({
         <Fixtures />
         <Standing standing={standing} locale={locale} />
       </div>
+      {isError && <LimittedError isError={isError} setIsError={setIsError} />}
       {isPopup && (
         <div className="fixed inset-0 bg-black bg-opacity-30 z-50 flex items-center justify-center">
           <div>

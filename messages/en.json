@@ -1,7 +1,7 @@
 {
   "header": {
     "matches": "Matches",
-    "news": "News",
+    "newsFromBBC": "BBC News",
     "theme": "Theme",
     "language": "Language",
     "lanOption": {
@@ -21,7 +21,13 @@
     "notification2": "If data fails to load, please try again in 1 minute.",
     "notification3": "Once the daily limit is reached, the service will resume the following day.",
     "gotit": "Got it!",
-    "dontshowtoday": "Don’t show again today"
+    "dontshowtoday": "Don’t show again today",
+    "API Limit Reached": "API Limit Reached",
+    "Too Many Requests": "Too Many Requests",
+    
+    "API Limit Reached Content": "This website uses API-Football’s free tier, which allows only 100 requests per day. Please wait until the next day before trying again.",
+
+    "Too Many Requests Content": "This website uses API-Football’s free tier, which allows only 10 requests per minute. Please wait a minute before trying again."
   },
 
   "general": {

@@ -52,9 +52,9 @@ export default function Leagues({
     }));
   };
   /** 뒤에있는 World를 맨 앞으로 옮기기 위해 */
-  const countries = Object.keys(allLeagues).sort();
-  const withoutWorld = countries.filter((v) => v !== "World");
-  const countryKeys = ["World"].concat(withoutWorld);
+  const countries = allLeagues ? Object?.keys(allLeagues).sort() : null;
+  const withoutWorld = countries?.filter((v) => v !== "World");
+  const countryKeys = withoutWorld ? ["World"]?.concat(withoutWorld): null;
 
   return (
     <div className=" w-1/5 max-lg:hidden max-xl:w-2/5  max-xl:mr-6 ">
@@ -236,7 +236,7 @@ export default function Leagues({
           </h2>
         </div>
         {allLeagueDropdown &&
-          countryKeys.map((countryName: string, countryIndex: number) => {
+          countryKeys?.map((countryName: string, countryIndex: number) => {
             const flag = allLeagues[countryName]?.flag;
             const leagues = allLeagues[countryName]?.league;
 

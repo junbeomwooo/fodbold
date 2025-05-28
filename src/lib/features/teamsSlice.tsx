@@ -5,7 +5,7 @@ const url = "https://v3.football.api-sports.io";
 
 export const getTransferInfoByTeam = createAsyncThunk(
   "teamsSlice/getTransferInfoByTeam",
-  async ({ team}: { team: number }, { rejectWithValue }) => {
+  async ({ team }: { team: number }, { rejectWithValue }) => {
     let result = null;
 
     try {
@@ -15,6 +15,11 @@ export const getTransferInfoByTeam = createAsyncThunk(
           "x-rapidapi-key": `${process.env.NEXT_PUBLIC_FOOTBALL_API_KEY}`,
         },
       });
+
+      if (response?.data?.errors) {
+        return rejectWithValue(response?.data?.errors);
+      }
+
       result = response?.data?.response;
     } catch (err) {
       const axiosErr = err as AxiosError;
@@ -39,6 +44,11 @@ export const getTeamSquad = createAsyncThunk(
           "x-rapidapi-key": `${process.env.NEXT_PUBLIC_FOOTBALL_API_KEY}`,
         },
       });
+
+      if (response?.data?.errors) {
+        return rejectWithValue(response?.data?.errors);
+      }
+
       result = response?.data?.response;
     } catch (err) {
       const axiosErr = err as AxiosError;
@@ -53,16 +63,27 @@ export const getTeamSquad = createAsyncThunk(
 
 export const getTeamsStatistics = createAsyncThunk(
   "teamsSlice/getTeamsStatistics",
-  async ({ league, season ,team}: { league: number, season:number, team: number }, { rejectWithValue }) => {
+  async (
+    { league, season, team }: { league: number; season: number; team: number },
+    { rejectWithValue }
+  ) => {
     let result = null;
 
     try {
-      const response = await axios.get(`${url}/teams/statistics?season=${season}&team=${team}&league=${league}`, {
-        headers: {
-          "x-rapidapi-host": "v3.football.api-sports.io",
-          "x-rapidapi-key": `${process.env.NEXT_PUBLIC_FOOTBALL_API_KEY}`,
-        },
-      });
+      const response = await axios.get(
+        `${url}/teams/statistics?season=${season}&team=${team}&league=${league}`,
+        {
+          headers: {
+            "x-rapidapi-host": "v3.football.api-sports.io",
+            "x-rapidapi-key": `${process.env.NEXT_PUBLIC_FOOTBALL_API_KEY}`,
+          },
+        }
+      );
+
+      if (response?.data?.errors) {
+        return rejectWithValue(response?.data?.errors);
+      }
+
       result = response?.data?.response;
     } catch (err) {
       const axiosErr = err as AxiosError;
@@ -77,7 +98,7 @@ export const getTeamsStatistics = createAsyncThunk(
 
 export const getTeamInfo = createAsyncThunk(
   "teamsSlice/getTeamInfo",
-  async ({ team}: { team:number }, { rejectWithValue }) => {
+  async ({ team }: { team: number }, { rejectWithValue }) => {
     let result = null;
 
     try {
@@ -87,6 +108,11 @@ export const getTeamInfo = createAsyncThunk(
           "x-rapidapi-key": `${process.env.NEXT_PUBLIC_FOOTBALL_API_KEY}`,
         },
       });
+
+      if (response?.data?.errors) {
+        return rejectWithValue(response?.data?.errors);
+      }
+
       result = response?.data?.response[0];
     } catch (err) {
       const axiosErr = err as AxiosError;
@@ -99,15 +125,13 @@ export const getTeamInfo = createAsyncThunk(
   }
 );
 
-
 export const teamsSlice = createSlice({
   name: "teamsSlice",
   initialState: {
     statics: null,
-    squads : null,
+    squads: null,
     transfer: null,
     teamInfo: null,
-    
   },
   reducers: {
     // 현재 상태값 불러오기

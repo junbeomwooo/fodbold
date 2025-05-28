@@ -1,7 +1,7 @@
 {
   "header": {
     "matches": "Kampe",
-    "news": "Nyheder",
+    "newsFromBBC": "BBC Nyheder",
     "theme": "Tema",
     "language": "Sprog",
     "lanOption": {
@@ -21,7 +21,9 @@
     "notification2": "Hvis data ikke indlæses, så prøv igen om 1 minut.",
     "notification3": "Når den daglige grænse er nået, genoptages tjenesten næste dag.",
     "gotit": "Forstået!",
-    "dontshowtoday": "Vis ikke igen i dag"
+    "dontshowtoday": "Vis ikke igen i dag",
+    "API Limit Reached": "API-grænse nået",
+    "Too Many Requests": "For mange forespørgsler"
   },
 
   "general": {

@@ -15,6 +15,11 @@ export const getTrophiesByPlayer = createAsyncThunk(
           "x-rapidapi-key": `${process.env.NEXT_PUBLIC_FOOTBALL_API_KEY}`,
         },
       });
+
+      if (response?.data?.errors) {
+        return rejectWithValue(response?.data?.errors);
+      }
+
       result = response?.data?.response;
     } catch (err) {
       const axiosErr = err as AxiosError;
@@ -39,6 +44,11 @@ export const getTeamsByPlayer = createAsyncThunk(
           "x-rapidapi-key": `${process.env.NEXT_PUBLIC_FOOTBALL_API_KEY}`,
         },
       });
+
+      if (response?.data?.errors) {
+        return rejectWithValue(response?.data?.errors);
+      }
+
       result = response?.data?.response;
     } catch (err) {
       const axiosErr = err as AxiosError;
@@ -69,6 +79,11 @@ export const getPlayerStatistics = createAsyncThunk(
           },
         }
       );
+
+      if (response?.data?.errors) {
+        return rejectWithValue(response?.data?.errors);
+      }
+
       result = response?.data?.response;
     } catch (err) {
       const axiosErr = err as AxiosError;
@@ -93,6 +108,11 @@ export const getSeasonByPlayer = createAsyncThunk(
           "x-rapidapi-key": `${process.env.NEXT_PUBLIC_FOOTBALL_API_KEY}`,
         },
       });
+
+      if (response?.data?.errors) {
+        return rejectWithValue(response?.data?.errors);
+      }
+
       result = response?.data?.response;
     } catch (err) {
       const axiosErr = err as AxiosError;

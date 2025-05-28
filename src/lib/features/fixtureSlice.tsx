@@ -26,8 +26,12 @@ export const getFixtruesByRound = createAsyncThunk(
           },
         }
       );
-      result = response.data.response;
 
+      if (response?.data?.errors) {
+        return rejectWithValue(response?.data?.errors);
+      }
+
+      result = response.data.response;
     } catch (err) {
       const axiosErr = err as AxiosError;
       console.group("getFixtruesByRound Error");
@@ -43,7 +47,11 @@ export const getFixtruesByRound = createAsyncThunk(
 export const getH2H = createAsyncThunk(
   "fixtureSlice/getH2H",
   async (
-    { homeID, awayID, timezone }: { homeID: number; awayID: number, timezone:string },
+    {
+      homeID,
+      awayID,
+      timezone,
+    }: { homeID: number; awayID: number; timezone: string },
     { rejectWithValue }
   ) => {
     let result = null;
@@ -58,6 +66,10 @@ export const getH2H = createAsyncThunk(
           },
         }
       );
+
+      if (response?.data?.errors) {
+        return rejectWithValue(response?.data?.errors);
+      }
 
       result = response.data.response;
     } catch (err) {
@@ -85,6 +97,10 @@ export const getInjuries = createAsyncThunk(
         },
       });
 
+      if (response?.data?.errors) {
+        return rejectWithValue(response?.data?.errors);
+      }
+
       result = response.data.response;
     } catch (err) {
       const axiosErr = err as AxiosError;
@@ -100,16 +116,26 @@ export const getInjuries = createAsyncThunk(
 // 해당되는 경기 정보 가져오기
 export const getFixtures = createAsyncThunk(
   "fixtureSlice/getFixtures",
-  async ({ id, timezone }: { id: number, timezone: string }, { rejectWithValue }) => {
+  async (
+    { id, timezone }: { id: number; timezone: string },
+    { rejectWithValue }
+  ) => {
     let result = null;
 
     try {
-      const response = await axios.get(`${url}/fixtures?id=${id}&timezone=${timezone}`, {
-        headers: {
-          "x-rapidapi-host": "v3.football.api-sports.io",
-          "x-rapidapi-key": `${process.env.NEXT_PUBLIC_FOOTBALL_API_KEY}`,
-        },
-      });
+      const response = await axios.get(
+        `${url}/fixtures?id=${id}&timezone=${timezone}`,
+        {
+          headers: {
+            "x-rapidapi-host": "v3.football.api-sports.io",
+            "x-rapidapi-key": `${process.env.NEXT_PUBLIC_FOOTBALL_API_KEY}`,
+          },
+        }
+      );
+
+      if (response?.data?.errors) {
+        return rejectWithValue(response?.data?.errors);
+      }
 
       result = response.data.response[0];
     } catch (err) {
@@ -126,16 +152,30 @@ export const getFixtures = createAsyncThunk(
 // 해당 팀의 경기 정보 가져오기
 export const getFixturesByTeam = createAsyncThunk(
   "fixtureSlice/getFixturesByTeam",
-  async ({ team, season, timezone }: { team: number, season: number ,timezone: string }, { rejectWithValue }) => {
+  async (
+    {
+      team,
+      season,
+      timezone,
+    }: { team: number; season: number; timezone: string },
+    { rejectWithValue }
+  ) => {
     let result = null;
 
     try {
-      const response = await axios.get(`${url}/fixtures?team=${team}&season=${season}&timezone=${timezone}`, {
-        headers: {
-          "x-rapidapi-host": "v3.football.api-sports.io",
-          "x-rapidapi-key": `${process.env.NEXT_PUBLIC_FOOTBALL_API_KEY}`,
-        },
-      });
+      const response = await axios.get(
+        `${url}/fixtures?team=${team}&season=${season}&timezone=${timezone}`,
+        {
+          headers: {
+            "x-rapidapi-host": "v3.football.api-sports.io",
+            "x-rapidapi-key": `${process.env.NEXT_PUBLIC_FOOTBALL_API_KEY}`,
+          },
+        }
+      );
+
+      if (response?.data?.errors) {
+        return rejectWithValue(response?.data?.errors);
+      }
 
       result = response.data.response;
     } catch (err) {

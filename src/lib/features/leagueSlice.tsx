@@ -6,31 +6,42 @@ const url = "https://v3.football.api-sports.io";
 /** Yellow , Red 카드 많이 받은 선수 */
 export const getTopYellowRed = createAsyncThunk(
   "leagueSlice/getTopYellowRed",
-  async ({ leagueID, season }: { leagueID: number, season: number }, { rejectWithValue }) => {
+  async (
+    { leagueID, season }: { leagueID: number; season: number },
+    { rejectWithValue }
+  ) => {
     let result = null;
 
     try {
-
       const [yellow, red] = await Promise.all([
-        axios.get(`${url}/players/topyellowcards?season=${season}&league=${leagueID}`, {
-          headers: {
-            "x-rapidapi-host": "v3.football.api-sports.io",
-            "x-rapidapi-key": `${process.env.NEXT_PUBLIC_FOOTBALL_API_KEY}`,
-          },
-        }),
-        axios.get(`${url}/players/topredcards?season=${season}&league=${leagueID}`, {
-          headers: {
-            "x-rapidapi-host": "v3.football.api-sports.io",
-            "x-rapidapi-key": `${process.env.NEXT_PUBLIC_FOOTBALL_API_KEY}`,
-          },
-        })
-      ])
+        axios.get(
+          `${url}/players/topyellowcards?season=${season}&league=${leagueID}`,
+          {
+            headers: {
+              "x-rapidapi-host": "v3.football.api-sports.io",
+              "x-rapidapi-key": `${process.env.NEXT_PUBLIC_FOOTBALL_API_KEY}`,
+            },
+          }
+        ),
+        axios.get(
+          `${url}/players/topredcards?season=${season}&league=${leagueID}`,
+          {
+            headers: {
+              "x-rapidapi-host": "v3.football.api-sports.io",
+              "x-rapidapi-key": `${process.env.NEXT_PUBLIC_FOOTBALL_API_KEY}`,
+            },
+          }
+        ),
+      ]);
+
+      if (yellow?.data?.errors || red?.data?.errors) {
+        return rejectWithValue(yellow?.data?.errors || red?.data?.errors);
+      }
 
       result = {
         yellow: yellow.data.response,
-        red: red.data.response
-      }
-      
+        red: red.data.response,
+      };
     } catch (err) {
       const axiosErr = err as AxiosError;
       console.group("getTopScore Error");
@@ -41,37 +52,47 @@ export const getTopYellowRed = createAsyncThunk(
     return result;
   }
 );
-
 
 /** 득점왕 및 어시왕 정보 가져오기*/
 export const getTopScoreAssist = createAsyncThunk(
   "leagueSlice/getTopScore",
-  async ({ season, leagueID }: { season: number, leagueID: number }, { rejectWithValue }) => {
+  async (
+    { season, leagueID }: { season: number; leagueID: number },
+    { rejectWithValue }
+  ) => {
     let result = null;
 
     try {
-
       const [goal, assist] = await Promise.all([
-        axios.get(`${url}/players/topscorers?season=${season}&league=${leagueID}`, {
-          headers: {
-            "x-rapidapi-host": "v3.football.api-sports.io",
-            "x-rapidapi-key": `${process.env.NEXT_PUBLIC_FOOTBALL_API_KEY}`,
-          },
-        }),
-        axios.get(`${url}/players/topassists?season=${season}&league=${leagueID}`, {
-          headers: {
-            "x-rapidapi-host": "v3.football.api-sports.io",
-            "x-rapidapi-key": `${process.env.NEXT_PUBLIC_FOOTBALL_API_KEY}`,
-          },
-        })
-      ])
+        axios.get(
+          `${url}/players/topscorers?season=${season}&league=${leagueID}`,
+          {
+            headers: {
+              "x-rapidapi-host": "v3.football.api-sports.io",
+              "x-rapidapi-key": `${process.env.NEXT_PUBLIC_FOOTBALL_API_KEY}`,
+            },
+          }
+        ),
+        axios.get(
+          `${url}/players/topassists?season=${season}&league=${leagueID}`,
+          {
+            headers: {
+              "x-rapidapi-host": "v3.football.api-sports.io",
+              "x-rapidapi-key": `${process.env.NEXT_PUBLIC_FOOTBALL_API_KEY}`,
+            },
+          }
+        ),
+      ]);
+
+
+      if (goal?.data?.errors || assist?.data?.errors) {
+        return rejectWithValue(goal?.data?.errors || assist?.data?.errors);
+      }
 
       result = {
         goal: goal.data.response,
-        assist: assist.data.response
-      }
-      
-      
+        assist: assist.data.response,
+      };
     } catch (err) {
       const axiosErr = err as AxiosError;
       console.group("getTopScore Error");
@@ -82,7 +103,6 @@ export const getTopScoreAssist = createAsyncThunk(
     return result;
   }
 );
-
 
 /** 리그의 경기 정보 가져오기 */
 export const getMatches = createAsyncThunk(
@@ -112,8 +132,11 @@ export const getMatches = createAsyncThunk(
         }
       );
 
+      if (response?.data?.errors) {
+        return rejectWithValue(response?.data?.errors);
+      }
+
       result = response?.data?.response;
-      
     } catch (err) {
       const axiosErr = err as AxiosError;
       console.group("getMatches Error");
@@ -139,6 +162,11 @@ export const getLeague = createAsyncThunk(
           "x-rapidapi-key": `${process.env.NEXT_PUBLIC_FOOTBALL_API_KEY}`,
         },
       });
+
+      if (response?.data?.errors) {
+        return rejectWithValue(response?.data?.errors);
+      }
+
 
       result = response.data.response[0];
     } catch (err) {
@@ -169,6 +197,11 @@ export const getStanding = createAsyncThunk(
         }
       );
 
+      if (response?.data?.errors) {
+        return rejectWithValue(response?.data?.errors);
+      }
+
+
       result = response.data.response[0].league.standings;
     } catch (err) {
       const axiosErr = err as AxiosError;
@@ -184,19 +217,21 @@ export const getStanding = createAsyncThunk(
 // 하나의 팀 ID를 통한 모든 리그 정보 가져오기
 export const getAllLeaguesByTeam = createAsyncThunk(
   "leagueSlice/getAllLeaguesByTeam",
-  async ({ team }: { team:number }, { rejectWithValue }) => {
+  async ({ team }: { team: number }, { rejectWithValue }) => {
     let result = null;
 
     try {
-      const response = await axios.get(
-        `${url}/leagues?team=${team}`,
-        {
-          headers: {
-            "x-rapidapi-host": "v3.football.api-sports.io",
-            "x-rapidapi-key": `${process.env.NEXT_PUBLIC_FOOTBALL_API_KEY}`,
-          },
-        }
-      );
+      const response = await axios.get(`${url}/leagues?team=${team}`, {
+        headers: {
+          "x-rapidapi-host": "v3.football.api-sports.io",
+          "x-rapidapi-key": `${process.env.NEXT_PUBLIC_FOOTBALL_API_KEY}`,
+        },
+      });
+
+      if (response?.data?.errors) {
+        return rejectWithValue(response?.data?.errors);
+      }
+
       result = response.data.response;
     } catch (err) {
       const axiosErr = err as AxiosError;
@@ -219,8 +254,8 @@ export const leagueSlice = createSlice({
     error: null,
     topScoreAssist: null,
     topYellowRed: null,
-    leagues:null,
-    seasonChange: null
+    leagues: null,
+    seasonChange: null,
   },
   reducers: {
     // 현재 상태값 불러오기
@@ -229,17 +264,16 @@ export const leagueSlice = createSlice({
     },
 
     // 하나의 탭에서 저장한 년도
-    setSelectedSeason: (state, {payload}: {payload: any}) => {
+    setSelectedSeason: (state, { payload }: { payload: any }) => {
       state.selectedSeason = payload;
     },
 
     // 하나의 탭에서 년도값이 변경되었는지
-    setSeasonChanged: (state, {payload}: {payload: any}) => {
+    setSeasonChanged: (state, { payload }: { payload: any }) => {
       state.seasonChange = payload;
-    }
+    },
   },
   extraReducers: (builder) => {
-
     builder.addCase(
       getStanding.fulfilled,
       (state, { payload }: { payload: any }) => {
@@ -285,6 +319,7 @@ export const leagueSlice = createSlice({
 });
 
 // Action creators are generated for each case reducer function
-export const { getCurrentData, setSelectedSeason, setSeasonChanged} = leagueSlice.actions;
+export const { getCurrentData, setSelectedSeason, setSeasonChanged } =
+  leagueSlice.actions;
 
 export default leagueSlice.reducer;

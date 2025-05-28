@@ -1,7 +1,7 @@
 {
   "header": {
     "matches": "경기",
-    "news": "뉴스",
+    "newsFromBBC": "BBC 뉴스",
     "theme": "테마",
     "language": "언어",
     "lanOption": {
@@ -21,7 +21,9 @@
     "notification2": "데이터 로딩에 실패한 경우 1분 후 다시 시도해주세요.",
     "notification3": "일일 제한에 도달하면 서비스는 다음 날에 다시 시작됩니다.",
     "gotit": "확인했어요!",
-    "dontshowtoday": "오늘 하루 보지 않기"
+    "dontshowtoday": "오늘 하루 보지 않기",
+    "API Limit Reached": "API 사용 한도 초과",
+    "Too Many Requests": "요청이 너무 많습니다"
   },
 
   "general": {

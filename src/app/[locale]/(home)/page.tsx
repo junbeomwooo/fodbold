@@ -50,9 +50,15 @@ const getAllLeagues = async () => {
   });
 
   /** API가 일일 한도치 또는 분당 한도치에 초과하였을 경우 알림메세지 보여주기 */
-  // const data = await response.json();
-  // console.log("AHAHAHHA");
-  // console.log(data?.errors?.requests);
+  const data = await response.json();
+
+  if (data?.errors?.rateLimit) {
+    throw new Error("Too Many Requests");
+  }
+
+  if (data?.errors?.requests) {
+    throw new Error("API Limit Reached");
+  }
 
   return response.json();
 };
@@ -62,11 +68,15 @@ export default async function page({
 }: {
   params: { locale: string };
 }) {
-  /** epl 스탠딩 받아오기 */
-  const [standing] = (await getStanding(39)).response;
+  try {
+    /** epl 스탠딩 받아오기 */
+    const [standing] = (await getStanding(39)).response;
 
-  /** 전 세계 리그정보 가져오기 */
-  const leagueData = (await getAllLeagues()).response;
+    /** 전 세계 리그정보 가져오기 */
+    const leagueData = (await getAllLeagues()).response;
 
-  return <Main standing={standing} locale={locale} leagueData={leagueData} />;
+    return <Main standing={standing} locale={locale} leagueData={leagueData} />;
+  } catch (error) {
+    return <Main locale={locale} error={(error as Error).message} />;
+  }
 }
