@@ -64,6 +64,7 @@ const FixturesOverView = ({ id, locale }: { id: number; locale: string }) => {
         const { payload } = await dispatch(
           getFixtures({ id: id, timezone: locate })
         ).unwrap();
+        
         await Promise.all([
           dispatch(getInjuries({ id: id })).unwrap(),
           dispatch(

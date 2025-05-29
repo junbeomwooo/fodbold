@@ -16,8 +16,11 @@ export const getTransferInfoByTeam = createAsyncThunk(
         },
       });
 
-      if (response?.data?.errors) {
-        return rejectWithValue(response?.data?.errors);
+      if (
+        response?.data?.errors &&
+        Object.keys(response.data.errors).length > 0
+      ) {
+        return rejectWithValue(response.data.errors);
       }
 
       result = response?.data?.response;
@@ -45,8 +48,11 @@ export const getTeamSquad = createAsyncThunk(
         },
       });
 
-      if (response?.data?.errors) {
-        return rejectWithValue(response?.data?.errors);
+      if (
+        response?.data?.errors &&
+        Object.keys(response.data.errors).length > 0
+      ) {
+        return rejectWithValue(response.data.errors);
       }
 
       result = response?.data?.response;
@@ -80,8 +86,11 @@ export const getTeamsStatistics = createAsyncThunk(
         }
       );
 
-      if (response?.data?.errors) {
-        return rejectWithValue(response?.data?.errors);
+      if (
+        response?.data?.errors &&
+        Object.keys(response.data.errors).length > 0
+      ) {
+        return rejectWithValue(response.data.errors);
       }
 
       result = response?.data?.response;
@@ -109,8 +118,11 @@ export const getTeamInfo = createAsyncThunk(
         },
       });
 
-      if (response?.data?.errors) {
-        return rejectWithValue(response?.data?.errors);
+      if (
+        response?.data?.errors &&
+        Object.keys(response.data.errors).length > 0
+      ) {
+        return rejectWithValue(response.data.errors);
       }
 
       result = response?.data?.response[0];

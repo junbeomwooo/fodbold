@@ -27,8 +27,13 @@ export const getFixtruesByRound = createAsyncThunk(
         }
       );
 
-      if (response?.data?.errors) {
-        return rejectWithValue(response?.data?.errors);
+      console.log(response);
+
+      if (
+        response?.data?.errors &&
+        Object.keys(response.data.errors).length > 0
+      ) {
+        return rejectWithValue(response.data.errors);
       }
 
       result = response.data.response;
@@ -67,8 +72,11 @@ export const getH2H = createAsyncThunk(
         }
       );
 
-      if (response?.data?.errors) {
-        return rejectWithValue(response?.data?.errors);
+      if (
+        response?.data?.errors &&
+        Object.keys(response.data.errors).length > 0
+      ) {
+        return rejectWithValue(response.data.errors);
       }
 
       result = response.data.response;
@@ -97,8 +105,11 @@ export const getInjuries = createAsyncThunk(
         },
       });
 
-      if (response?.data?.errors) {
-        return rejectWithValue(response?.data?.errors);
+      if (
+        response?.data?.errors &&
+        Object.keys(response.data.errors).length > 0
+      ) {
+        return rejectWithValue(response.data.errors);
       }
 
       result = response.data.response;
@@ -132,9 +143,13 @@ export const getFixtures = createAsyncThunk(
           },
         }
       );
+      console.log(response);
 
-      if (response?.data?.errors) {
-        return rejectWithValue(response?.data?.errors);
+      if (
+        response?.data?.errors &&
+        Object.keys(response.data.errors).length > 0
+      ) {
+        return rejectWithValue(response.data.errors);
       }
 
       result = response.data.response[0];
@@ -173,8 +188,11 @@ export const getFixturesByTeam = createAsyncThunk(
         }
       );
 
-      if (response?.data?.errors) {
-        return rejectWithValue(response?.data?.errors);
+      if (
+        response?.data?.errors &&
+        Object.keys(response.data.errors).length > 0
+      ) {
+        return rejectWithValue(response.data.errors);
       }
 
       result = response.data.response;

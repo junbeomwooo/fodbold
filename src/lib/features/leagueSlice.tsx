@@ -34,7 +34,11 @@ export const getTopYellowRed = createAsyncThunk(
         ),
       ]);
 
-      if (yellow?.data?.errors || red?.data?.errors) {
+      if (
+        (yellow?.data?.errors || red?.data?.errors) &&
+        (Object.keys(yellow.data.errors).length > 0 ||
+          Object.keys(red.data.errors).length > 0)
+      ) {
         return rejectWithValue(yellow?.data?.errors || red?.data?.errors);
       }
 
@@ -84,8 +88,11 @@ export const getTopScoreAssist = createAsyncThunk(
         ),
       ]);
 
-
-      if (goal?.data?.errors || assist?.data?.errors) {
+      if (
+        (goal?.data?.errors || assist?.data?.errors) &&
+        (Object.keys(goal.data.errors).length > 0 ||
+          Object.keys(assist.data.errors).length > 0)
+      ) {
         return rejectWithValue(goal?.data?.errors || assist?.data?.errors);
       }
 
@@ -132,8 +139,11 @@ export const getMatches = createAsyncThunk(
         }
       );
 
-      if (response?.data?.errors) {
-        return rejectWithValue(response?.data?.errors);
+      if (
+        response?.data?.errors &&
+        Object.keys(response.data.errors).length > 0
+      ) {
+        return rejectWithValue(response.data.errors);
       }
 
       result = response?.data?.response;
@@ -163,10 +173,12 @@ export const getLeague = createAsyncThunk(
         },
       });
 
-      if (response?.data?.errors) {
-        return rejectWithValue(response?.data?.errors);
+      if (
+        response?.data?.errors &&
+        Object.keys(response.data.errors).length > 0
+      ) {
+        return rejectWithValue(response.data.errors);
       }
-
 
       result = response.data.response[0];
     } catch (err) {
@@ -197,10 +209,12 @@ export const getStanding = createAsyncThunk(
         }
       );
 
-      if (response?.data?.errors) {
-        return rejectWithValue(response?.data?.errors);
+      if (
+        response?.data?.errors &&
+        Object.keys(response.data.errors).length > 0
+      ) {
+        return rejectWithValue(response.data.errors);
       }
-
 
       result = response.data.response[0].league.standings;
     } catch (err) {
@@ -228,8 +242,11 @@ export const getAllLeaguesByTeam = createAsyncThunk(
         },
       });
 
-      if (response?.data?.errors) {
-        return rejectWithValue(response?.data?.errors);
+      if (
+        response?.data?.errors &&
+        Object.keys(response.data.errors).length > 0
+      ) {
+        return rejectWithValue(response.data.errors);
       }
 
       result = response.data.response;

@@ -69,7 +69,7 @@ const getAllLeagues = async () => {
     throw new Error("API Limit Reached");
   }
 
-  return response.json();
+  return data;
 };
 
 export default async function page({
