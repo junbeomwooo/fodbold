@@ -61,12 +61,13 @@ const FixturesOverView = ({ id, locale }: { id: number; locale: string }) => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const { payload } = await dispatch(
+        const payload = await dispatch(
           getFixtures({ id: id, timezone: locate })
         ).unwrap();
         
         await Promise.all([
           dispatch(getInjuries({ id: id })).unwrap(),
+
           dispatch(
             getFixtruesByRound({
               leagueID: payload?.league.id,
@@ -74,6 +75,7 @@ const FixturesOverView = ({ id, locale }: { id: number; locale: string }) => {
               round: payload?.league.round,
             })
           ).unwrap(),
+
           dispatch(
             getH2H({
               homeID: payload?.teams.home.id,
@@ -81,6 +83,7 @@ const FixturesOverView = ({ id, locale }: { id: number; locale: string }) => {
               timezone: locate,
             })
           ).unwrap(),
+
         ]);
       } catch (error: any) {
         if (error?.rateLimit) {

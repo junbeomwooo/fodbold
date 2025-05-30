@@ -61,6 +61,9 @@ export const getH2H = createAsyncThunk(
   ) => {
     let result = null;
 
+    console.log(homeID);
+    console.log(awayID);
+
     try {
       const response = await axios.get(
         `${url}/fixtures/headtohead?h2h=${homeID}-${awayID}&timezone=${timezone}`,
@@ -71,6 +74,8 @@ export const getH2H = createAsyncThunk(
           },
         }
       );
+
+      console.log(response);
 
       if (
         response?.data?.errors &&

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { Fragment, useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import { useLocale } from "next-intl";
 
@@ -28,6 +28,7 @@ import {
   goal,
 } from "../../../public/example";
 import LeagueHeader from "./header/leagueHeader";
+import LimittedError from "../reuse/limittedError";
 
 export default function LeagueOverview({
   id,
@@ -57,39 +58,97 @@ export default function LeagueOverview({
   /** 년도 상태값 */
   const [selectedYear, setSelectedYear] = useState<number>(0);
 
+  // State value for Error components
+  const [isError, setIsError] = useState<string | null>(null);
+
+  /** 이번에 사용할 useEffect */
   useEffect(() => {
-    /** selectedYear가 비어있을 때 **/
-    if (selectedYear === 0) {
-      // 리그 시즌 데이터 가져온 뒤 상태값에 저장
-      dispatch(getLeague({ id })).then(({ payload }) => {
-        const season = payload?.seasons;
+    const fetchData = async () => {
+      try {
+        /** selectedYear가 비어있을 때 **/
+        if (selectedYear === 0) {
+          // 리그 시즌 데이터 가져온 뒤 상태값에 저장
+          const { payload } = await dispatch(getLeague({ id })).unwrap();
 
-        if (season && season.length > 0) {
-          const lastSeason = season[season?.length - 1].year;
-          // selectedYear이 변경됨으로 useEffect가 다시 실행되며 selectYear 값이 0이 아니니 else 부분으로 넘어감
-          setSelectedYear(lastSeason);
-          dispatch(setSelectedSeason(lastSeason));
-          /** 전역 상태값으로 써 공유를 하기위해 선택한 년도를 상태값으로써 저장 */
-          dispatch(setSelectedSeason(lastSeason));
+          const season = payload?.seasons;
+          if (season && season.length > 0) {
+            const lastSeason = season[season.length - 1].year;
+            // selectedYear이 변경됨으로 useEffect가 다시 실행되며 selectYear 값이 0이 아니니 else 부분으로 넘어감
+            setSelectedYear(lastSeason);
+            /** 전역 상태값으로 써 공유를 하기위해 선택한 년도를 상태값으로써 저장 */
+            dispatch(setSelectedSeason(lastSeason));
+          } else {
+            console.error("season error");
+          }
+          /** selectedYear가 비어있지 않을 때 */
         } else {
-          console.error("season error");
-        }
-      });
-      //   /** selectedYear가 비어있지 않을 때 */
-    } else {
-      // 선택된 시즌의 스탠딩 정보 가져오기
-      dispatch(getStanding({ id: id, year: selectedYear }));
-      /** 전역 상태값으로 써 공유를 하기위해 선택한 년도를 상태값으로써 저장 */
-      dispatch(setSelectedSeason(selectedYear));
+          // 선택된 시즌의 스탠딩 정보 가져오기
+          await dispatch(getStanding({ id: id, year: selectedYear })).unwrap();
 
-      /** 해당 시즌의 경기 데이터 구하기  */
-      dispatch(
-        getMatches({ leagueID: id, season: selectedYear, timezone: location })
-      );
-      /** 득점왕 및 어시왕 정보 가져오기 */
-      dispatch(getTopScoreAssist({ season: selectedYear, leagueID: id }));
-    }
+          /** 전역 상태값으로 써 공유를 하기위해 선택한 년도를 상태값으로써 저장 */
+          dispatch(setSelectedSeason(selectedYear));
+
+          /** 해당 시즌의 경기 데이터 구하기  */
+          await dispatch(
+            getMatches({
+              leagueID: id,
+              season: selectedYear,
+              timezone: location,
+            })
+          ).unwrap();
+
+          /** 득점왕 및 어시왕 정보 가져오기 */
+          await dispatch(
+            getTopScoreAssist({ season: selectedYear, leagueID: id })
+          ).unwrap();
+        }
+      } catch (error: any) {
+        if (error?.rateLimit) {
+          setIsError("Too Many Requests");
+        } else if (error?.requests) {
+          setIsError("API Limit Reached");
+        }
+        console.error("Error fetching data:", error);
+      }
+    };
+
+    fetchData();
   }, [dispatch, id, selectedYear, location]);
+
+  /** 이전에 사용하던 useEffect */
+  // useEffect(() => {
+  //   /** selectedYear가 비어있을 때 **/
+  //   if (selectedYear === 0) {
+  //     // 리그 시즌 데이터 가져온 뒤 상태값에 저장
+  //     dispatch(getLeague({ id })).then(({ payload }) => {
+  //       const season = payload?.seasons;
+
+  //       if (season && season.length > 0) {
+  //         const lastSeason = season[season?.length - 1].year;
+  //         // selectedYear이 변경됨으로 useEffect가 다시 실행되며 selectYear 값이 0이 아니니 else 부분으로 넘어감
+  //         setSelectedYear(lastSeason);
+  //         dispatch(setSelectedSeason(lastSeason));
+  //         /** 전역 상태값으로 써 공유를 하기위해 선택한 년도를 상태값으로써 저장 */
+  //         dispatch(setSelectedSeason(lastSeason));
+  //       } else {
+  //         console.error("season error");
+  //       }
+  //     });
+  //     //   /** selectedYear가 비어있지 않을 때 */
+  //   } else {
+  //     // 선택된 시즌의 스탠딩 정보 가져오기
+  //     dispatch(getStanding({ id: id, year: selectedYear }));
+  //     /** 전역 상태값으로 써 공유를 하기위해 선택한 년도를 상태값으로써 저장 */
+  //     dispatch(setSelectedSeason(selectedYear));
+
+  //     /** 해당 시즌의 경기 데이터 구하기  */
+  //     dispatch(
+  //       getMatches({ leagueID: id, season: selectedYear, timezone: location })
+  //     );
+  //     /** 득점왕 및 어시왕 정보 가져오기 */
+  //     dispatch(getTopScoreAssist({ season: selectedYear, leagueID: id }));
+  //   }
+  // }, [dispatch, id, selectedYear, location]);
 
   // location이 없다면 코펜하겐으로 고정
   const locate = location || "Europe/Copenhagen";
@@ -115,7 +174,7 @@ export default function LeagueOverview({
   };
 
   return (
-    <>
+    <Fragment>
       {/** header */}
       <LeagueHeader
         id={id}
@@ -563,6 +622,7 @@ export default function LeagueOverview({
           </div>
         </div>
       </div>
-    </>
+      {isError && <LimittedError isError={isError} setIsError={setIsError} />}
+    </Fragment>
   );
 }
