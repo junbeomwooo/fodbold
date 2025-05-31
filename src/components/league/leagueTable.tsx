@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef, Fragment } from "react";
 import { useAppDispatch, useAppSelector } from "@/lib/storeHooks";
 import leagueSlice, {
   getLeague,
@@ -14,6 +14,7 @@ import Image from "next/image";
 
 import { useTranslations } from "next-intl";
 import LeagueHeader from "./header/leagueHeader";
+import LimittedError from "../reuse/limittedError";
 
 export default function LeagueTable({
   id,
@@ -58,37 +59,120 @@ export default function LeagueTable({
     dispatch(setSeasonChanged(value));
   };
 
+  // State value for Error components
+  const [isError, setIsError] = useState<string | null>(null);
+  // Ref value for preventing duplicate error messages
+  const hadErrorMsgRef = useRef(false);
+
+  /** 현재 코드 */
   // 1. 시즌 정보가 없을 때 가져오는 useEffect
   useEffect(() => {
-    if (!season) {
-      dispatch(getLeague({ id }));
-    }
+    const fetchSeason = async () => {
+      if (!season) {
+        try {
+          await dispatch(getLeague({ id })).unwrap();
+        } catch (error: any) {
+          if (!hadErrorMsgRef.current) {
+            if (error?.rateLimit) {
+              setIsError("Too Many Requests");
+            } else if (error?.requests) {
+              setIsError("API Limit Reached");
+            }
+            hadErrorMsgRef.current = true;
+            console.error("Error fetching data:", error);
+          }
+        }
+      }
+    };
+
+    fetchSeason();
   }, [dispatch, id, season]);
 
   // 2. selectedYear가 0이면 최신 시즌을 설정하는 useEffect , stadning이 없을 경우 stadning fetch
   useEffect(() => {
-    if (season && selectedYear === 0) {
-      const lastSeason = season[season.length - 1].year;
-      setSelectedYear(lastSeason);
+    const initSelectedYear = async () => {
+      try {
+        if (season && selectedYear === 0) {
+          const lastSeason = season[season.length - 1].year;
+          setSelectedYear(lastSeason);
 
-      if (!standing) {
-        dispatch(getStanding({ id, year: lastSeason }));
+          if (!standing) {
+            await dispatch(getStanding({ id, year: lastSeason })).unwrap();
+          }
+        }
+      } catch (error: any) {
+        if (!hadErrorMsgRef.current) {
+          if (error?.rateLimit) {
+            setIsError("Too Many Requests");
+          } else if (error?.requests) {
+            setIsError("API Limit Reached");
+          }
+          hadErrorMsgRef.current = true;
+          console.error("Error fetching data:", error);
+        }
       }
-    }
+    };
+
+    initSelectedYear();
   }, [season, selectedYear, dispatch, id, standing]);
 
   // 3. selectedYear이 변경될 때 순위 데이터를 가져오는 useEffect
   useEffect(() => {
-    console.log(selectedYearChanged);
-    if (selectedYear !== 0 && selectedYearChanged) {
-      // 시즌 값이 변경되었을 경우 다른 탭페이지와 공유하기 위해 상태값 업데이트
-      dispatch(setSelectedSeason(selectedYear));
-      dispatch(getStanding({ id, year: selectedYear }));
-    }
+    const fetchingStanding = async () => {
+      if (selectedYear !== 0 && selectedYearChanged) {
+        try {
+          // 시즌 값이 변경되었을 경우 다른 탭페이지와 공유하기 위해 상태값 업데이트
+          await dispatch(setSelectedSeason(selectedYear));
+          await dispatch(getStanding({ id, year: selectedYear })).unwrap();
+        } catch (error: any) {
+          if (!hadErrorMsgRef.current) {
+            if (error?.rateLimit) {
+              setIsError("Too Many Requests");
+            } else if (error?.requests) {
+              setIsError("API Limit Reached");
+            }
+            hadErrorMsgRef.current = true;
+            console.error("Error fetching data:", error);
+          }
+        }
+      }
+    };
+
+    fetchingStanding();
   }, [dispatch, id, selectedYear, selectedYearChanged]);
 
+  /** 이전 코드 */
+  // // 1. 시즌 정보가 없을 때 가져오는 useEffect
+  // useEffect(() => {
+  //   if (!season) {
+  //     dispatch(getLeague({ id }));
+  //   }
+  // }, [dispatch, id, season]);
+
+  // // 2. selectedYear가 0이면 최신 시즌을 설정하는 useEffect , stadning이 없을 경우 stadning fetch
+  // useEffect(() => {
+  //   if (season && selectedYear === 0) {
+  //     const lastSeason = season[season.length - 1].year;
+  //     setSelectedYear(lastSeason);
+
+  //     if (!standing) {
+  //       dispatch(getStanding({ id, year: lastSeason }));
+  //     }
+  //   }
+  // }, [season, selectedYear, dispatch, id, standing]);
+
+  // // 3. selectedYear이 변경될 때 순위 데이터를 가져오는 useEffect
+  // useEffect(() => {
+  //   console.log(selectedYearChanged);
+  //   if (selectedYear !== 0 && selectedYearChanged) {
+  //     // 시즌 값이 변경되었을 경우 다른 탭페이지와 공유하기 위해 상태값 업데이트
+  //     dispatch(setSelectedSeason(selectedYear));
+  //     dispatch(getStanding({ id, year: selectedYear }));
+  //   }
+  // }, [dispatch, id, selectedYear, selectedYearChanged]);
+
   return (
-    <>
+    <Fragment>
       <LeagueHeader
         id={id}
         seasons={seasons}
@@ -377,6 +461,7 @@ export default function LeagueTable({
           )}
         </div>
       </div>
-    </>
+      {isError && <LimittedError isError={isError} setIsError={setIsError} />}
+    </Fragment>
   );
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef, Fragment } from "react";
 import LeagueHeader from "./header/leagueHeader";
 import { useAppDispatch, useAppSelector } from "@/lib/storeHooks";
 import { useRouter } from "next/navigation";
@@ -16,6 +16,7 @@ import { useTranslations } from "next-intl";
 
 import Image from "next/image";
 import arrow from "../../../public/img/arrow.png";
+import LimittedError from "../reuse/limittedError";
 
 export default function LeagueMatches({
   id,
@@ -72,49 +73,155 @@ export default function LeagueMatches({
     dispatch(setSeasonChanged(value));
   };
 
+  // State value for Error components
+  const [isError, setIsError] = useState<string | null>(null);
+  // Ref value for preventing duplicate error messages
+  const hadErrorMsgRef = useRef(false);
+
   // 1. 시즌 정보가 없을 때 가져오는 useEffect
   useEffect(() => {
-    if (!season) {
-      dispatch(getLeague({ id }));
-    }
+    const fetchSeason = async () => {
+      if (!season) {
+        try {
+          await dispatch(getLeague({ id })).unwrap();
+        } catch (error: any) {
+          if (!hadErrorMsgRef.current) {
+            if (error?.rateLimit) {
+              setIsError("Too Many Requests");
+            } else if (error?.requests) {
+              setIsError("API Limit Reached");
+            }
+            hadErrorMsgRef.current = true;
+            console.error("Error fetching data:", error);
+          }
+        }
+      }
+    };
+
+    fetchSeason();
   }, [dispatch, id, season]);
 
-  // 2. selectedYear가 0이면 최신 시즌을 설정하는 useEffect
+  // 2. selectedYear가 0이면 최신 시즌을 설정하는 useEffect, 매치데이터가 없을경우 매치데이터 페칭
   useEffect(() => {
-    if (season && selectedYear === 0) {
-      const lastSeason = season[season.length - 1].year;
-      setSelectedYear(lastSeason);
+    const initSelectedYear = async () => {
+      try {
+        if (season && selectedYear === 0) {
+          const lastSeason = season[season.length - 1].year;
+          setSelectedYear(lastSeason);
 
-      if (!match) {
-        dispatch(
-          getMatches({ leagueID: id, season: lastSeason, timezone: location })
-        );
+          if (!match) {
+            await dispatch(
+              getMatches({
+                leagueID: id,
+                season: lastSeason,
+                timezone: location,
+              })
+            ).unwrap();
+          }
+        }
+      } catch (error: any) {
+        if (!hadErrorMsgRef.current) {
+          if (error?.rateLimit) {
+            setIsError("Too Many Requests");
+          } else if (error?.requests) {
+            setIsError("API Limit Reached");
+          }
+          hadErrorMsgRef.current = true;
+          console.error("Error fetching data:", error);
+        }
       }
-    }
+    };
+
+    initSelectedYear();
   }, [season, selectedYear, dispatch, id, location, match]);
 
-  // 3. selectedYear이 변경될 때 데이터를 가져오는 useEffect
+  // 3. selectedYear이 변경될 때 매치 데이터를 가져오는 useEffect
   useEffect(() => {
-    if (selectedYear !== 0 && selectedYearChanged) {
-      // 시즌 값이 변경되었을 경우 다른 탭페이지와 공유하기 위해 상태값 업데이트
-      dispatch(setSelectedSeason(selectedYear));
-      dispatch(
-        getMatches({ leagueID: id, season: selectedYear, timezone: location })
-        // 시즌 값이 변경되면서 페이지네이션을 위한 filterMonth 상태값을 해당 시즌의 첫경기로 고정시키기 위해
-      ).then((payload) => {
-        const match = payload?.payload;
-        const sortedMatch = Array.isArray(match)
-          ? [...match].sort((a: any, b: any) => {
-              return a.fixture.timestamp - b.fixture.timestamp;
+    const fetchingMatchData = async () => {
+      try {
+        if (selectedYear !== 0 && selectedYearChanged) {
+          // 시즌 값이 변경되었을 경우 다른 탭페이지와 공유하기 위해 상태값 업데이트
+          await dispatch(setSelectedSeason(selectedYear));
+          const payload = await dispatch(
+            getMatches({
+              leagueID: id,
+              season: selectedYear,
+              timezone: location,
             })
-          : null;
-        if (sortedMatch) {
-          const newFilterMonth = new Date(sortedMatch[0]?.fixture?.date);
-          setFilterMonth(newFilterMonth);
+          ).unwrap();
+
+          // 시즌 값이 변경되면서 페이지네이션을 위한 filterMonth 상태값을 해당 시즌의 첫경기로 고정시키기 위해
+          const match = payload?.payload;
+          const sortedMatch = Array.isArray(match)
+            ? [...match].sort((a: any, b: any) => {
+                return a.fixture.timestamp - b.fixture.timestamp;
+              })
+            : null;
+          if (sortedMatch) {
+            const newFilterMonth = new Date(sortedMatch[0]?.fixture?.date);
+            setFilterMonth(newFilterMonth);
+          }
         }
-      });
-    }
+      } catch (error: any) {
+        if (!hadErrorMsgRef.current) {
+          if (error?.rateLimit) {
+            setIsError("Too Many Requests");
+          } else if (error?.requests) {
+            setIsError("API Limit Reached");
+          }
+          hadErrorMsgRef.current = true;
+          console.error("Error fetching data:", error);
+        }
+      }
+    };
+
+    fetchingMatchData();
   }, [dispatch, id, selectedYear, selectedYearChanged, location]);
+
+  /** 이전 코드 */
+  // // 1. 시즌 정보가 없을 때 가져오는 useEffect
+  // useEffect(() => {
+  //   if (!season) {
+  //     dispatch(getLeague({ id }));
+  //   }
+  // }, [dispatch, id, season]);
+
+  // // 2. selectedYear가 0이면 최신 시즌을 설정하는 useEffect
+  // useEffect(() => {
+  //   if (season && selectedYear === 0) {
+  //     const lastSeason = season[season.length - 1].year;
+  //     setSelectedYear(lastSeason);
+
+  //     if (!match) {
+  //       dispatch(
+  //         getMatches({ leagueID: id, season: lastSeason, timezone: location })
+  //       );
+  //     }
+  //   }
+  // }, [season, selectedYear, dispatch, id, location, match]);
+
+  // // 3. selectedYear이 변경될 때 데이터를 가져오는 useEffect
+  // useEffect(() => {
+  //   if (selectedYear !== 0 && selectedYearChanged) {
+  //     // 시즌 값이 변경되었을 경우 다른 탭페이지와 공유하기 위해 상태값 업데이트
+  //     dispatch(setSelectedSeason(selectedYear));
+  //     dispatch(
+  //       getMatches({ leagueID: id, season: selectedYear, timezone: location })
+  //       // 시즌 값이 변경되면서 페이지네이션을 위한 filterMonth 상태값을 해당 시즌의 첫경기로 고정시키기 위해
+  //     ).then((payload) => {
+  //       const match = payload?.payload;
+  //       const sortedMatch = Array.isArray(match)
+  //         ? [...match].sort((a: any, b: any) => {
+  //             return a.fixture.timestamp - b.fixture.timestamp;
+  //           })
+  //         : null;
+  //       if (sortedMatch) {
+  //         const newFilterMonth = new Date(sortedMatch[0]?.fixture?.date);
+  //         setFilterMonth(newFilterMonth);
+  //       }
+  //     });
+  //   }
+  // }, [dispatch, id, selectedYear, selectedYearChanged, location]);
 
   /** 받아온 데이터를 시간순으로 정렬 */
   const sortedMatch = Array.isArray(match)
@@ -237,7 +344,7 @@ export default function LeagueMatches({
     new Date(endDate.getFullYear(), endDate.getMonth(), 1);
 
   return (
-    <>
+    <Fragment>
       <LeagueHeader
         id={id}
         seasons={seasons}
@@ -500,6 +607,7 @@ export default function LeagueMatches({
           </div>
         )}
       </div>
-    </>
+      {isError && <LimittedError isError={isError} setIsError={setIsError} />}
+    </Fragment>
   );
 }

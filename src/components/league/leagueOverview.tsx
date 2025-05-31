@@ -68,7 +68,7 @@ export default function LeagueOverview({
         /** selectedYear가 비어있을 때 **/
         if (selectedYear === 0) {
           // 리그 시즌 데이터 가져온 뒤 상태값에 저장
-          const { payload } = await dispatch(getLeague({ id })).unwrap();
+          const payload = await dispatch(getLeague({ id })).unwrap();
 
           const season = payload?.seasons;
           if (season && season.length > 0) {
