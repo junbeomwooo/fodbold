@@ -16,12 +16,7 @@ import moment from "moment-timezone";
 
 import { useTranslations } from "next-intl";
 
-import { usePathname } from "next/navigation";
-
 import { useRouter } from "next/navigation";
-
-/** 예제 파일 */
-import { example } from "../../../../public/example";
 
 export default function LeagueSwiper({
   match,
@@ -39,9 +34,6 @@ export default function LeagueSwiper({
   // 라우터
   const router = useRouter();
 
-  // 패스네임
-  const pathname = usePathname();
-
   // match가 배열인지 확인하고, 배열이 아니면 빈 배열로 설정
   const matches = Array.isArray(match) ? match : [];
 
@@ -57,19 +49,25 @@ export default function LeagueSwiper({
   });
 
   /** 오늘이나 가장 가까운 미래의 경기의 인덱스  */
-  const todayIndex = sortedMatch?.findIndex((v: any, i: number) => {
+  let todayIndex = sortedMatch?.findIndex((v: any, i: number) => {
     return v.fixture.date.split("T")[0] >= today;
   });
+
+  // 👉 미래 경기가 하나도 없는 경우
+  if (todayIndex === -1) {
+    // 오늘 이전 경기들만 필터링해서 가장 마지막 경기 찾기
+    todayIndex =
+      sortedMatch
+        .map((_, i: number) => i) // 인덱스만 유지
+        .filter((i) => sortedMatch[i].fixture.date.split("T")[0] < today)
+        .pop() ?? 0;
+  }
 
   // 현재 년도
   const nowYear = today.substring(0, 4);
 
   /**경기 상세 페이지로 이동 */
-  const formattedLeagueURL = (
-    home: string,
-    away: string,
-    matchID: number
-  ) => {
+  const formattedLeagueURL = (home: string, away: string, matchID: number) => {
     const matchVS = `${home}-vs-${away}`;
 
     // 하이픈을 모두 삭제합니다.

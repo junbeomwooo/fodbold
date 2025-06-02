@@ -20,15 +20,9 @@ import { useTranslations } from "next-intl";
 import nowTimezone from "@/lib/nowTimezone";
 import { setSelectedSeason } from "@/lib/features/leagueSlice";
 
-/** 지울 데이터 */
-import {
-  leagueStands,
-  groupStands,
-  assist,
-  goal,
-} from "../../../public/example";
 import LeagueHeader from "./header/leagueHeader";
 import LimittedError from "../reuse/limittedError";
+import handleLimitedError from "@/lib/handlelimitedError";
 
 export default function LeagueOverview({
   id,
@@ -103,12 +97,10 @@ export default function LeagueOverview({
           ).unwrap();
         }
       } catch (error: any) {
-        if (error?.rateLimit) {
-          setIsError("Too Many Requests");
-        } else if (error?.requests) {
-          setIsError("API Limit Reached");
-        }
-        console.error("Error fetching data:", error);
+        handleLimitedError({
+          error: error,
+          setIsError: setIsError,
+        });
       }
     };
 

@@ -15,6 +15,7 @@ import Image from "next/image";
 import { useTranslations } from "next-intl";
 import LeagueHeader from "./header/leagueHeader";
 import LimittedError from "../reuse/limittedError";
+import handleLimitedError from "@/lib/handlelimitedError";
 
 export default function LeagueTable({
   id,
@@ -72,15 +73,11 @@ export default function LeagueTable({
         try {
           await dispatch(getLeague({ id })).unwrap();
         } catch (error: any) {
-          if (!hadErrorMsgRef.current) {
-            if (error?.rateLimit) {
-              setIsError("Too Many Requests");
-            } else if (error?.requests) {
-              setIsError("API Limit Reached");
-            }
-            hadErrorMsgRef.current = true;
-            console.error("Error fetching data:", error);
-          }
+          handleLimitedError({
+            error: error,
+            ref: hadErrorMsgRef,
+            setIsError: setIsError,
+          });
         }
       }
     };
@@ -101,15 +98,11 @@ export default function LeagueTable({
           }
         }
       } catch (error: any) {
-        if (!hadErrorMsgRef.current) {
-          if (error?.rateLimit) {
-            setIsError("Too Many Requests");
-          } else if (error?.requests) {
-            setIsError("API Limit Reached");
-          }
-          hadErrorMsgRef.current = true;
-          console.error("Error fetching data:", error);
-        }
+        handleLimitedError({
+          error: error,
+          ref: hadErrorMsgRef,
+          setIsError: setIsError,
+        });
       }
     };
 
@@ -125,15 +118,11 @@ export default function LeagueTable({
           await dispatch(setSelectedSeason(selectedYear));
           await dispatch(getStanding({ id, year: selectedYear })).unwrap();
         } catch (error: any) {
-          if (!hadErrorMsgRef.current) {
-            if (error?.rateLimit) {
-              setIsError("Too Many Requests");
-            } else if (error?.requests) {
-              setIsError("API Limit Reached");
-            }
-            hadErrorMsgRef.current = true;
-            console.error("Error fetching data:", error);
-          }
+          handleLimitedError({
+            error: error,
+            ref: hadErrorMsgRef,
+            setIsError: setIsError,
+          });
         }
       }
     };

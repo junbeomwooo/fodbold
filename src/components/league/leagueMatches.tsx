@@ -17,6 +17,7 @@ import { useTranslations } from "next-intl";
 import Image from "next/image";
 import arrow from "../../../public/img/arrow.png";
 import LimittedError from "../reuse/limittedError";
+import handleLimitedError from "@/lib/handlelimitedError";
 
 export default function LeagueMatches({
   id,
@@ -85,15 +86,11 @@ export default function LeagueMatches({
         try {
           await dispatch(getLeague({ id })).unwrap();
         } catch (error: any) {
-          if (!hadErrorMsgRef.current) {
-            if (error?.rateLimit) {
-              setIsError("Too Many Requests");
-            } else if (error?.requests) {
-              setIsError("API Limit Reached");
-            }
-            hadErrorMsgRef.current = true;
-            console.error("Error fetching data:", error);
-          }
+          handleLimitedError({
+            error: error,
+            ref: hadErrorMsgRef,
+            setIsError: setIsError,
+          });
         }
       }
     };
@@ -120,15 +117,11 @@ export default function LeagueMatches({
           }
         }
       } catch (error: any) {
-        if (!hadErrorMsgRef.current) {
-          if (error?.rateLimit) {
-            setIsError("Too Many Requests");
-          } else if (error?.requests) {
-            setIsError("API Limit Reached");
-          }
-          hadErrorMsgRef.current = true;
-          console.error("Error fetching data:", error);
-        }
+        handleLimitedError({
+          error: error,
+          ref: hadErrorMsgRef,
+          setIsError: setIsError,
+        });
       }
     };
 
@@ -163,15 +156,11 @@ export default function LeagueMatches({
           }
         }
       } catch (error: any) {
-        if (!hadErrorMsgRef.current) {
-          if (error?.rateLimit) {
-            setIsError("Too Many Requests");
-          } else if (error?.requests) {
-            setIsError("API Limit Reached");
-          }
-          hadErrorMsgRef.current = true;
-          console.error("Error fetching data:", error);
-        }
+        handleLimitedError({
+          error: error,
+          ref: hadErrorMsgRef,
+          setIsError: setIsError,
+        });
       }
     };
 
@@ -242,6 +231,8 @@ export default function LeagueMatches({
   const filteredMatches = sortedMatch
     ? filterMatchesByMonthAndYear(sortedMatch, filterMonth.getMonth() + 1)
     : [];
+
+    console.log(filteredMatches);
 
   /** 선택한 년도와 같은 시즌 정보 가져오기 */
   const foundSeason = seasons?.seasons.find(

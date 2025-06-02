@@ -27,6 +27,7 @@ import MissedPenalty from "@/../public/img/missedPenalty.png";
 import Saved from "@/../public/img/saved.png";
 import { ImCross } from "react-icons/im";
 import LimittedError from "../reuse/limittedError";
+import handleLimitedError from "@/lib/handlelimitedError";
 
 // import { fixture } from "../../../public/example";
 
@@ -64,7 +65,7 @@ const FixturesOverView = ({ id, locale }: { id: number; locale: string }) => {
         const payload = await dispatch(
           getFixtures({ id: id, timezone: locate })
         ).unwrap();
-        
+
         await Promise.all([
           dispatch(getInjuries({ id: id })).unwrap(),
 
@@ -83,16 +84,12 @@ const FixturesOverView = ({ id, locale }: { id: number; locale: string }) => {
               timezone: locate,
             })
           ).unwrap(),
-
         ]);
       } catch (error: any) {
-        if (error?.rateLimit) {
-          setIsError("Too Many Requests");
-        }
-        if (error?.requests) {
-          setIsError("API Limit Reached");
-        }
-        console.error("Error fetching data:", error);
+        handleLimitedError({
+          error: error,
+          setIsError: setIsError,
+        });
       }
     };
     fetchData();
@@ -5269,7 +5266,7 @@ const FixturesOverView = ({ id, locale }: { id: number; locale: string }) => {
           </div>
         )}
       </div>
-      {isError && <LimittedError isError={isError} setIsError={setIsError}  />}
+      {isError && <LimittedError isError={isError} setIsError={setIsError} />}
     </Fragment>
   );
 };

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef, Fragment } from "react";
 import LeagueHeader from "./header/leagueHeader";
 
 import { useAppSelector, useAppDispatch } from "@/lib/storeHooks";
@@ -13,6 +13,9 @@ import {
   getTopYellowRed,
   setSeasonChanged,
 } from "@/lib/features/leagueSlice";
+
+import handleLimitedError from "../../lib/handlelimitedError";
+import LimittedError from "../reuse/limittedError";
 
 export default function LeagueStats({
   locale,
@@ -56,44 +59,142 @@ export default function LeagueStats({
     dispatch(setSeasonChanged(value));
   };
 
+  // State value for Error components
+  const [isError, setIsError] = useState<string | null>(null);
+  // Ref value for preventing duplicate error messages
+  const hadErrorMsgRef = useRef(false);
+
+  /** 현재 코드 */
   // // 1. 시즌 정보가 없을 때 가져오는 useEffect
   useEffect(() => {
-    if (!season) {
-      dispatch(getLeague({ id }));
-    }
+    const fetchSeason = async () => {
+      if (!season) {
+        try {
+          await dispatch(getLeague({ id })).unwrap();
+        } catch (error: any) {
+          handleLimitedError({
+            error: error,
+            ref: hadErrorMsgRef,
+            setIsError: setIsError,
+          });
+        }
+      }
+    };
+
+    fetchSeason();
   }, [dispatch, id, season]);
 
   // 2. selectedYear가 0이면 최신 시즌을 설정하는 useEffect , 데이터가 없을 경우 데이터 fetch
   useEffect(() => {
-    if (season && selectedYear === 0) {
-      const lastSeason = season[season.length - 1].year;
-      setSelectedYear(lastSeason);
+    const initSelectedYear = async () => {
+      try {
+        if (season && selectedYear === 0) {
+          const lastSeason = season[season.length - 1].year;
+          setSelectedYear(lastSeason);
 
-      if (!topScoreAssist) {
-        dispatch(getTopScoreAssist({ season: lastSeason, leagueID: id }));
+          if (!topScoreAssist) {
+            await dispatch(
+              getTopScoreAssist({ season: lastSeason, leagueID: id })
+            ).unwrap();
+          }
+        }
+      } catch (error: any) {
+        handleLimitedError({
+          error: error,
+          ref: hadErrorMsgRef,
+          setIsError: setIsError,
+        });
       }
-    }
+    };
+
+    initSelectedYear();
   }, [season, selectedYear, dispatch, id, topScoreAssist]);
 
+  // 3. 년도값이 바뀌었거나 topYellowRed가 없을 경우 yellow,red card 데이터 페칭
   useEffect(() => {
-    if (!selectedYearChanged && selectedYear && !topYellowRed) {
-      dispatch(getTopYellowRed({ season: selectedYear, leagueID: id }));
-    }
+    const fetchingYellowRedData = async () => {
+      if (!selectedYearChanged && selectedYear && !topYellowRed) {
+        try {
+          await dispatch(
+            getTopYellowRed({ season: selectedYear, leagueID: id })
+          ).unwrap();
+        } catch (error: any) {
+          handleLimitedError({
+            error: error,
+            ref: hadErrorMsgRef,
+            setIsError: setIsError,
+          });
+        }
+      }
+    };
+    fetchingYellowRedData();
   }, [dispatch, id, selectedYear, topYellowRed, selectedYearChanged]);
 
-  // 3. selectedYear이 변경될 때 순위 데이터를 가져오는 useEffect
+  // 4. selectedYear이 변경될 때 모든 데이터를 가져오는 useEffect
   useEffect(() => {
-    console.log(selectedYearChanged);
-    if (selectedYear !== 0 && selectedYearChanged) {
-      // 시즌 값이 변경되었을 경우 다른 탭페이지와 공유하기 위해 상태값 업데이트
-      dispatch(setSelectedSeason(selectedYear));
-      dispatch(getTopScoreAssist({ season: selectedYear, leagueID: id }));
-      dispatch(getTopYellowRed({ season: selectedYear, leagueID: id }));
-    }
+    const fetchingAllData = async () => {
+      if (selectedYear !== 0 && selectedYearChanged) {
+        try {
+          // 시즌 값이 변경되었을 경우 다른 탭페이지와 공유하기 위해 상태값 업데이트
+          await dispatch(setSelectedSeason(selectedYear));
+          await dispatch(
+            getTopScoreAssist({ season: selectedYear, leagueID: id })
+          ).unwrap();
+          await dispatch(
+            getTopYellowRed({ season: selectedYear, leagueID: id })
+          ).unwrap();
+        } catch (error: any) {
+          handleLimitedError({
+            error: error,
+            ref: hadErrorMsgRef,
+            setIsError: setIsError,
+          });
+        }
+      }
+    };
+
+    fetchingAllData();
   }, [dispatch, id, selectedYear, selectedYearChanged]);
 
+  /** 이전 코드 */
+  // // 1. 시즌 정보가 없을 때 가져오는 useEffect
+  // useEffect(() => {
+  //   if (!season) {
+  //     dispatch(getLeague({ id }));
+  //   }
+  // }, [dispatch, id, season]);
+
+  // // 2. selectedYear가 0이면 최신 시즌을 설정하는 useEffect , 데이터가 없을 경우 데이터 fetch
+  // useEffect(() => {
+  //   if (season && selectedYear === 0) {
+  //     const lastSeason = season[season.length - 1].year;
+  //     setSelectedYear(lastSeason);
+
+  //     if (!topScoreAssist) {
+  //       dispatch(getTopScoreAssist({ season: lastSeason, leagueID: id }));
+  //     }
+  //   }
+  // }, [season, selectedYear, dispatch, id, topScoreAssist]);
+
+  // useEffect(() => {
+  //   if (!selectedYearChanged && selectedYear && !topYellowRed) {
+  //     dispatch(getTopYellowRed({ season: selectedYear, leagueID: id }));
+  //   }
+  // }, [dispatch, id, selectedYear, topYellowRed, selectedYearChanged]);
+
+  // // 3. selectedYear이 변경될 때 순위 데이터를 가져오는 useEffect
+  // useEffect(() => {
+  //   console.log(selectedYearChanged);
+  //   if (selectedYear !== 0 && selectedYearChanged) {
+  //     // 시즌 값이 변경되었을 경우 다른 탭페이지와 공유하기 위해 상태값 업데이트
+  //     dispatch(setSelectedSeason(selectedYear));
+  //     dispatch(getTopScoreAssist({ season: selectedYear, leagueID: id }));
+  //     dispatch(getTopYellowRed({ season: selectedYear, leagueID: id }));
+  //   }
+  // }, [dispatch, id, selectedYear, selectedYearChanged]);
+
   return (
-    <>
+    <Fragment>
       <LeagueHeader
         id={id}
         seasons={seasons}
@@ -379,6 +480,7 @@ export default function LeagueStats({
           </div>
         </div>
       </div>
-    </>
+      {isError && <LimittedError isError={isError} setIsError={setIsError} />}
+    </Fragment>
   );
 }

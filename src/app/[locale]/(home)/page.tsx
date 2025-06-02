@@ -77,11 +77,12 @@ const getAllLeagues = async () => {
 };
 
 /**
- * LeagueOverView 수정했으니 데이터를 잘받아오는 지 확인
- * 리덕스를 통한 상태값을 다른 탭페이지에서도 공유하여 불필요한 데이터 페칭을 최소화하는지 확인
- * 에러가 발생하였을때 에러 핸들링이 잘되어있는지 확인 
+ * LeageMatches에서 현재 달의 데이터가 없을 경우 가까운 미래,과거 매치 경기가 있는 달로 자동으로 옮기는 거 구현
+ * LeagueKnockOut 또한 에러 핸들링 구현하기
  * 
- * 현재까지 메인페이지의 main , fixture 까지 에러 핸들링 구현 완료
+ * 현재까지 메인페이지의 main , fixture까지 에러 핸들링 구현 완료
+ * 
+ * LeagueOverView완료, LeaugeTable완료, LeagueMatches완료, LeagueStat 완료
  * */
 
 export default async function page({
