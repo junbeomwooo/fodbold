@@ -22,7 +22,7 @@ import { setSelectedSeason } from "@/lib/features/leagueSlice";
 
 import LeagueHeader from "./header/leagueHeader";
 import LimittedError from "../reuse/limittedError";
-import handleLimitedError from "@/lib/handlelimitedError";
+import handleLimitedError from "@/lib/handleLimitedError";
 
 export default function LeagueOverview({
   id,

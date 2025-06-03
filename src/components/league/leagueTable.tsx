@@ -15,7 +15,7 @@ import Image from "next/image";
 import { useTranslations } from "next-intl";
 import LeagueHeader from "./header/leagueHeader";
 import LimittedError from "../reuse/limittedError";
-import handleLimitedError from "@/lib/handlelimitedError";
+import handleLimitedError from "@/lib/handleLimitedError";
 
 export default function LeagueTable({
   id,

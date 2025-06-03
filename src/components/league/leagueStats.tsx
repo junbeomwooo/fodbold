@@ -14,7 +14,7 @@ import {
   setSeasonChanged,
 } from "@/lib/features/leagueSlice";
 
-import handleLimitedError from "../../lib/handlelimitedError";
+import handleLimitedError from "../../lib/handleLimitedError";
 import LimittedError from "../reuse/limittedError";
 
 export default function LeagueStats({

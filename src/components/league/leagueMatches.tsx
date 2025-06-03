@@ -17,7 +17,7 @@ import { useTranslations } from "next-intl";
 import Image from "next/image";
 import arrow from "../../../public/img/arrow.png";
 import LimittedError from "../reuse/limittedError";
-import handleLimitedError from "@/lib/handlelimitedError";
+import handleLimitedError from "@/lib/handleLimitedError";
 
 export default function LeagueMatches({
   id,
@@ -232,7 +232,41 @@ export default function LeagueMatches({
     ? filterMatchesByMonthAndYear(sortedMatch, filterMonth.getMonth() + 1)
     : [];
 
-    console.log(filteredMatches);
+  
+  /** 현재 달에 데이터가 없을 경우 가장 가까운 미래나 과거의 경기 찾기 */
+  if (filteredMatches.length === 0 && sortedMatch && sortedMatch.length > 0 && filterMonth.getFullYear() === new Date().getFullYear()) {
+    console.log(filterMonth);
+    const thisMonth = new Date(filterMonth);
+    thisMonth.setDate(1);
+    thisMonth.setHours(0, 0, 0, 0); // 시,분,초,밀리초 모두 0으로 설정
+
+    const timeStamp = thisMonth.getTime();
+
+    const futureMatch = sortedMatch.find((match: any) => {
+      return new Date(match.fixture.date).getTime() >= timeStamp;
+    });
+
+    const pastMatch = [...sortedMatch].reverse().find((match: any) => {
+      return new Date(match.fixture.date).getTime() <= timeStamp;
+    });
+
+
+    if (futureMatch) {
+      const nearestDate = new Date(futureMatch.fixture.date);
+      // 안전하게 월 첫날로 설정 0시 0분 초로
+      nearestDate.setDate(1);
+      nearestDate.setHours(0, 0, 0, 0);
+      setFilterMonth(nearestDate);
+    } else if (pastMatch) {
+      // 가장 가까운 과거 경기 (역순으로 찾기)
+      const nearestDate = new Date(pastMatch.fixture.date);
+      // 안전하게 월 첫날로 설정 0시 0분 초로
+      nearestDate.setDate(1);
+      nearestDate.setHours(0, 0, 0, 0);
+      setFilterMonth(nearestDate);
+    }
+  }
+
 
   /** 선택한 년도와 같은 시즌 정보 가져오기 */
   const foundSeason = seasons?.seasons.find(

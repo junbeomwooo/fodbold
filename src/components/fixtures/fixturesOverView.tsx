@@ -27,7 +27,7 @@ import MissedPenalty from "@/../public/img/missedPenalty.png";
 import Saved from "@/../public/img/saved.png";
 import { ImCross } from "react-icons/im";
 import LimittedError from "../reuse/limittedError";
-import handleLimitedError from "@/lib/handlelimitedError";
+import handleLimitedError from "@/lib/handleLimitedError";
 
 // import { fixture } from "../../../public/example";
 
