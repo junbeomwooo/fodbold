@@ -1,7 +1,7 @@
 "use client";
 
 import { useAppDispatch, useAppSelector } from "@/lib/storeHooks";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, Fragment } from "react";
 import { useRouter } from "next/navigation";
 
 import LeagueHeader from "./header/leagueHeader";
@@ -23,6 +23,9 @@ import FormatLeagueOrTeamName from "@/lib/formatLeagueOrTeamName";
 import { GiLaurelsTrophy } from "react-icons/gi";
 import ConfettiExplosion from "react-confetti-explosion";
 import ColorThief from "colorthief";
+
+import handleLimitedError from "@/lib/handleLimitedError";
+import LimittedError from "../reuse/limittedError";
 
 export default function LeagueKnockOut({
   id,
@@ -103,57 +106,132 @@ export default function LeagueKnockOut({
 
   // Match status
 
-  // scehduled
-  const scheduled = ["TBD", "NS"];
   // ongoing
   const live = ["1H", "2H", "ET", "P", "LIVE", "HT", "BT"];
-  // stopped by referee
-  const stop = ["SUSP", "INT"];
   //match finsiehd
   const finish = ["FT", "AET", "PEN"];
-  // match cancled || postponed
-  const cancle = ["PST", "CANC", "ABD"];
-  // unearned win
-  const unearned = ["AWD", "WO"];
 
   /**
    * http://localhost:3000/en/leagues/1/world-cup/playoff
    * http://localhost:3000/en/leagues/2/champions-league/playoff
    */
 
+  // State value for Error components
+  const [isError, setIsError] = useState<string | null>(null);
+  // Ref value for preventing duplicate error messages
+  const hadErrorMsgRef = useRef(false);
+
+  /** 현재 코드 */
   // 1. if there is no season data, fetch season data
   useEffect(() => {
-    if (!season) {
-      dispatch(getLeague({ id }));
-    }
+    const fetchSeason = async () => {
+      if (!season) {
+        try {
+          await dispatch(getLeague({ id })).unwrap();
+        } catch (error: any) {
+          handleLimitedError({
+            error: error,
+            ref: hadErrorMsgRef,
+            setIsError: setIsError,
+          });
+        }
+      }
+    };
+
+    fetchSeason();
   }, [dispatch, id, season]);
 
   // 2 if selectedYear has no value, set lastest season
   useEffect(() => {
-    if (season && selectedYear === 0) {
-      const lastSeason = season[season.length - 1].year;
-      setSelectedYear(lastSeason);
+    const initSelectedYear = async () => {
+      try {
+        if (season && selectedYear === 0) {
+          const lastSeason = season[season.length - 1].year;
+          setSelectedYear(lastSeason);
 
-      if (!match) {
-        dispatch(
-          getMatches({ leagueID: id, season: lastSeason, timezone: location })
-        );
+          if (!match) {
+            await dispatch(
+              getMatches({
+                leagueID: id,
+                season: lastSeason,
+                timezone: location,
+              })
+            ).unwrap();
+          }
+        }
+      } catch (error: any) {
+        handleLimitedError({
+          error: error,
+          ref: hadErrorMsgRef,
+          setIsError: setIsError,
+        });
       }
-    }
+    };
+
+    initSelectedYear();
   }, [season, selectedYear, dispatch, id, location, match]);
 
   // 3. When selected year has been changed, fetch new data for chnaged month
   useEffect(() => {
-    if (selectedYear !== 0 && selectedYearChanged) {
-      // 시즌 값이 변경되었을 경우 다른 탭페이지와 공유하기 위해 상태값 업데이트
-      dispatch(setSelectedSeason(selectedYear));
-      dispatch(
-        getMatches({ leagueID: id, season: selectedYear, timezone: location })
-      );
-    }
+    const fetchingMatch = async () => {
+      if (selectedYear !== 0 && selectedYearChanged) {
+        try {
+          // 시즌 값이 변경되었을 경우 다른 탭페이지와 공유하기 위해 상태값 업데이트
+          await dispatch(setSelectedSeason(selectedYear));
+          await dispatch(
+            getMatches({
+              leagueID: id,
+              season: selectedYear,
+              timezone: location,
+            })
+          ).unwrap();
+        } catch (error: any) {
+          handleLimitedError({
+            error: error,
+            ref: hadErrorMsgRef,
+            setIsError: setIsError,
+          });
+        }
+      }
+    };
+
+    fetchingMatch();
   }, [dispatch, id, selectedYear, selectedYearChanged, location]);
 
- // Show match scores and game time alternately every 2.5 seconds.
+  /** 이전 코드 */
+  // 1. if there is no season data, fetch season data
+  // useEffect(() => {
+  //   if (!season) {
+  //     dispatch(getLeague({ id }));
+  //   }
+  // }, [dispatch, id, season]);
+
+  // // 2 if selectedYear has no value, set lastest season
+  // useEffect(() => {
+  //   if (season && selectedYear === 0) {
+  //     const lastSeason = season[season.length - 1].year;
+  //     setSelectedYear(lastSeason);
+
+  //     if (!match) {
+  //       dispatch(
+  //         getMatches({ leagueID: id, season: lastSeason, timezone: location })
+  //       );
+  //     }
+  //   }
+  // }, [season, selectedYear, dispatch, id, location, match]);
+
+  // // 3. When selected year has been changed, fetch new data for chnaged month
+  // useEffect(() => {
+  //   if (selectedYear !== 0 && selectedYearChanged) {
+  //     // 시즌 값이 변경되었을 경우 다른 탭페이지와 공유하기 위해 상태값 업데이트
+  //     dispatch(setSelectedSeason(selectedYear));
+  //     dispatch(
+  //       getMatches({ leagueID: id, season: selectedYear, timezone: location })
+  //     );
+  //   }
+  // }, [dispatch, id, selectedYear, selectedYearChanged, location]);
+
+  // Show match scores and game time alternately every 2.5 seconds.
   useEffect(() => {
     const interval = setInterval(() => {
       setIsPoint((prev) => !prev); // match goals <-> match time
@@ -269,7 +347,7 @@ export default function LeagueKnockOut({
 
   const quarterFinals = groupdByquarter && Object.values(groupdByquarter);
   // const quarterFinals = null;
-  
+
   console.group("Quarter-finals");
   console.log(quarterFinals);
   console.groupEnd();
@@ -528,7 +606,7 @@ export default function LeagueKnockOut({
   };
 
   return (
-    <>
+    <Fragment>
       <LeagueHeader
         id={id}
         seasons={seasons}
@@ -2272,9 +2350,11 @@ export default function LeagueKnockOut({
                     );
 
                     return (
-                      <div key={i} className="w-full h-1/2 flex items-center max-lg:flex-col max-lg:h-[110px]">
-
-                         {i % 2 !== 0 && (
+                      <div
+                        key={i}
+                        className="w-full h-1/2 flex items-center max-lg:flex-col max-lg:h-[110px]"
+                      >
+                        {i % 2 !== 0 && (
                           <>
                             {/* computer */}
                             <div className="absolute left-0 top-[135px] h-1/2 border-l border-solid border-[#E8E8E8] border-[1.2px] dark:border-[#464646] max-lg:hidden"></div>
@@ -2399,8 +2479,8 @@ export default function LeagueKnockOut({
                           )}
                         </div>
 
-                       {/* hr */}
-                       <div className="flex items-center flex-1 max-lg:h-full">
+                        {/* hr */}
+                        <div className="flex items-center flex-1 max-lg:h-full">
                           <hr className="border-l border-[1.2px] border-solid border-[#E8E8E8] w-full dark:border-[#464646] max-lg:h-full" />
                         </div>
                       </div>
@@ -2989,6 +3069,8 @@ export default function LeagueKnockOut({
           </div>
         </div>
       )}
-    </>
+
+      {isError && <LimittedError isError={isError} setIsError={setIsError} />}
+    </Fragment>
   );
 }

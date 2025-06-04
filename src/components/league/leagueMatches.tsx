@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState, useRef, Fragment } from "react";
+import React, { useEffect, useState, useRef, Fragment, useMemo } from "react";
 import LeagueHeader from "./header/leagueHeader";
 import { useAppDispatch, useAppSelector } from "@/lib/storeHooks";
 import { useRouter } from "next/navigation";
@@ -144,7 +144,7 @@ export default function LeagueMatches({
           ).unwrap();
 
           // 시즌 값이 변경되면서 페이지네이션을 위한 filterMonth 상태값을 해당 시즌의 첫경기로 고정시키기 위해
-          const match = payload?.payload;
+          const match = payload;
           const sortedMatch = Array.isArray(match)
             ? [...match].sort((a: any, b: any) => {
                 return a.fixture.timestamp - b.fixture.timestamp;
@@ -228,45 +228,57 @@ export default function LeagueMatches({
   };
 
   /** 필터링된 월별 데이터 */
-  const filteredMatches = sortedMatch
+  const filteredMatches = useMemo(() => {
+    return sortedMatch
     ? filterMatchesByMonthAndYear(sortedMatch, filterMonth.getMonth() + 1)
     : [];
+  },[sortedMatch, filterMonth]) 
 
-  
+  // 아래 useEffect를 딱 한번만 실행하기 위해 첫렌더링인지 판별하기 위한 ref값
+  const renderOnce = useRef<boolean>(false);
+
   /** 현재 달에 데이터가 없을 경우 가장 가까운 미래나 과거의 경기 찾기 */
-  if (filteredMatches.length === 0 && sortedMatch && sortedMatch.length > 0 && filterMonth.getFullYear() === new Date().getFullYear()) {
-    console.log(filterMonth);
-    const thisMonth = new Date(filterMonth);
-    thisMonth.setDate(1);
-    thisMonth.setHours(0, 0, 0, 0); // 시,분,초,밀리초 모두 0으로 설정
+  useEffect(() => {
+    if (
+      !renderOnce.current && 
+      filteredMatches.length === 0 &&
+      sortedMatch &&
+      sortedMatch.length > 0 &&
+      filterMonth.getFullYear() === new Date().getFullYear()
+    ) {
+      
+      renderOnce.current = true;
+      
+      const thisMonth = new Date(filterMonth);
+      thisMonth.setDate(1);
+      thisMonth.setHours(0, 0, 0, 0); // 시,분,초,밀리초 모두 0으로 설정
 
-    const timeStamp = thisMonth.getTime();
+      const timeStamp = thisMonth.getTime();
 
-    const futureMatch = sortedMatch.find((match: any) => {
-      return new Date(match.fixture.date).getTime() >= timeStamp;
-    });
+      const futureMatch = sortedMatch.find((match: any) => {
+        return new Date(match.fixture.date).getTime() >= timeStamp;
+      });
 
-    const pastMatch = [...sortedMatch].reverse().find((match: any) => {
-      return new Date(match.fixture.date).getTime() <= timeStamp;
-    });
+      const pastMatch = [...sortedMatch].reverse().find((match: any) => {
+        return new Date(match.fixture.date).getTime() <= timeStamp;
+      });
 
-
-    if (futureMatch) {
-      const nearestDate = new Date(futureMatch.fixture.date);
-      // 안전하게 월 첫날로 설정 0시 0분 초로
-      nearestDate.setDate(1);
-      nearestDate.setHours(0, 0, 0, 0);
-      setFilterMonth(nearestDate);
-    } else if (pastMatch) {
-      // 가장 가까운 과거 경기 (역순으로 찾기)
-      const nearestDate = new Date(pastMatch.fixture.date);
-      // 안전하게 월 첫날로 설정 0시 0분 초로
-      nearestDate.setDate(1);
-      nearestDate.setHours(0, 0, 0, 0);
-      setFilterMonth(nearestDate);
+      if (futureMatch) {
+        const nearestDate = new Date(futureMatch.fixture.date);
+        // 안전하게 월 첫날로 설정 0시 0분 초로
+        nearestDate.setDate(1);
+        nearestDate.setHours(0, 0, 0, 0);
+        setFilterMonth(nearestDate);
+      } else if (pastMatch) {
+        // 가장 가까운 과거 경기 (역순으로 찾기)
+        const nearestDate = new Date(pastMatch.fixture.date);
+        // 안전하게 월 첫날로 설정 0시 0분 초로
+        nearestDate.setDate(1);
+        nearestDate.setHours(0, 0, 0, 0);
+        setFilterMonth(nearestDate);
+      }
     }
-  }
-
+  }, [filterMonth, filteredMatches, sortedMatch]);
 
   /** 선택한 년도와 같은 시즌 정보 가져오기 */
   const foundSeason = seasons?.seasons.find(
