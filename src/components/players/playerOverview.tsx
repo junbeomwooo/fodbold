@@ -17,6 +17,9 @@ import noImage from "@/../public/img/noimage.png";
 
 import { useTranslations } from "next-intl";
 
+import handleLimitedError from "@/lib/handleLimitedError";
+import LimittedError from "../reuse/limittedError";
+
 export default function PlayerOverview({
   locale,
   id,
@@ -57,15 +60,45 @@ export default function PlayerOverview({
   // http://localhost:3000/en/players/186/Son-Heung-Min
   // http://localhost:3000/en/players/31354/G.-Vicario
 
-  
+  // State value for Error components
+  const [isError, setIsError] = useState<string | null>(null);
+
+  /** 현재 코드 */
   useEffect(() => {
-    dispatch(getTrophiesByPlayer({ id: playerID }));
-    dispatch(getTeamsByPlayer({ id: playerID })).then((payload) => {
-      const lastestSeason =
-        payload && payload?.payload[0] && payload?.payload[0]?.seasons[0];
-      dispatch(getPlayerStatistics({ id: playerID, season: lastestSeason }));
-    });
+    const fetchData = async () => {
+      try {
+        await dispatch(getTrophiesByPlayer({ id: playerID })).unwrap();
+        const payload = await dispatch(
+          getTeamsByPlayer({ id: playerID })
+        ).unwrap();
+
+        console.log(payload);
+
+        const lastestSeason = payload && payload[0] && payload[0]?.seasons[0];
+
+        await dispatch(
+          getPlayerStatistics({ id: playerID, season: lastestSeason })
+        ).unwrap();
+      } catch (error: any) {
+        handleLimitedError({
+          error: error,
+          setIsError: setIsError,
+        });
+      }
+    };
+
+    fetchData();
   }, [dispatch, playerID]);
+
+  /** 이전 코드 */
+  // useEffect(() => {
+  //   dispatch(getTrophiesByPlayer({ id: playerID }));
+  //   dispatch(getTeamsByPlayer({ id: playerID })).then((payload) => {
+  //     const lastestSeason =
+  //       payload && payload?.payload[0] && payload?.payload[0]?.seasons[0];
+  //     dispatch(getPlayerStatistics({ id: playerID, season: lastestSeason }));
+  //   });
+  // }, [dispatch, playerID]);
 
   /** data for using */
   const playerStatics = statics && statics[0];
@@ -436,7 +469,9 @@ export default function PlayerOverview({
 
                 {/* Dribbles */}
                 <div>
-                  <h1 className="font-normal my-6 text-base">{p("dribbles")}</h1>
+                  <h1 className="font-normal my-6 text-base">
+                    {p("dribbles")}
+                  </h1>
                   {/* Attempts */}
                   <div className="flex justify-between mb-2">
                     <h2>{p("attempts")}</h2>
@@ -568,7 +603,9 @@ export default function PlayerOverview({
 
                 {/* Substitutes */}
                 <div>
-                  <h1 className="font-normal my-6 text-base">{p("substitutes")}</h1>
+                  <h1 className="font-normal my-6 text-base">
+                    {p("substitutes")}
+                  </h1>
                   {/* Bench */}
                   <div className="flex justify-between mb-2">
                     <h2>{p("bench")}</h2>
@@ -702,6 +739,8 @@ export default function PlayerOverview({
           )}
         </div>
       </div>
+
+      {isError && <LimittedError isError={isError} setIsError={setIsError} />}
     </div>
   );
 }

@@ -35,21 +35,8 @@ import arrow from "../../../public/img/arrow.png";
 // components
 import TeamHeader from "./header/teamHeader";
 
-/** for statics */
-interface Team {
-  id: number;
-  name: string;
-  logo: string;
-}
-
-interface League {
-  country: string;
-  flag: string;
-  id: number;
-  logo: string;
-  name: string;
-  stason: number;
-}
+import handleLimitedError from "@/lib/handleLimitedError";
+import LimittedError from "../reuse/limittedError";
 
 export default function TeamOverView({
   locale,
@@ -89,19 +76,22 @@ export default function TeamOverView({
   // http://localhost:3000/en/teams/57/ipswich/overview
   // http://localhost:3000/en/teams/40/liverpool/overview
 
-  /**
-   * */
+  // State value for Error components
+  const [isError, setIsError] = useState<string | null>(null);
+
+  /** 현재 코드 */
   useEffect(() => {
     const fetchData = async () => {
       try {
         /** 1. Get team squad and all leagues the team is playing in  */
         const [getAllLeaguesByTeamAction, _notused2] = await Promise.all([
           // dispatch(getTeamSquad({ team: id })),
-          dispatch(getAllLeaguesByTeam({ team: id })),
-          dispatch(getTransferInfoByTeam({ team: id })),
+          dispatch(getAllLeaguesByTeam({ team: id })).unwrap(),
+          dispatch(getTransferInfoByTeam({ team: id })).unwrap(),
         ]);
+        
         // Assign National league ID and Latest season year to variable  */
-        const leagues = getAllLeaguesByTeamAction.payload;
+        const leagues = getAllLeaguesByTeamAction;
         let nationalLeagueObj = leagues?.filter(
           (league: any) =>
             league?.league?.type === "League" &&
@@ -140,11 +130,14 @@ export default function TeamOverView({
               season: latestSeason,
               timezone: locate,
             })
-          ),
-          dispatch(getStanding({ id: nationalLeague, year: latestSeason })),
+          ).unwrap(),
+          dispatch(
+            getStanding({ id: nationalLeague, year: latestSeason })
+          ).unwrap(),
         ]);
+
         // Find the most recent match
-        const fixturesByTeam = getFixturesByTeamAction.payload;
+        const fixturesByTeam = getFixturesByTeamAction;
         const lastMatch = (fixturesByTeam ?? [])
           .filter((match: any) => {
             return (
@@ -158,18 +151,103 @@ export default function TeamOverView({
               new Date(a?.fixture?.date).getTime()
           )
           .at(0);
+          
         /** Get data of the most recent match */
         if (lastMatch?.fixture?.id) {
           await dispatch(
             getFixtures({ id: lastMatch.fixture.id, timezone: locate })
-          );
+          ).unwrap();
         }
       } catch (error) {
-        console.error("Error fetching data:", error);
+        handleLimitedError({
+          error: error,
+          setIsError: setIsError,
+        });
       }
     };
     fetchData();
   }, [dispatch, id, locate]);
+
+  /** 이전코드 */
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     try {
+  //       /** 1. Get team squad and all leagues the team is playing in  */
+  //       const [getAllLeaguesByTeamAction, _notused2] = await Promise.all([
+  //         // dispatch(getTeamSquad({ team: id })),
+  //         dispatch(getAllLeaguesByTeam({ team: id })),
+  //         dispatch(getTransferInfoByTeam({ team: id })),
+  //       ]);
+  //       // Assign National league ID and Latest season year to variable  */
+  //       const leagues = getAllLeaguesByTeamAction.payload;
+  //       let nationalLeagueObj = leagues?.filter(
+  //         (league: any) =>
+  //           league?.league?.type === "League" &&
+  //           league?.seasons?.some((v: any) => v?.current === true)
+  //       );
+
+  //       // if there is no league type data, then find cup type data
+  //       if (nationalLeagueObj.length === 0) {
+  //         nationalLeagueObj =
+  //           leagues?.filter(
+  //             (league: any) =>
+  //               league?.league?.type === "Cup" &&
+  //               league?.seasons?.some((v: any) => v?.current === true)
+  //           ) || [];
+  //       }
+
+  //       // find most recent league
+  //       const sortedNationalLeagues = [...nationalLeagueObj].sort(
+  //         (a: any, b: any) => {
+  //           const aLatestSeason = a.seasons?.at(-1)?.year || 0;
+  //           const bLatestSeason = b.seasons?.at(-1)?.year || 0;
+  //           return bLatestSeason - aLatestSeason;
+  //         }
+  //       );
+
+  //       setLeagueNational(sortedNationalLeagues[0]);
+
+  //       const nationalLeague = sortedNationalLeagues[0]?.league?.id;
+  //       const latestSeason = sortedNationalLeagues[0]?.seasons?.at(-1)?.year;
+
+  //       // /** 2. Get all matches of the team and league standings  */
+  //       const [getFixturesByTeamAction, _notused3] = await Promise.all([
+  //         dispatch(
+  //           getFixturesByTeam({
+  //             team: id,
+  //             season: latestSeason,
+  //             timezone: locate,
+  //           })
+  //         ),
+  //         dispatch(getStanding({ id: nationalLeague, year: latestSeason })),
+  //       ]);
+  //       // Find the most recent match
+  //       const fixturesByTeam = getFixturesByTeamAction.payload;
+  //       const lastMatch = (fixturesByTeam ?? [])
+  //         .filter((match: any) => {
+  //           return (
+  //             match.league.id === nationalLeague &&
+  //             ["FT", "PEN", "AET"].includes(match.fixture.status.short)
+  //           );
+  //         })
+  //         .sort(
+  //           (a: any, b: any) =>
+  //             new Date(b?.fixture?.date).getTime() -
+  //             new Date(a?.fixture?.date).getTime()
+  //         )
+  //         .at(0);
+  //       /** Get data of the most recent match */
+  //       if (lastMatch?.fixture?.id) {
+  //         await dispatch(
+  //           getFixtures({ id: lastMatch.fixture.id, timezone: locate })
+  //         );
+  //       }
+  //     } catch (error) {
+  //       console.error("Error fetching data:", error);
+  //     }
+  //   };
+  //   fetchData();
+  // }, [dispatch, id, locate]);
 
   console.group("leagues");
   console.log(leagues);
@@ -1843,6 +1921,8 @@ export default function TeamOverView({
           )}
         </div>
       </div>
+
+      {isError && <LimittedError isError={isError} setIsError={setIsError} />}
     </div>
   );
 }

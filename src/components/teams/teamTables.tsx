@@ -8,13 +8,16 @@ import { useAppSelector, useAppDispatch } from "@/lib/storeHooks";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { getAllLeaguesByTeam, getStanding } from "@/lib/features/leagueSlice";
 import { getTeamInfo } from "@/lib/features/teamsSlice";
 
 /**  Format url function */
 import FormatLeagueOrTeamName from "@/lib/formatLeagueOrTeamName";
+
+import handleLimitedError from "@/lib/handleLimitedError";
+import LimittedError from "../reuse/limittedError";
 
 export default function TeamTables({
   locale,
@@ -71,50 +74,114 @@ export default function TeamTables({
 
   // http://localhost:3000/en/teams/47/Tottenham/tables
 
+  // State value for Error components
+  const [isError, setIsError] = useState<string | null>(null);
+
   useEffect(() => {
-    if (firstRender.current) {
-      if (
-        (!leagues || !standing) && // leagues 또는 standing이 없고
-        (!fixture || !teamInfo)
-      ) {
-        firstRender.current = false; // after first rendering, it will chagne useRef value as fasle.
+    const fetchingData = async () => {
+      if (firstRender.current) {
+        if (
+          (!leagues || !standing) && // leagues 또는 standing이 없고
+          (!fixture || !teamInfo)
+        ) {
+          try {
+            firstRender.current = false; // after first rendering, it will chagne useRef value as fasle.
 
-        dispatch(getTeamInfo({ team: id }));
-        dispatch(getAllLeaguesByTeam({ team: id })).then((payload) => {
-          const leagues = payload?.payload;
-          let nationalLeagueObj = leagues?.filter(
-            (league: any) =>
-              league?.league?.type === "League" &&
-              league?.seasons?.some((v: any) => v?.current === true)
-          );
+            await dispatch(getTeamInfo({ team: id })).unwrap();
+            const payload = await dispatch(
+              getAllLeaguesByTeam({ team: id })
+            ).unwrap();
 
-          // if there is no league type data, then find cup type data
-          if (nationalLeagueObj.length === 0) {
-            nationalLeagueObj =
-              leagues?.filter(
-                (league: any) =>
-                  league?.league?.type === "Cup" &&
-                  league?.seasons?.some((v: any) => v?.current === true)
-              ) || [];
-          }
+            const leagues = payload;
+            let nationalLeagueObj = leagues?.filter(
+              (league: any) =>
+                league?.league?.type === "League" &&
+                league?.seasons?.some((v: any) => v?.current === true)
+            );
 
-          // find most recent league
-          const sortedNationalLeagues = [...nationalLeagueObj].sort(
-            (a: any, b: any) => {
-              const aLatestSeason = a.seasons?.at(-1)?.year || 0;
-              const bLatestSeason = b.seasons?.at(-1)?.year || 0;
-              return bLatestSeason - aLatestSeason;
+            // if there is no league type data, then find cup type data
+            if (nationalLeagueObj.length === 0) {
+              nationalLeagueObj =
+                leagues?.filter(
+                  (league: any) =>
+                    league?.league?.type === "Cup" &&
+                    league?.seasons?.some((v: any) => v?.current === true)
+                ) || [];
             }
-          );
 
-          const nationalLeague = sortedNationalLeagues[0]?.league?.id;
-          const latestSeason = sortedNationalLeagues[0]?.seasons?.at(-1)?.year;
+            // find most recent league
+            const sortedNationalLeagues = [...nationalLeagueObj].sort(
+              (a: any, b: any) => {
+                const aLatestSeason = a.seasons?.at(-1)?.year || 0;
+                const bLatestSeason = b.seasons?.at(-1)?.year || 0;
+                return bLatestSeason - aLatestSeason;
+              }
+            );
 
-          dispatch(getStanding({ id: nationalLeague, year: latestSeason }));
-        });
+            const nationalLeague = sortedNationalLeagues[0]?.league?.id;
+            const latestSeason =
+              sortedNationalLeagues[0]?.seasons?.at(-1)?.year;
+
+            await dispatch(
+              getStanding({ id: nationalLeague, year: latestSeason })
+            ).unwrap();
+          } catch (error: any) {
+            handleLimitedError({
+              error: error,
+              setIsError: setIsError,
+            });
+          }
+        }
       }
-    }
+    };
+    fetchingData();
   }, [dispatch, fixture, id, leagues, standing, teamInfo]);
+
+  /** 이전 코드 */
+  // useEffect(() => {
+  //   if (firstRender.current) {
+  //     if (
+  //       (!leagues || !standing) && // leagues 또는 standing이 없고
+  //       (!fixture || !teamInfo)
+  //     ) {
+  //       firstRender.current = false; // after first rendering, it will chagne useRef value as fasle.
+
+  //       dispatch(getTeamInfo({ team: id }));
+  //       dispatch(getAllLeaguesByTeam({ team: id })).then((payload) => {
+  //         const leagues = payload?.payload;
+  //         let nationalLeagueObj = leagues?.filter(
+  //           (league: any) =>
+  //             league?.league?.type === "League" &&
+  //             league?.seasons?.some((v: any) => v?.current === true)
+  //         );
+
+  //         // if there is no league type data, then find cup type data
+  //         if (nationalLeagueObj.length === 0) {
+  //           nationalLeagueObj =
+  //             leagues?.filter(
+  //               (league: any) =>
+  //                 league?.league?.type === "Cup" &&
+  //                 league?.seasons?.some((v: any) => v?.current === true)
+  //             ) || [];
+  //         }
+
+  //         // find most recent league
+  //         const sortedNationalLeagues = [...nationalLeagueObj].sort(
+  //           (a: any, b: any) => {
+  //             const aLatestSeason = a.seasons?.at(-1)?.year || 0;
+  //             const bLatestSeason = b.seasons?.at(-1)?.year || 0;
+  //             return bLatestSeason - aLatestSeason;
+  //           }
+  //         );
+
+  //         const nationalLeague = sortedNationalLeagues[0]?.league?.id;
+  //         const latestSeason = sortedNationalLeagues[0]?.seasons?.at(-1)?.year;
+
+  //         dispatch(getStanding({ id: nationalLeague, year: latestSeason }));
+  //       });
+  //     }
+  //   }
+  // }, [dispatch, fixture, id, leagues, standing, teamInfo]);
 
   return (
     <div className="full">
@@ -460,6 +527,8 @@ export default function TeamTables({
           <h1 className="text-base">{g("noresults")}</h1>
         </div>
       )}
+
+      {isError && <LimittedError isError={isError} setIsError={setIsError} />}
     </div>
   );
 }

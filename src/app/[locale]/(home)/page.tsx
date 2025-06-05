@@ -77,10 +77,11 @@ const getAllLeagues = async () => {
 };
 
 /**
- * LeagueKnockOut 또한 에러 핸들링 구현하기
+ * 12. teamSquad, teamTrasnfer 또한 에러 핸들링 구현하기
  *
- * 현재까지 메인페이지의 main , fixture, league 까지 에러 핸들링 구현 완료
- *  player 부분 수정하기
+ * 현재까지 메인페이지의 main , fixture, league, players 까지 에러 핸들링 구현 완료
+ * 
+ * TeamOverView, teamTable, teamFixture 완료
  * */
 
 export default async function page({

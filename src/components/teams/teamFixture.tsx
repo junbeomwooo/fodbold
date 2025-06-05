@@ -27,6 +27,9 @@ import arrow from "../../../public/img/arrow.png";
 /** motion */
 import { motion, AnimatePresence } from "motion/react";
 
+import handleLimitedError from "@/lib/handleLimitedError";
+import LimittedError from "../reuse/limittedError";
+
 export default function TeamFixture({
   locale,
   id,
@@ -53,54 +56,121 @@ export default function TeamFixture({
   // for removing alert from dependency array of useEffect
   const firstRender = useRef(true);
 
+  // State value for Error components
+  const [isError, setIsError] = useState<string | null>(null);
+
   /** if date can't be recieved through redux global state, it will fetch data */
+  /** 현재코드 */
   useEffect(() => {
-    if (firstRender.current) {
-      if (
-        (!leagues || !fixtureByTeam) && // leagues 또는 standing이 없고
-        (!fixture || !teamInfo)
-      ) {
-        firstRender.current = false; // after first rendering, it will chagne useRef value as fasle.
+    const fetchingData = async () => {
+      if (firstRender.current) {
+        if (
+          (!leagues || !fixtureByTeam) && // leagues 또는 standing이 없고
+          (!fixture || !teamInfo)
+        ) {
+          try {
+            firstRender.current = false; // after first rendering, it will chagne useRef value as fasle.
 
-        dispatch(getTeamInfo({ team: id }));
-        dispatch(getAllLeaguesByTeam({ team: id })).then((payload) => {
-          const leagues = payload?.payload;
-          let nationalLeagueObj = leagues?.filter(
-            (league: any) =>
-              league?.league?.type === "League" &&
-              league?.seasons?.some((v: any) => v?.current === true)
-          );
+            await dispatch(getTeamInfo({ team: id })).unwrap();
+            const payload = await dispatch(
+              getAllLeaguesByTeam({ team: id })
+            ).unwrap();
 
-          // if there is no league type data, then find cup type data
-          if (nationalLeagueObj.length === 0) {
-            nationalLeagueObj =
-              leagues?.filter(
-                (league: any) =>
-                  league?.league?.type === "Cup" &&
-                  league?.seasons?.some((v: any) => v?.current === true)
-              ) || [];
-          }
+            const leagues = payload;
+            let nationalLeagueObj = leagues?.filter(
+              (league: any) =>
+                league?.league?.type === "League" &&
+                league?.seasons?.some((v: any) => v?.current === true)
+            );
 
-          // find most recent league
-          const sortedNationalLeagues = [...nationalLeagueObj].sort(
-            (a: any, b: any) => {
-              const aLatestSeason = a.seasons?.at(-1)?.year || 0;
-              const bLatestSeason = b.seasons?.at(-1)?.year || 0;
-              return bLatestSeason - aLatestSeason;
+            // if there is no league type data, then find cup type data
+            if (nationalLeagueObj.length === 0) {
+              nationalLeagueObj =
+                leagues?.filter(
+                  (league: any) =>
+                    league?.league?.type === "Cup" &&
+                    league?.seasons?.some((v: any) => v?.current === true)
+                ) || [];
             }
-          );
-          const latestSeason = sortedNationalLeagues[0]?.seasons?.at(-1)?.year;
-          dispatch(
-            getFixturesByTeam({
-              team: id,
-              season: latestSeason,
-              timezone: locate,
-            })
-          );
-        });
+
+            // find most recent league
+            const sortedNationalLeagues = [...nationalLeagueObj].sort(
+              (a: any, b: any) => {
+                const aLatestSeason = a.seasons?.at(-1)?.year || 0;
+                const bLatestSeason = b.seasons?.at(-1)?.year || 0;
+                return bLatestSeason - aLatestSeason;
+              }
+            );
+            const latestSeason =
+              sortedNationalLeagues[0]?.seasons?.at(-1)?.year;
+            await dispatch(
+              getFixturesByTeam({
+                team: id,
+                season: latestSeason,
+                timezone: locate,
+              })
+            ).unwrap();
+          } catch (error: any) {
+            handleLimitedError({
+              error: error,
+              setIsError: setIsError,
+            });
+          }
+        }
       }
-    }
+    };
+
+    fetchingData();
   }, [dispatch, fixture, fixtureByTeam, id, leagues, locate, teamInfo]);
+
+  /** 이전 코드 */
+  // useEffect(() => {
+  //   if (firstRender.current) {
+  //     if (
+  //       (!leagues || !fixtureByTeam) && // leagues 또는 standing이 없고
+  //       (!fixture || !teamInfo)
+  //     ) {
+  //       firstRender.current = false; // after first rendering, it will chagne useRef value as fasle.
+
+  //       dispatch(getTeamInfo({ team: id }));
+  //       dispatch(getAllLeaguesByTeam({ team: id })).then((payload) => {
+  //         const leagues = payload?.payload;
+  //         let nationalLeagueObj = leagues?.filter(
+  //           (league: any) =>
+  //             league?.league?.type === "League" &&
+  //             league?.seasons?.some((v: any) => v?.current === true)
+  //         );
+
+  //         // if there is no league type data, then find cup type data
+  //         if (nationalLeagueObj.length === 0) {
+  //           nationalLeagueObj =
+  //             leagues?.filter(
+  //               (league: any) =>
+  //                 league?.league?.type === "Cup" &&
+  //                 league?.seasons?.some((v: any) => v?.current === true)
+  //             ) || [];
+  //         }
+
+  //         // find most recent league
+  //         const sortedNationalLeagues = [...nationalLeagueObj].sort(
+  //           (a: any, b: any) => {
+  //             const aLatestSeason = a.seasons?.at(-1)?.year || 0;
+  //             const bLatestSeason = b.seasons?.at(-1)?.year || 0;
+  //             return bLatestSeason - aLatestSeason;
+  //           }
+  //         );
+  //         const latestSeason = sortedNationalLeagues[0]?.seasons?.at(-1)?.year;
+  //         dispatch(
+  //           getFixturesByTeam({
+  //             team: id,
+  //             season: latestSeason,
+  //             timezone: locate,
+  //           })
+  //         );
+  //       });
+  //     }
+  //   }
+  // }, [dispatch, fixture, fixtureByTeam, id, leagues, locate, teamInfo]);
 
   /** routing */
   const router = useRouter();
@@ -196,7 +266,6 @@ export default function TeamFixture({
 
     return () => clearInterval(interval); // clear Interval when componets is unmounted
   }, []);
-
 
   return (
     <div className="w-full">
@@ -402,6 +471,8 @@ export default function TeamFixture({
           </ul>
         </div>
       )}
+
+      {isError && <LimittedError isError={isError} setIsError={setIsError} />}
     </div>
   );
 }
