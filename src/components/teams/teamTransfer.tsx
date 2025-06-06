@@ -11,6 +11,9 @@ import { getAllLeaguesByTeam } from "@/lib/features/leagueSlice";
 
 import Image from "next/image";
 
+import handleLimitedError from "@/lib/handleLimitedError";
+import LimittedError from "../reuse/limittedError";
+
 export default function TeamTransfer({
   locale,
   id,
@@ -42,20 +45,59 @@ export default function TeamTransfer({
   // for removing alert from dependency array of useEffect
   const firstRender = useRef(true);
 
-  useEffect(() => {
-    if (firstRender.current) {
-      if (
-        (!leagues || !transfer) && // leagues 또는 transfer 없고
-        (!fixture || !teamInfo)
-      ) {
-        firstRender.current = false; // after first rendering, it will chagne useRef value as fasle.
+  // State value for Error components
+  const [isError, setIsError] = useState<string | null>(null);
 
-        dispatch(getTeamInfo({ team: id }));
-        dispatch(getAllLeaguesByTeam({ team: id }));
-        dispatch(getTransferInfoByTeam({ team: id }));
+  /** 현재 코드 */
+  useEffect(() => {
+    const fetchingData = async () => {
+      if (firstRender.current) {
+        if (
+          (!leagues || !transfer) && // leagues 또는 transfer 없고
+          (!fixture || !teamInfo)
+        ) {
+          try {
+            firstRender.current = false; // after first rendering, it will chagne useRef value as fasle.
+
+            if (!teamInfo) {
+              await dispatch(getTeamInfo({ team: id })).unwrap();
+            }
+
+            if (!leagues) {
+              await dispatch(getAllLeaguesByTeam({ team: id })).unwrap();
+            }
+
+            if (!transfer) {
+              await dispatch(getTransferInfoByTeam({ team: id })).unwrap();
+            }
+          } catch (error: any) {
+            handleLimitedError({
+              error: error,
+              setIsError: setIsError,
+            });
+          }
+        }
       }
-    }
-  }, [dispatch, fixture, id, leagues, , teamInfo, transfer]);
+    };
+
+    fetchingData();
+  }, [dispatch, fixture, id, leagues, teamInfo, transfer]);
+
+  /** 이전 코드 */
+  // useEffect(() => {
+  //   if (firstRender.current) {
+  //     if (
+  //       (!leagues || !transfer) && // leagues 또는 transfer 없고
+  //       (!fixture || !teamInfo)
+  //     ) {
+  //       firstRender.current = false; // after first rendering, it will chagne useRef value as fasle.
+
+  //       dispatch(getTeamInfo({ team: id }));
+  //       dispatch(getAllLeaguesByTeam({ team: id }));
+  //       dispatch(getTransferInfoByTeam({ team: id }));
+  //     }
+  //   }
+  // }, [dispatch, fixture, id, leagues, teamInfo, transfer]);
 
   /** data for using */
 
@@ -77,13 +119,13 @@ export default function TeamTransfer({
   console.log(nationalLeagueObj);
 
   // // find most recent league
-  const sortedNationalLeagues = Array.isArray(nationalLeagueObj) ?[...nationalLeagueObj].sort(
-    (a: any, b: any) => {
-      const aLatestSeason = a.seasons?.at(-1)?.year || 0;
-      const bLatestSeason = b.seasons?.at(-1)?.year || 0;
-      return bLatestSeason - aLatestSeason;
-    }
-  ): [];
+  const sortedNationalLeagues = Array.isArray(nationalLeagueObj)
+    ? [...nationalLeagueObj].sort((a: any, b: any) => {
+        const aLatestSeason = a.seasons?.at(-1)?.year || 0;
+        const bLatestSeason = b.seasons?.at(-1)?.year || 0;
+        return bLatestSeason - aLatestSeason;
+      })
+    : [];
   console.log(sortedNationalLeagues);
 
   const leagueNational = sortedNationalLeagues[0];
@@ -445,6 +487,8 @@ export default function TeamTransfer({
           </div>
         </div>
       )}
+
+      {isError && <LimittedError isError={isError} setIsError={setIsError} />}
     </div>
   );
 }

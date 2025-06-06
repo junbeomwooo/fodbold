@@ -87,7 +87,10 @@ export default function TeamTables({
           try {
             firstRender.current = false; // after first rendering, it will chagne useRef value as fasle.
 
-            await dispatch(getTeamInfo({ team: id })).unwrap();
+            if (!teamInfo) {
+              await dispatch(getTeamInfo({ team: id })).unwrap();
+            }
+
             const payload = await dispatch(
               getAllLeaguesByTeam({ team: id })
             ).unwrap();
@@ -524,7 +527,7 @@ export default function TeamTables({
         )
       ) : (
         <div className="w-full h-20 px-8 py-10">
-          <h1 className="text-base">{g("noresults")}</h1>
+          <h1 className="text-base">{t("noResults")}</h1>
         </div>
       )}
 

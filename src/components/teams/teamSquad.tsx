@@ -12,6 +12,9 @@ import { Fragment } from "react";
 import TeamHeader from "./header/teamHeader";
 import ColorThief from "colorthief";
 
+import handleLimitedError from "@/lib/handleLimitedError";
+import LimittedError from "../reuse/limittedError";
+
 export default function TeamSquad({
   locale,
   id,
@@ -43,21 +46,51 @@ export default function TeamSquad({
   // for removing alert from dependency array of useEffect
   const firstRender = useRef(true);
 
+  // State value for Error components
+  const [isError, setIsError] = useState<string | null>(null);
+
   // http://localhost:3000/en/teams/47/Tottenham/squad
 
+  /** 현재 코드 */
   useEffect(() => {
-    if (firstRender.current) {
-      firstRender.current = false; // after first rendering, it will chagne useRef value as fasle.
+    const fetchingData = async () => {
+      if (firstRender.current) {
+        try {
+          firstRender.current = false; // after first rendering, it will chagne useRef value as fasle.
 
-      if (!teamInfo) {
-        dispatch(getTeamInfo({ team: id }));
-      }
+          if (!teamInfo) {
+            await dispatch(getTeamInfo({ team: id })).unwrap();
+          }
 
-      if (!squads) {
-        dispatch(getTeamSquad({ team: id }));
+          if (!squads) {
+            await dispatch(getTeamSquad({ team: id })).unwrap();
+          }
+        } catch (error: any) {
+          handleLimitedError({
+            error: error,
+            setIsError: setIsError,
+          });
+        }
       }
-    }
+    };
+
+    fetchingData();
   }, [dispatch, id, teamInfo, squads]);
+
+  /** 이전 코드 */
+  // useEffect(() => {
+  //   if (firstRender.current) {
+  //     firstRender.current = false; // after first rendering, it will chagne useRef value as fasle.
+
+  //     if (!teamInfo) {
+  //       dispatch(getTeamInfo({ team: id }));
+  //     }
+
+  //     if (!squads) {
+  //       dispatch(getTeamSquad({ team: id }));
+  //     }
+  //   }
+  // }, [dispatch, id, teamInfo, squads]);
 
   const players = squads ? squads[0]?.players : null;
 
@@ -192,7 +225,7 @@ export default function TeamSquad({
                   })
                 ) : (
                   <tr>
-                    <td className="py-6 text-sm">{t("noTransfer")}</td>
+                    <td className="py-6 text-sm">{t("noResults")}</td>
                   </tr>
                 )}
               </tbody>
@@ -200,6 +233,8 @@ export default function TeamSquad({
           </div>
         </div>
       }
+
+      {isError && <LimittedError isError={isError} setIsError={setIsError} />}
     </div>
   );
 }

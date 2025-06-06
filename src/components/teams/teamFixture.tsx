@@ -71,7 +71,10 @@ export default function TeamFixture({
           try {
             firstRender.current = false; // after first rendering, it will chagne useRef value as fasle.
 
-            await dispatch(getTeamInfo({ team: id })).unwrap();
+            if (!teamInfo) {
+              await dispatch(getTeamInfo({ team: id })).unwrap();
+            }
+
             const payload = await dispatch(
               getAllLeaguesByTeam({ team: id })
             ).unwrap();
