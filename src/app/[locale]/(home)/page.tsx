@@ -78,6 +78,9 @@ const getAllLeagues = async () => {
 
 /**
  * 1. team 페이지 데이터 페칭 및 상태값 공유가 모든 탭에서 잘 이루어지는 지 확인
+ * 2. overView페이지 if문 구성해서 탭이동시 데이터페칭 최소화하기
+ * 3. team, league overView페이지 데이터페칭 및 렌더링 잘되는 지 확인하기
+ * 4. 배포하기
  * 
  * 현재까지 메인페이지의 main , fixture, league, players, teams 까지 에러 핸들링 구현 완료
  * 
