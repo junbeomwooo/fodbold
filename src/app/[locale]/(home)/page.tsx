@@ -4,9 +4,7 @@ import Standing from "@/components/main/standing";
 import Fixtures from "@/components/main/fixtures";
 import Main from "@/components/main/main";
 
-export const FOOTBALL_URL = "https://v3.football.api-sports.io";
-export const FOOTBALL_IMAGE = "https://media.api-sports.io/football";
-export const GEOLOCATION_URL = "https://api.ipgeolocation.io/ipgeo";
+import { FOOTBALL_URL } from "@/constants/api";
 
 // 메인페이지 최신시즌값 자동으로 받아온후 해당시즌에 대한 스탠딩값 가져오기
 /** 해당 리그 id를 통한 리그 스탠딩 데이터 받아오기 */
@@ -77,6 +75,7 @@ const getAllLeagues = async () => {
 };
 
 /**
+ * 0. URL import 구문 모두 api.ts로 바꾸기
  * 1. team 페이지 데이터 페칭 및 상태값 공유가 모든 탭에서 잘 이루어지는 지 확인
  * 2. overView페이지 if문 구성해서 탭이동시 데이터페칭 최소화하기
  * 3. team, league overView페이지 데이터페칭 및 렌더링 잘되는 지 확인하기

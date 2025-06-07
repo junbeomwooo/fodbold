@@ -10,8 +10,8 @@ import search from "../../../public/img/search.png";
 import moment from "moment-timezone";
 import { Calendar } from "@/components/ui/calendar";
 
-import { FOOTBALL_URL } from "@/app/[locale]/(home)/page";
-import { GEOLOCATION_URL } from "@/app/[locale]/(home)/page";
+import { FOOTBALL_URL } from "@/constants/api";
+import { GEOLOCATION_URL } from "@/constants/api";
 
 import nowTimezone from "@/lib/nowTimezone";
 import stringFormatDate from "@/lib/stringFormatDate";

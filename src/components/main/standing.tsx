@@ -2,7 +2,7 @@
 
 import React, { useEffect } from "react";
 import Image from "next/image";
-import { FOOTBALL_IMAGE } from "@/app/[locale]/(home)/page";
+import { FOOTBALL_IMAGE } from "@/constants/api";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import FormatLeagueOrTeamName from "@/lib/formatLeagueOrTeamName";

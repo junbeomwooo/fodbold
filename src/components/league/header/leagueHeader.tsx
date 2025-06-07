@@ -1,6 +1,6 @@
 import React from "react";
 import Image from "next/image";
-import { FOOTBALL_IMAGE } from "../../../app/[locale]/(home)/page";
+import { FOOTBALL_IMAGE } from "@/constants/api";
 
 import { useTranslations } from "next-intl";
 

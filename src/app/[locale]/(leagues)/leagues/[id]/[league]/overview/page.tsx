@@ -1,7 +1,4 @@
-import Image from "next/image";
 
-import { FOOTBALL_URL } from "@/app/[locale]/(home)/page";
-import { FOOTBALL_IMAGE } from "@/app/[locale]/(home)/page";
 
 import LeagueOverview from "../../../../../../../components/league/leagueOverview";
 

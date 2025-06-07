@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import Image from "next/image";
 
-import { FOOTBALL_IMAGE } from "@/app/[locale]/(home)/page";
+import { FOOTBALL_IMAGE } from "@/constants/api";
 import triangle from "../../../public/img/triangle.png";
 import earth from "../../../public/img/earth.png";
 
