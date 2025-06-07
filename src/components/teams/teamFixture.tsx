@@ -65,7 +65,12 @@ export default function TeamFixture({
     const fetchingData = async () => {
       if (firstRender.current) {
         if (
-          (!leagues || !fixtureByTeam) && // leagues 또는 standing이 없고
+
+          // 공통 데이터: leagues, teamInfo
+          // 현재 탭에서 필요한 데이터: fixtureByTeam
+          // OverView가 아닌 다른 탭에서 재렌더링 후 이동 시 초기 렌더링에 필요한 데이터: fixture
+          
+          (!leagues || !fixtureByTeam) &&
           (!fixture || !teamInfo)
         ) {
           try {

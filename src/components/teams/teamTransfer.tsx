@@ -52,30 +52,25 @@ export default function TeamTransfer({
   useEffect(() => {
     const fetchingData = async () => {
       if (firstRender.current) {
-        if (
-          (!leagues || !transfer) && // leagues 또는 transfer 없고
-          (!fixture || !teamInfo)
-        ) {
-          try {
-            firstRender.current = false; // after first rendering, it will chagne useRef value as fasle.
+        try {
+          firstRender.current = false; // after first rendering, it will chagne useRef value as fasle.
 
-            if (!teamInfo) {
-              await dispatch(getTeamInfo({ team: id })).unwrap();
-            }
-
-            if (!leagues) {
-              await dispatch(getAllLeaguesByTeam({ team: id })).unwrap();
-            }
-
-            if (!transfer) {
-              await dispatch(getTransferInfoByTeam({ team: id })).unwrap();
-            }
-          } catch (error: any) {
-            handleLimitedError({
-              error: error,
-              setIsError: setIsError,
-            });
+          if (!teamInfo) {
+            await dispatch(getTeamInfo({ team: id })).unwrap();
           }
+
+          if (!leagues) {
+            await dispatch(getAllLeaguesByTeam({ team: id })).unwrap();
+          }
+
+          if (!transfer) {
+            await dispatch(getTransferInfoByTeam({ team: id })).unwrap();
+          }
+        } catch (error: any) {
+          handleLimitedError({
+            error: error,
+            setIsError: setIsError,
+          });
         }
       }
     };

@@ -425,7 +425,7 @@ export default function Fixtures() {
             <div
               className={` rounded-2xl text-xsm px-2.5 cursor-pointer box-border flex items-center mr-3 w-fit text-nowrap dark:border-0 dark:bg-custom-gray3 dark:text-white ${
                 filter === "all"
-                  ? "bg-black text-white dark:bg-white dark:text-custom-gray3"
+                  ? "bg-black text-white dark:bg-white dark:text-gray-900"
                   : "border border-solid border-slate-300 hover:bg-slate-300 dark:hover:bg-custom-gray2"
               }`}
               onClick={() => setFilter("all")}
@@ -435,7 +435,7 @@ export default function Fixtures() {
             <div
               className={` rounded-2xl text-xsm px-2.5 cursor-pointer box-border flex items-center mr-3 w-fit text-nowrap dark:border-0 dark:bg-custom-gray3 dark:text-white ${
                 filter === "live"
-                  ? "bg-black text-white dark:bg-white dark:text-custom-gray3"
+                  ? "bg-black text-white dark:bg-white dark:text-gray-900"
                   : "border border-solid border-slate-300 hover:bg-slate-300 dark:hover:bg-custom-gray2"
               }`}
               onClick={() => setFilter("live")}
@@ -445,7 +445,7 @@ export default function Fixtures() {
             <div
               className={` rounded-2xl text-xsm px-2.5 cursor-pointer box-border flex items-center mr-3 w-fit text-nowrap dark:border-0 dark:bg-custom-gray3 dark:text-white ${
                 filter === "finished"
-                  ? "bg-black text-white dark:bg-white dark:text-custom-gray3"
+                  ? "bg-black text-white dark:bg-white dark:text-gray-900"
                   : "border border-solid border-slate-300 hover:bg-slate-300 dark:hover:bg-custom-gray2"
               }`}
               onClick={() => setFilter("finished")}
@@ -455,7 +455,7 @@ export default function Fixtures() {
             <div
               className={` rounded-2xl text-xsm px-2.5 cursor-pointer box-border flex items-center mr-3 w-fit text-nowrap dark:border-0 dark:bg-custom-gray3 dark:text-white ${
                 filter === "scheduled"
-                  ? "bg-black text-white dark:bg-white dark:text-custom-gray3"
+                  ? "bg-black text-white dark:bg-white dark:text-gray-900"
                   : "border border-solid border-slate-300 hover:bg-slate-300 dark:hover:bg-custom-gray2"
               }`}
               onClick={() => setFilter("scheduled")}
