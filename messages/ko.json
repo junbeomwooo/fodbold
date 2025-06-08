@@ -23,7 +23,11 @@
     "gotit": "확인했어요!",
     "dontshowtoday": "오늘 하루 보지 않기",
     "API Limit Reached": "API 사용 한도 초과",
-    "Too Many Requests": "요청이 너무 많습니다"
+    "Too Many Requests": "요청이 너무 많습니다",
+
+    "API Limit Reached Content": "이 웹사이트는 API-Football의 무료 요금제를 사용하고 있으며, 하루에 최대 100개의 요청만 허용됩니다. 내일 다시 시도해 주세요.",
+
+    "Too Many Requests Content": "이 웹사이트는 API-Football의 무료 요금제를 사용하고 있으며, 분당 최대 10개의 요청만 허용됩니다. 잠시 후 다시 시도해 주세요."
   },
 
   "general": {

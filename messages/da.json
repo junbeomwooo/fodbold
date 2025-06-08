@@ -23,7 +23,11 @@
     "gotit": "Forstået!",
     "dontshowtoday": "Vis ikke igen i dag",
     "API Limit Reached": "API-grænse nået",
-    "Too Many Requests": "For mange forespørgsler"
+    "Too Many Requests": "For mange forespørgsler",
+
+    "API Limit Reached Content": "Denne hjemmeside bruger API-Footballs gratis plan, som tillader kun 100 forespørgsler om dagen. Prøv venligst igen i morgen.",
+
+    "Too Many Requests Content": "Denne hjemmeside bruger API-Footballs gratis plan, som tillader kun 10 forespørgsler pr. minut. Vent venligst et øjeblik og prøv igen."
   },
 
   "general": {
