@@ -2,7 +2,7 @@
 
 import React, { Fragment, useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
-import { useLocale } from "next-intl";
+import { useRouter } from "next/navigation";
 
 import Image from "next/image";
 import LeagueSwiper from "./swiper/leagueSwiper";
@@ -54,6 +54,8 @@ export default function LeagueOverview({
 
   // State value for Error components
   const [isError, setIsError] = useState<string | null>(null);
+
+  const router = useRouter();
 
   /** 이번에 사용할 useEffect */
   useEffect(() => {
@@ -491,7 +493,16 @@ export default function LeagueOverview({
                   {goal?.slice(0, 3).map((v: any, i: number) => {
                     return (
                       <div key={i}>
-                        <div className="flex py-4 px-8 justify-between items-center cursor-pointer  hover:bg-slate-100 dark:hover:bg-zinc-700">
+                        <div
+                          className="flex py-4 px-8 justify-between items-center cursor-pointer  hover:bg-slate-100 dark:hover:bg-zinc-700"
+                          onClick={() => {
+                            router.push(
+                              `/${locale}/players/${
+                                v?.player?.id
+                              }/${(v?.player?.name).replace(/ /g, "-")}`
+                            );
+                          }}
+                        >
                           <div className="flex items-center">
                             <Image
                               src={v.player.photo}
@@ -559,6 +570,13 @@ export default function LeagueOverview({
                         <div
                           key={i}
                           className="flex py-4 px-8 justify-between items-center cursor-pointer  hover:bg-slate-100 dark:hover:bg-zinc-700"
+                          onClick={() => {
+                            router.push(
+                              `/${locale}/players/${
+                                v?.player?.id
+                              }/${(v?.player?.name).replace(/ /g, "-")}`
+                            );
+                          }}
                         >
                           <div className="flex items-center">
                             <Image
