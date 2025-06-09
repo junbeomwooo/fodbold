@@ -17,6 +17,7 @@ import {
 import handleLimitedError from "../../lib/handleLimitedError";
 import LimittedError from "../reuse/limittedError";
 
+import { useRouter } from "next/navigation";
 export default function LeagueStats({
   locale,
   id,
@@ -46,6 +47,8 @@ export default function LeagueStats({
   const season = seasons ? seasons.seasons : null;
   const yellow = topYellowRed?.yellow;
   const red = topYellowRed?.red;
+
+  const router = useRouter();
 
   /** 선택 년도 상태값 */
   const [selectedYear, setSelectedYear] = useState<number>(selected);
@@ -226,7 +229,16 @@ export default function LeagueStats({
                   {goal?.slice(0, 20).map((v: any, i: number) => {
                     return (
                       <div key={i}>
-                        <div className="flex py-4 px-8 justify-between items-center cursor-pointer  hover:bg-slate-100 dark:hover:bg-zinc-700">
+                        <div
+                          className="flex py-4 px-8 justify-between items-center cursor-pointer  hover:bg-slate-100 dark:hover:bg-zinc-700"
+                          onClick={() => {
+                            router.push(
+                              `/${locale}/players/${
+                                v?.player?.id
+                              }/${(v?.player?.name).replace(/ /g, "-")}`
+                            );
+                          }}
+                        >
                           <div className="flex items-center">
                             <Image
                               src={v.player.photo}
@@ -296,6 +308,13 @@ export default function LeagueStats({
                         <div
                           key={i}
                           className="flex py-4 px-8 justify-between items-center cursor-pointer  hover:bg-slate-100 dark:hover:bg-zinc-700"
+                          onClick={() => {
+                            router.push(
+                              `/${locale}/players/${
+                                v?.player?.id
+                              }/${(v?.player?.name).replace(/ /g, "-")}`
+                            );
+                          }}
                         >
                           <div className="flex items-center">
                             <Image
@@ -361,6 +380,13 @@ export default function LeagueStats({
                         <div
                           key={i}
                           className="flex py-4 px-8 justify-between items-center cursor-pointer  hover:bg-slate-100 dark:hover:bg-zinc-700"
+                          onClick={() => {
+                            router.push(
+                              `/${locale}/players/${
+                                v?.player?.id
+                              }/${(v?.player?.name).replace(/ /g, "-")}`
+                            );
+                          }}
                         >
                           <div className="flex items-center">
                             <Image
@@ -426,6 +452,13 @@ export default function LeagueStats({
                         <div
                           key={i}
                           className="flex py-4 px-8 justify-between items-center cursor-pointer  hover:bg-slate-100 dark:hover:bg-zinc-700"
+                          onClick={() => {
+                            router.push(
+                              `/${locale}/players/${
+                                v?.player?.id
+                              }/${(v?.player?.name).replace(/ /g, "-")}`
+                            );
+                          }}
                         >
                           <div className="flex items-center">
                             <Image
